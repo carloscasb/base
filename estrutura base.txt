@@ -1,0 +1,798 @@
+---------ACESSORIOS ------------------
+
+https://github.com/tutorialesvirtuales/Curso-Laravel
+https://github.com/jeroennoten/Laravel-AdminLTE
+fontawesone.io
+-------------------
+# composer dump-autoload
+# php artisan migrate:refresh
+php artisan migrate:fresh
+php artisan migrate:fresh
+
+
+
+----CRIA PROJETO base--------------------------
+
+C:\Users\barbosa>cd\
+
+C:\>cd wamp64\www\
+
+C:\wamp64\www>composer create-project --prefer-dist laravel/laravel base
+Installing laravel/laravel (v6.18.8)
+
+---------------CRIA ARQUIVO BAT-- > (faz um bloco de nota e salva com extensa�o .bat
+cd\
+cd wamp64\www\base
+
+php artisan serve
+
+
+------------------------------------------------------------------------------
+2. CONFIGURAR DB EM .env
+
+@...@
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=base
+DB_USERNAME=root
+DB_PASSWORD=
+@...@
+
+---------------------------------PULAR CERCADINHO TE item 5
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---NÃO ERA PRA TER FEITO----FOI FEITO, VAMOS ENGENBRAR
+3. RODAR AS MIGRATYONS
+# php artisan migrate:refresh
+---------------------------------
+---------------------------------
+4. FAZER AUTENTICAÇÃO -> agora tem que ir na documentação Authentication em seguraty e ler pois foi desacoplado o processo de aitentixação
+automatico precisando rodar alguns comando ---> RODAR COMANDOS composer para instalar o componente
+
+
+# composer require laravel/ui --dev   //......INSTALA PACOTE...esse --dev é para dizer  que essa instalação em a nivel de DESENVOLVIMENTO
+
+RODAR A AUTHENTICATION PERSONALIZADA
+
+# php artisan ui bootstrap --auth    //.....SERÁ ESSA.......FAZ A AUTENTICAÇÃO so que mudaremos para Bookstrap (personalizamos)
+
+# php artisan ui vue --auth    //.....FAZ A AUTENTICAÇÃO so que mudaremos para Brostrap
+
+ELE VAI PEDIR PARA INSTALAR O "npm install && npm run dev"
+
+#npm install && npm run dev    //..... DEU UM ERRO MAS FEZ AS ROTAS E O LOGIN\ REGITRO --> vamos em grente
+
+---------------------------------
+
+
+4. REALIZAÇÃO A AUTENTICAçÃO PARDÃO
+# php artisan make:auth
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ---NÃO ERA PRA TER FEITO
+
+------------------------------------------------------------------------------
+
+5---------DEPOIS EM config\app.php
+ 'timezone' => 'America/Sao_Paulo',
+----------------------------------------------------------------------------
+CRIAR NOSSO DIRETORIO DE MODELS em app e ARRASTA O User.php PARA DENTRO MUDANDO O NAMESPACE
+namespace App\Models;
+----------------------------------------------------------------------------
+VAMOS EM config\auth.php e atualizamos o namespace do models User 
+        'providers' => [
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\User::class,
+        ],
+
+6----------------INSTALAÇÂO ADMINLTE----------------------------------------AdminLT3
+VAMOS USAR O PACOTE AdminLT3 ENCONTAMOS NO LINK ABAIXO
+AdminLTE Laravel: https://github.com/jeroennoten/Laravel-AdminLTE
+
+INSTALAR O PACOTE VIA TERMINAL
+# composer require jeroennoten/laravel-adminlte
+E DEPOIS CONFERE A INSTALAÇÂO DEFINITIVA
+# php artisan adminlte:install
+
+MODIFICOU ALGUNAS COISA NO NOSSO PROJETO, PRINCIPALMENTE A CRIAÇÂO DE Vendor NO NOSSO DIRETORIO Public (DE TERCEIROS)
+EM Config ELE JA COLOCA UMA PASTA AdminLTE e em Resource\vendor\adminLte ja colocou os idiomas ETC...
+----------------------------------------------------------------------------
+VAMOS EM config\adminlte.php E DEFINIMOS NOSSO TEMPALTE CONFORME VONTADE ..exemplo
+ 'title' => 'Base 3',
+    'title_prefix' => '',
+    'title_postfix' => '',
+-----------
+ 'logo' => '<b>LAraFood1</b>LTE',
+    'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
+    'logo_img_class' => 'brand-image img-circle elevation-3',
+    'logo_img_xl' => null,
+    'logo_img_xl_class' => 'brand-image-xs',
+    'logo_img_alt' => 'Base 3',
+
+ -----------------------------------
+ MAIS O MAIS IMPRTANTE É A PARTE DE MENU e SUBMENU (ONDE TRABALHAMOS COM MENU DO DASHBOARD)
+ VAMOS MEXER COM O DESEVOLVIMENTO DO PROJETO
+
+    'menu' => [
+        [
+            'text' => 'search',
+            'search' => true,
+            'topnav' => true,
+        ],
+        [
+            'text' => 'blog',
+            'url'  => 'admin/blog',
+            'can'  => 'manage-blog',
+        ],
+        [
+            'text'        => 'pages',
+            'url'         => 'admin/pages',
+            'icon'        => 'far fa-fw fa-file',
+            'label'       => 4,
+            'label_color' => 'success',
+----------------------------------------------------------------AINDA NENHUM EFEITO VISUAL
+SE DESEJAR CUSTOMIZAR AS views ----- NAO FIZ (NAO RODEI)
+
+# php artisan adminlte:install --only=main_views
+-----------------------------------------------------
+7--------------------USER (migration)------------FIZ OU REFIZ MINHA MIGRATION User
+ public function up()
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->rememberToken();
+            $table->timestamps();
+        });
+    }
+
+8--------------CRIAR GERAL---------------------------------VAMOS TRABALHAR--FAZER AS MODELS JA COM AS MIGRATION
+# php artisan make:model Models\Geral -mc --resource 
+# php artisan make:model Models\Geral -m  --------------------------------USEI ESSA (MAS A DE CIMA PRETENDO)
+CRIOU A MODEL pessoa E A MIGRATION pessoa
+VAMOS EM NIGATTION pessoa e DEFININOS AS COLUNAS DE NOSSA TABELA
+  public function up()
+    {
+        Schema::create('gerals', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('name')->unique();
+            $table->string('url')->unique();
+            $table->double('price' , 10, 2);
+            $table->string('description')->nullable();
+            $table->timestamps();
+        });
+    }
+-------------------------------------------------------
+ E NA MODELS GERAL DEFININOS NOSSO fillable (permisao de dados no BD)
+ class Geral extends Model
+{
+    protected $fillable = ['name', 'url', 'price', 'description'];
+}
+
+9-------------------------------------CRIAR BD------------------------------------------------
+NESSE MOMENTO VAMOS CRIAR UM BD NO phpadmin COM o NOME DE base RECOMEDADO utf8mb4_unicode_ci
+
+
+
+10------------------------------------CRIAR TABELAS------------------------------------------------
+NO TERMINAL 
+# php artisan migrate          USEI ESSA   ----DEU UMA -EXCESÂO AQUI--PQ A MIGRATION JA TINHA SIDO GERADA
+
+ERRONEAMNENTE ANTES, MAS SE EDTIVER TUDO BEM DA CERTO
+
+# php artisan make:migration create_gerals_table    QUANDO FOR ESPECIFICA
+
+------------------------------------------------------------------------------------VAMOS TENTAR RESOLVER -  
+------------------FIZ VARIAS TENTATIVAS, TINHA ERROS DE CODIGOS, AI FIZ A PROFILE provider\appServiceProvider
+public function boot()
+    {        
+      // 
+       Schema::defaultStringLength(191);
+    }
+}
+
+--------------------- E RODEI 
+composer dump-autoload
+php artisan migrate:fresh
+php artisan migrate:refresh
+--------------------------------------------BINGO--- DEU CERTO E CRIOU AS TABELAS, Users, Gerals
+-----------------------------------------------------------MAS TENHO QUE TER CUIDADO COM A migrate
+-----VAMOS CONTINUAR----------------------------------------
+
+11------------PRIMEIRAMENTE VAMOS CRIAR UM SEEDER User
+# php artisan make:seeder UsersTableSeeder
+E CODIFICAR , NAO ESQUECER O ---use App\Models\User; LA EM CIMA (pois mudamos o namespace de user para dentro da MODELS)
+<?php
+
+use Illuminate\Database\Seeder;
+use App\Models\User; 
+class UsersTableSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        User::Create([
+            'name' => 'carlos',
+            'email' => 'carlos@gmail.com',
+            'password' => bcrypt('casb'),
+        ]);
+    }
+    
+}
+
+-----NAO ESQUECER O ---use App\Models\User; LA EM CIMA
+---------EM DATABASEEDER LIBERE O THIS
+public function run()
+    {
+        $this->call(UsersTableSeeder::class);
+        
+    }
+}
+
+-----RODAR SEEDER PARA POPULAR A TELA User
+# php artisan db:seed
+
+# php artisan db:seed --class=UsersTableSeeder
+
+-------------------------------------------------------------------POPULOU A TABRELA User 
+-------------------------------------------------------------------ATE AQUI FUNCIOMOU
+
+
+12------------------CRIAR AS ROTAS-----------------------------------
+--INICIALMENTE FAREMOS UMA POR UMA-------
+--Antes recomendado criar o GeralController --(nesse caso que ainda nao criamos os Metodos, quando for ressouse ja fica criado)
+com vai ficar no diretorio Admin colocamos o namespace
+
+# php artisan make:controller Admin\GeralController
+
+CRIA Admin\pessoaController FALTANDO PREENCHER SEUS METODOS
+class GeralController extends Controller
+{
+    public function index()
+            {
+            return view('admin.pages.gerals.index');
+        }
+}
+    
+
+-----LIBERE A ROUTER EM WEB.php  ----- (PODERIA SER Resource)
+Route::get('/admin/gerals', 'Admin\GeralController@index')->name('gerals.index');
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+----------------E VAMOS CRIAR A View index em Resource\views\admin\pages\gerals
+
+----------------------PEGA O 4. Usage DO AdminLTE E COLOCA (NA DOCUMENTAÇÃO)
+@extends('adminlte::page')
+
+@section('title', 'Dashboard')
+
+@section('content_header')
+    <h1>Dashboard</h1>
+@stop
+
+@section('content')
+    <p>Welcome to this beautiful admin panel.</p>
+@stop
+
+------------------------------------------ OK PERFEITO  A PAGINA index JA ESTA FUNCIONANDO COM A ROUTER
+13----------------------------COMEÇAR A CONFIGURA OAdminLTE - Dashboard ------------------
+
+Vamos em Config\AdminLT3.php
+menu' => [
+        [
+            'text' => 'search',
+            'search' => true,
+            'topnav' => true,
+        ],
+        [
+            'text' => 'pessoaos',
+            'url'  => 'admin/gerals',
+            
+        ],
+
+14------------------------------------- VAMOS PARA O MODULO PESSOA (fazer realmente os metodos do CRUD)-----------------------
+
+----------COMEÇANDO PELO NOSSA MODEL E MIGRATION 
+
+# php artisan make:model Models\Pessoa -m
+
+---NA MIGRATION VOCE TEM QUE SABER PERFEITAMENTE OS CAMPOS QUE A TABELA VAI TER 
+ public function up()
+    {
+        Schema::create('pessoas', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('name')->required();
+            $table->string('url')->unique();
+            $table->string('vulgo')->required();
+            $table->string('mae')->nullable();
+            $table->string('genero')->nullable();
+            $table->string('rg')->unique();
+            $table->string('exp')->nullable();
+            $table->string('cpf')->unique();
+            $table->string('situa')->uninullableque();
+            $table->string('nasc')->nullable();
+            $table->string('description')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('pessoas');
+    }
+}
+
+
+-------------------NA MODEL 
+
+class Pessoa extends Model
+{
+    //
+    protected $fillable = ['name', 'url', 'vulgo', 'mae', 'genero', 'rg', 'exp', 'cpf', 'situa', 'nasc', 'description'];
+}
+
+15 - RODAR MIGRATE PARA CRIAR NOSSA TABELA pessoas  NO BD 
+
+# php artisAN migrate
+
+-------------------------ok perfeito criou a tabela PESSOAS no BD
+
+16------CRIAR O CONTROLLER PessoaController ---AQUI VAMOS APENAS FAZER TESTE PARA DEPOIS OTIMIZAR NOSSO CRUD
+
+# php artisan make:controller Admin\PessoaController
+
+CRIA Admin\pessoaController FALTANDO PREENCHER SEUS METODOS
+
+--------------------------------------------------------SE LOCALIZAR 
+class PessoaController extends Controller
+{
+    public function index()
+            {
+            return view('admin.pages.pessoas.index');
+        }
+}
+    
+
+---CRIAR E LIBERE A ROUTER EM WEB.php
+Route::get('/admin/pessoas', 'Admin\pessoaController@index')->name('pessoas.index');
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+----------------E VAMOS CRIAR A View index em Resource\views\admin\pages\pessoas
+
+----------------------PEGA O 4. Usage DO AdminLTE E COLOCA (NA DOCUMENTAÇÃO)
+@extends('adminlte::page')
+
+@section('title', 'Dashboard')
+
+@section('content_header')
+    <h1>Dashboard</h1>
+@stop
+
+@section('content')
+    <p>Welcome to this beautiful admin panel.</p>
+@stop
+------------------------------------------   A PAGINA index JA ESTA FUNCIONANDO COM A ROUTER
+--------------VAMOS ESTILIZAR A PAGINA index
+@extends('adminlte::page')
+
+@section('title', 'pessoaos')
+
+@section('content_header')
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Perfis</a></li>
+    </ol>
+<h1>pessoaOS</h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-header">
+                #filtross
+
+                </div>
+        <div class="card-body">
+
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Preço</th>
+                     <th style="width: 50px">Ação</th>
+
+                </tr>
+
+            </thead>
+            <body>
+               
+            </body>
+        </table>
+       
+    
+                </div>
+            </div>
+
+@stop
+
+
+----------------------ATE AQUI FOI TESTE NA index
+17------------------------------------- VAMOS LISTAR NOSSOS pessoas (fazer realmente os metodos do CRUD)-----------------------
+
+----CODIFICANDO NOSSO CONTROLLER PessoaController, view e model -  ja foi feita parcialmente
+
+------------- vamos trabalhar com CONTROLLER PessoaController
+
+----NO PessoasContoller FARENOS UM __CONSTRUTOR ---CRIAMOS UM 
+Atributo repository PEGAR NOSSO OBJETO Pessoa e JOGAR NA VARIAVEL $pessoa , E NOSSO ATRIBUTO repository RECEBE UM OBJETO DE Plan
+ARMAZENADA NA VARIAVEL $Plan
+--Numa VARIAVEL $pessoas VOU RECUPERAR TODOS o REPOSITIRO (do atributo repository) E PASSAR PARA NOSSA View (poderia ser por conpact)
+
+@
+ class PessoaController extends Controller
+{
+
+       private $repository; 
+      
+       public function __construct(Pessoa $pessoa)
+       {
+           $this->repository= $pessoa;
+        }
+       public function index()
+        {
+                $pessoas = $this->repository->all();
+            return view('admin.pages.pessoas.index', [
+                'pessoas' => $pessoas,
+                ]);
+        }
+}
+
+-----------------------------E AGORA PARA LISTAR OS PessoaOS NA views (admin.pages.pessoas.index) FAZ UM foreach NA view ja estilizada
+@extends('adminlte::page')
+
+@section('title', 'Pessoaos')
+
+@section('content_header')
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Perfis</a></li>
+    </ol>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-header">
+                #filtross
+
+                </div>
+        <div class="card-body">
+
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Preço</th>
+                     <th style="width: 50px">Ação</th>
+
+                </tr>
+
+            </thead>
+            <body>
+                @foreach($pessoas as $pessoa)
+                 <tr>
+                    <td>{{ $pessoa->name }}</td>
+                    <td>{{ $pessoa->cpf }}</td>
+                    <td>
+                    <a href="url" class="btn btn-warning">Detalhe</a>
+                    </td>
+                    </tr>
+                @endforeach
+            </body>
+        </table>
+       
+    
+                </div>
+            </div>
+
+@stop
+---------------------------------------------------------------------Não VAI APARECER REGISTRO POIS NOSSO BD ESTA VAZIO
+-------------PODEMOS PREENCHER MANUALEMENTE SOMENTE PARA VISUALIZAR ---NÃO FAREI ISSO
+
+---------------------------------------------------------VAMOS PAGINAR
+VAI EM PessoaController e troca all por paginate SEGUIDO PELO NUMERO DE REGISTRO POR PAGINA, O PADRAO È 15
+public function index()
+        {
+                $pessoas = $this->repository->paginate(1);
+            return view('admin.pages.pessoas.index', [
+                'pessoas' => $pessoas,
+                ]);
+        }
+----VAI NA View index e acrecentar NO FINAL UMA div CONTENDO A NOSSA PAGINAÇÂO
+
+      </tr>
+                @endforeach
+            </body>
+        </table>
+       
+    
+                </div>
+            </div>
+
+            <div class="card-footer">
+                {!! $pessoas->links() !!}
+            </div>
+
+@stop
+
+----------------------------------VAMOS DEIXAR DEFAULD E DO REGITRO DO MAIS ANTIGO PAR O MAIS NOVO, METODO Latext
+public function index()
+        {
+                $pessoas = $this->repository->latest()->paginate();
+            return view('admin.pages.pessoas.index', [
+                'pessoas' => $pessoas,
+                ]);
+        }
+}
+
+18-------------------------------INSERIR REGISTRO EM Pessoa (CADASTRAR NOVO PessoaO)
+---CRIAMOS UM BOTAO DE ADD NO INICIO DA PAGINA index
+@extends('adminlte::page')
+
+@section('title', 'Pessoaos')
+
+@section('content_header')
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Perfis</a></li>
+    </ol>
+<a href="{{route('pessoas.create')}}" class="btn btn-dark">CADASTRAR PESSOAS</a>
+@stop
+
+------- CRIAR A Router CREATE QUE AINDA NAO EXISTE e tambem a router Store TIPO (post) QUE REALMENTE FAZ A GRAVAÇÂO
+
+Route::post('/admin/pessoas', 'Admin\PessoaController@store')->name('pessoas.store');
+Route::get('/admin/pessoas/create', 'Admin\PessoaController@create')->name('pessoas.create');
+Route::get('/admin/pessoas', 'Admin\PessoaController@index')->name('pessoas.index');
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+------------------------------------TESTAR
+
+-------------------------------------E VAMOS CRIAR NOSSA View de Create com FORMULARIO DE CADASTRO E @csrf (quando for 
+criar e ou edit tem que ter  a diretriza @csrf)
+@extends('adminlte::page')
+
+@section('title', 'Cadastrando Novo Pessoaos')
+
+@section('content_header')
+<h1>Cadastrando Novo Pessoaos  </h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+            <form action="{{route('pessoas.store')}}" class="form" method="POST" >
+@csrf
+@include('admin.includes.alerts')
+<div class=form-group>
+    <label>NOME</label>
+<input class="form-control" type="text" name="name" placeholder="name" value=" {{$pessoa->name ?? old('name')}} ">
+</div>
+<div class=form-group>
+<label>PREÇO</label>
+<input type="text" class="form-control" name="price" placeholder="price" value=" {{$pessoa->price ?? old('price')}} ">
+</div> 
+<div class=form-group>
+<label>DESCRIÇÃO</label>
+<input type="text" class="form-control" name="description" placeholder="description" value="{{$pessoa->description ?? old('description')}} ">
+</div>
+<div class=form-group>
+<button type="submit" class="btn btn-success">Enviar</button>
+</div>
+</form>
+
+            </div>
+            </div>
+
+
+@endsection   
+
+-------------------------------------vamos CRIAR O METODO create e store em PlanController
+------- NETODO CREATE
+public function create(Request $request)
+        {
+            return view('admin.pages.plans.create');
+        }
+
+----------------------------------------------- O METODO STORE PODE SER ASSIM, mais vai dar um erro pois colocamos
+no Fillable o CAMPO 'uri", mas podemos CORRIGIR COM O DEBAIXO
+ public function store(Request $request)
+        {
+
+            $this->repository->create($request->all());
+            return redirect ()-> route('plans.index');
+        }
+    
+-----------------------------------------------------------------------Q STORE FIZ ESSE com uma VARIAVEL $data e usando 
+o KEBAB , para isso DEFININOS  A CLASSE NO INICIO (ACIMA)
+use Illuminate\Support\Str;
+ public function store(Request $request)
+        {
+            $data = $request->all();
+            $data['url']= Str::kebab($request->name);
+            $this->repository->create($data);
+            return redirect ()-> route('plans.index');
+        }
+---------------Confere o fillable na MODEL Plans
+protected $fillable = ['name', 'url', 'price', 'description'];
+
+--------------------------------------------------------------------------OK...PRONTO...O CAMPO PREÇO nao aceita virgula
+somente ponto nos centavos
+
+-------------------EXIBIR DETALHES DO PLANO-----------------------------------------------DETALHES
+
+---Criar rotas tipo get passando a url, poderia ser o id (mais comun) PELO METODO Show
+
+Route::get('/admin/plans/{url}', 'Admin\PlanController@show')->name('plans.show');
+Route::post('/admin/plans', 'Admin\PlanController@store')->name('plans.store');
+Route::get('/admin/plans/create', 'Admin\PlanController@create')->name('plans.create');
+Route::get('/admin/plans', 'Admin\PlanController@index')->name('plans.index');
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+-------------------------------NO PLANSCONTROLLER CRIAR O METODO Show------------------------
+
+public function show($url)
+        {
+            $plan = $this->repository->where('url', $url)->first();
+        if(!$plan)
+        {
+            return redirect ()-> back();
+            return view('admin.pages.plans.show', [
+                'plan'=>  $plan
+            ]);
+        }
+----------------------------------------------------E FAZENOS NOSSA ViEW Show em admin\pages\plans\
+
+@extends('adminlte::page')
+
+@section('title', "DETALHE Planos  {$plan->name} ")
+
+@section('content_header')
+<h1>Detalhe do Palno <b>{{ $plan->name }}</b>  </h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+            <ul>
+            <li>
+            <strong>NOME</strong> {{ $plan->name }}
+            </li>
+            <li>
+            <strong>Url</strong> {{ $plan->url }}
+            </li>
+            <li>
+            <strong>PREÇO</strong> R$ {{ nunber_format($plan->price, 2, ',', .'')  }}
+            </li>
+            <li>
+            <strong>DESCRIÇÂO</strong> {{ $plan->description }}
+            </li>
+            </ul>
+            </div>
+            </div>
+            @endsection
+--------------------------------------------------E NA view Index LEMBBAR DE FAZER OLINK PARA ROTA CORRETA 
+COM O PARAMETRO url (PODIA SER iD ----mais comun)
+
+ @foreach($plans as $plan)
+                 <tr>
+                    <td>{{ $plan->name }}</td>
+                    <td>{{ $plan->price }}</td>
+                    <td>
+                    <a href="{{route ('plans.show', $plan->url)}}" class="btn btn-warning">VER</a>
+                    </td>
+                    </tr>
+                @endforeach
+
+----------------ESTAR DANDO ERRO NA ROTA DO ADD E NAO ACEITA FORMATO NUMBER-------------------------ERROR|
+
+
+----------------------------DELETAR PLANO-------------------------------------------------------------
+-----------------CRIAR ROUTER de metodo delete
+
+Route::delete('/admin/plans/{url}', 'Admin\PlanController@destroy')->name('plans.destroy');
+Route::get('/admin/plans/{url}', 'Admin\PlanController@show')->name('plans.show');
+Route::post('/admin/plans', 'Admin\PlanController@store')->name('plans.store');
+Route::get('/admin/plans/create', 'Admin\PlanController@create')->name('plans.create');
+Route::get('/admin/plans', 'Admin\PlanController@index')->name('plans.index');
+
+Route::get('/', function () {
+    return view('welcome');
+});
+---------------------------------------------------------------------------------------------------------
+----------EM PLANCONTROLLER FAZ O METODO DETROY
+
+public function destroy($url)
+    {
+        $plan = $this->repository
+                        ->where('url', $url)
+                        ->first();
+
+        if (!$plan)
+            return redirect()->back();
+        
+            $plan->delete();
+
+        return redirect()->route('plans.index');
+    }
+
+-------------------------------AGORA NO PAGINA SHOR CRIA UM FORM COM O BOTAO E METODO DELETE
+@extends('adminlte::page')
+@section('title', "DETALHE DO Planos  {$plan->name} ")
+@section('content_header')
+<h1>Detalhe do PLANO <b>{{ $plan->name }}</b>  </h1>
+@stop
+@section('content')
+
+            <div class="card">
+            <div class="card-body">
+            <ul>
+            <li>
+            <strong>NOME</strong> {{ $plan->name }}
+            </li>
+            <li>
+            <strong>Url</strong> {{ $plan->url }}
+            </li>
+            <li>
+            <strong>PREÇO</strong> R$ {{ $plan->price  }}
+            </li>
+            <li>
+            <strong>DESCRIÇÂO</strong> {{ $plan->description }}
+            </li>
+          
+            </ul>
+
+                <form action=" {{ route('plans.destroy', $plan->url) }}"  method="POST"  >
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger">DELETAR O PLANO {{ $plan->name }}</button>
+               
+                </form>
+
+            </div>
+            </div>
+            @endsection
+---------------------------------------------------------OK.....DEU CERTO ...MAS CONTINUA INATIVO O BOTAO ADD
+
+-------------PESQUISAR PLANOS ----------------------------------------------
+
+----------CRIAR ROUTER TIPO Any===========================
