@@ -442,8 +442,8 @@ Route::get('/', function () {
 ------------- vamos trabalhar com CONTROLLER PessoaController
 
 ----NO PessoasContoller FARENOS UM __CONSTRUTOR ---CRIAMOS UM 
-Atributo repository PEGAR NOSSO OBJETO Pessoa e JOGAR NA VARIAVEL $pessoa , E NOSSO ATRIBUTO repository RECEBE UM OBJETO DE Plan
-ARMAZENADA NA VARIAVEL $Plan
+Atributo repository PEGAR NOSSO OBJETO Pessoa e JOGAR NA VARIAVEL $pessoa , E NOSSO ATRIBUTO repository RECEBE UM OBJETO DE Pessoa
+ARMAZENADA NA VARIAVEL $Pessoa
 --Numa VARIAVEL $pessoas VOU RECUPERAR TODOS o REPOSITIRO (do atributo repository) E PASSAR PARA NOSSA View (poderia ser por conpact)
 
 @
@@ -527,7 +527,10 @@ public function index()
                 'pessoas' => $pessoas,
                 ]);
         }
-----VAI NA View index e acrecentar NO FINAL UMA div CONTENDO A NOSSA PAGINAÇÂO
+
+
+
+----------VAI NA View index e acrecentar NO FINAL UMA div CONTENDO A NOSSA PAGINAÇÂO
 
       </tr>
                 @endforeach
@@ -554,8 +557,49 @@ public function index()
         }
 }
 
-18-------------------------------INSERIR REGISTRO EM Pessoa (CADASTRAR NOVO PessoaO)
+ATENÇÂO : NO FINAL RESOLVIR DEIXAR O METODO index DO PessoasContoller COMO ABAIXO:
+
+public function index()
+    {
+        $pessoas = $this->repository->latest()->paginate();
+
+        return view('admin.pages.pessoas.index', compact('pessoas'));
+    }
+
+
+18-----------------VAMOS FAZER UM PARENTESES E CRIAR NOSSOS ALERTAS (alerts) -
+ DENTRO DE resource\view\admin\includes\alerts.blade.php
+
+@if ($errors->any())
+    <div class="alert alert-warning">
+        @foreach ($errors->all() as $error)
+            <p>{{ $error }}</p>
+        @endforeach
+    </div>
+@endif
+
+@if (session('message'))
+    <div class="alert alert-success">
+        {{ session('message') }}
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+
+@if (session('info'))
+    <div class="alert alert-warning">
+        {{ session('info') }}
+    </div>
+@endif
+
+
+19-------------------------------INSERIR REGISTRO EM Pessoa (CADASTRAR NOVO PessoaO)
 ---CRIAMOS UM BOTAO DE ADD NO INICIO DA PAGINA index
+
 @extends('adminlte::page')
 
 @section('title', 'Pessoaos')
@@ -570,6 +614,7 @@ public function index()
 
 ------- CRIAR A Router CREATE QUE AINDA NAO EXISTE e tambem a router Store TIPO (post) QUE REALMENTE FAZ A GRAVAÇÂO
 
+
 Route::post('/admin/pessoas', 'Admin\PessoaController@store')->name('pessoas.store');
 Route::get('/admin/pessoas/create', 'Admin\PessoaController@create')->name('pessoas.create');
 Route::get('/admin/pessoas', 'Admin\PessoaController@index')->name('pessoas.index');
@@ -580,14 +625,1153 @@ Route::get('/', function () {
 
 ------------------------------------TESTAR
 
+---ATENÇÂO: A routre criar tem que esta acima da show DEIXAREMOS COMO ABAIXO
+//ROTAS DE PESSOAS
+
+Route::get('/admin/pessoas/create', 'Admin\PessoaController@create')->name('pessoas.create');
+
+Route::delete('/admin/pessoas/{url}', 'Admin\PessoaController@destroy')->name('pessoas.destroy');
+Route::get('/admin/pessoas/{url}', 'Admin\PessoaController@show')->name('pessoas.show');
+Route::post('/admin/pessoas', 'Admin\PessoaController@store')->name('pessoas.store');
+
+Route::get('/admin/pessoas', 'Admin\PessoaController@index')->name('pessoas.index');
+
+
+
 -------------------------------------E VAMOS CRIAR NOSSA View de Create com FORMULARIO DE CADASTRO E @csrf (quando for 
 criar e ou edit tem que ter  a diretriza @csrf)
+
 @extends('adminlte::page')
 
 @section('title', 'Cadastrando Novo Pessoaos')
 
 @section('content_header')
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Pessoas</a></li>
+    </ol>
 <h1>Cadastrando Novo Pessoaos  </h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+            <form action="{{route('pessoas.store')}}" class="form" method="POST" >
+@csrf
+@include('admin.includes.alerts')
+
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Nome</label>
+      <input class="form-control" type="text" name="name" placeholder="name" value=" {{$pessoa->name ?? old('name')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Vulgo</label>
+      <input type="text" class="form-control" name="vulgo" placeholder="vulgo" value=" {{$pessoa->vulgo ?? old('vulgo')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Mãe</label>
+      <input class="form-control" type="text" name="mae" placeholder="mae" value=" {{$pessoa->mae ?? old('mae')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Nascimento</label>
+      <input type="text" class="form-control" name="nasc" placeholder="DLL" value=" {{$pessoa->nasc ?? old('nasc')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> RG - Identidade</label>
+      <input class="form-control" type="text" name="rg"  value=" {{$pessoa->rg ?? old('rg')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Expedidor</label>
+      <input type="text" class="form-control" name="exp" placeholder="DLL" value=" {{$pessoa->exp ?? old('exp')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="inputCity">CPF</label>
+      <input type="text" class="form-control" name="cpf" placeholder="cpf" value=" {{$pessoa->cpf ?? old('cpf')}} ">
+    </div>
+    <div class="form-group col-md-3">
+      <label >Genero</label>
+      <select id="inputState" class="form-control">
+        <option selected>Choose...</option>
+        <option>Masculino</option>
+        <option>Feminino</option>
+      </select>
+    </div>
+    <div class="form-group col-md-3">
+      <label >Situação Penal</label>
+      <select id="inputState" class="form-control">
+        <option selected>Choose...</option>
+        <option>Preso</option>
+        <option>Solto</option>
+        <option>Mandado</option>
+        <option>Provisorio</option>
+
+      </select>
+    </div>
+    </div>
+  <div class="form-group">
+    <label for="inputAddress">Address</label>
+    <textarea type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"></textarea>
+  </div>
+  
+  
+  
+  <button type="submit" class="btn btn-primary">CADASTRAR PESSOAS in</button>
+
+</form>
+
+
+</div>
+</div>
+
+
+@endsection  
+------------------------------------TESTAR
+
+
+-------------------------------------vamos CRIAR O METODO create e store em PessoaController
+------- NETODO CREATE - somente testar router
+//public function create(Request $request) ---NOTE QUE TIREI OS Request
+
+/**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('admin.pages.pessoas.create');
+    }
+
+----------------------------------------------- O METODO STORE (quem vai realmente cadastra) PODE SER ASSIM, mais dessa forma daria 
+um erro pois colocamos no Fillable o CAMPO 'url", que ainda nao temos, mas podemos CORRIGIR COM O item 19.1
+ public function store(Request $request)
+        {
+
+            $this->repository->create($request->all());
+            return redirect ()-> route('pessoas.index');
+        }
+    
+19.1----------------------------------O STORE PODERIA SER ASSIM  ESSE com uma VARIAVEL $data e usando 
+o KEBAB (que pega no endereco da url o request name), para isso DEFININOS  A CLASSE NO INICIO (ACIMA) ---FIZ
+COMO MOSTRAR O ITEM 19.2
+use Illuminate\Support\Str;
+ public function store(Request $request)
+        {
+            $data = $request->all();
+            $data['url']= Str::kebab($request->name);
+            $this->repository->create($data);
+            return redirect ()-> route('pessoas.index');
+        }
+
+19.2 ---ATENÇÃO --FICOU ASSIM O METODO store DO pessoaController
+/**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\StoreUpdatePessoa  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+       
+        $data = $request->all();
+        $data['url']= Str::kebab($request->name);
+        
+
+        $this->repository->create($data);
+
+        return redirect()->route('pessoas.index');
+    }
+
+
+
+---------------Confere o fillable na MODEL pessoas
+ protected $fillable = ['name', 'url', 'vulgo', 'mae', 'genero', 'rg', 'exp', 'cpf', 'situa', 'nasc', 'description'];
+}
+
+--------------------------------------------------------------------------OK...PRONTO TESTAR (nao consegui
+por select aption , mudei para textbox e a VIEW create FICOU ASSIM )
+
+@extends('adminlte::page')
+
+@section('title', 'Cadastrando Novo Pessoas')
+
+@section('content_header')
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Pessoas</a></li>
+    </ol>
+<h1>Cadastrando Novo Pessoas  </h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+            <form action="{{route('pessoas.store')}}" class="form" method="POST" >
+@csrf
+@include('admin.includes.alerts')
+
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Nome</label>
+      <input class="form-control" type="text" name="name" placeholder="name" value=" {{$pessoa->name ?? old('name')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Vulgo</label>
+      <input type="text" class="form-control" name="vulgo" placeholder="vulgo" value=" {{$pessoa->vulgo ?? old('vulgo')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Mãe</label>
+      <input class="form-control" type="text" name="mae" placeholder="mae" value=" {{$pessoa->mae ?? old('mae')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Nascimento</label>
+      <input type="text" class="form-control" name="nasc" placeholder="DLL" value=" {{$pessoa->nasc ?? old('nasc')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> RG - Identidade</label>
+      <input class="form-control" type="text" name="rg"  value=" {{$pessoa->rg ?? old('rg')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Expedidor</label>
+      <input type="text" class="form-control" name="exp" placeholder="DLL" value=" {{$pessoa->exp ?? old('exp')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="inputCity">CPF</label>
+      <input type="text" class="form-control" name="cpf" placeholder="cpf" value=" {{$pessoa->cpf ?? old('cpf')}} ">
+    </div>
+    <div class="form-group col-md-3">
+      <label >Genero</label>
+      <input type="text" class="form-control" name="genero" placeholder="genero" value=" {{$pessoa->genero ?? old('genero')}} ">
+     </div>
+     <div class="form-group col-md-3">
+      <label >Situação Penal</label>
+      <input type="text" class="form-control" name="situa" placeholder="situa" value=" {{$pessoa->situa ?? old('situa')}} ">
+     </div>
+    
+    </div>
+  <div class="form-group">
+    <label for="inputAddress">Observação</label>
+    <textarea type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"></textarea>
+ </div>
+   <button type="submit" class="btn btn-primary">CADASTRAR PESSOAS</button>
+</form>
+</div>
+</div>
+@endsection   
+
+----------------------------------------------------------------------OK PERFEITO CADASTROU E EXIBIU pelo id (ficou o link VER)
+NOSSA PAGINAS FICARAM ASSIM ;
+
+-------ViEW index 
+@extends('adminlte::page')
+
+@section('title', 'Pessoaos')
+
+@section('content_header')
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Pessoas</a></li>
+    </ol>
+    <a href="{{route('pessoas.create')}}" class="btn btn-dark">CADASTRAR PESSOAS</a>
+        @stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-header">
+                #filtross
+
+                </div>
+        <div class="card-body">
+
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Vulgo</th>
+                     <th style="width: 50px">Ação</th>
+
+                </tr>
+
+            </thead>
+            <body>
+                @foreach($pessoas as $pessoa)
+                 <tr>
+                    <td>{{ $pessoa->name }}</td>
+                    <td>{{ $pessoa->vulgo }}</td>
+                    <td>
+                    <a href="{{ route('pessoas.show', $pessoa->id) }}" class="btn btn-warning">VER</a>
+                    </td>
+                    </tr>
+                @endforeach
+            </body>
+        </table>
+       
+    
+                </div>
+            </div>
+            <div class="card-footer">
+                {!! $pessoas->links() !!}
+            </div>
+
+@stop
+
+----  View Create
+
+@extends('adminlte::page')
+
+@section('title', 'Cadastrando Novo Pessoas')
+
+@section('content_header')
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Pessoas</a></li>
+    </ol>
+<h1>Cadastrando Novo Pessoas  </h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+            <form action="{{route('pessoas.store')}}" class="form" method="POST" >
+@csrf
+@include('admin.includes.alerts')
+
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Nome</label>
+      <input class="form-control" type="text" name="name" placeholder="name" value=" {{$pessoa->name ?? old('name')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Vulgo</label>
+      <input type="text" class="form-control" name="vulgo" placeholder="vulgo" value=" {{$pessoa->vulgo ?? old('vulgo')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Mãe</label>
+      <input class="form-control" type="text" name="mae" placeholder="mae" value=" {{$pessoa->mae ?? old('mae')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Nascimento</label>
+      <input type="text" class="form-control" name="nasc" placeholder="DLL" value=" {{$pessoa->nasc ?? old('nasc')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> RG - Identidade</label>
+      <input class="form-control" type="text" name="rg"  value=" {{$pessoa->rg ?? old('rg')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Expedidor</label>
+      <input type="text" class="form-control" name="exp" placeholder="DLL" value=" {{$pessoa->exp ?? old('exp')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="inputCity">CPF</label>
+      <input type="text" class="form-control" name="cpf" placeholder="cpf" value=" {{$pessoa->cpf ?? old('cpf')}} ">
+    </div>
+    <div class="form-group col-md-3">
+      <label >Genero</label>
+      <input type="text" class="form-control" name="genero" placeholder="genero" value=" {{$pessoa->genero ?? old('genero')}} ">
+     </div>
+     <div class="form-group col-md-3">
+      <label >Situação Penal</label>
+      <input type="text" class="form-control" name="situa" placeholder="situa" value=" {{$pessoa->situa ?? old('situa')}} ">
+     </div>
+    
+    </div>
+  <div class="form-group">
+    <label for="inputAddress">Observação</label>
+    <textarea type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"></textarea>
+ </div>
+   <button type="submit" class="btn btn-primary">CADASTRAR PESSOAS</button>
+</form>
+</div>
+</div>
+@endsection  
+-------ViEW Show 
+
+@extends('adminlte::page')
+
+@section('title', "DETALHE Pessoaos  {$pessoa->name} ")
+
+@section('content_header')
+<h1>Detalhe do Palno <b>{{ $pessoa->name }}</b>  </h1>
+
+@stop
+
+@section('content')
+
+            <div class="card">
+            <div class="card-body">
+            <ul>
+            <li>
+            <strong>NOME</strong> {{ $pessoa->name }}
+            </li>
+            <li>
+            <strong>Url</strong> {{ $pessoa->url }}
+            </li>
+           
+            <li>
+            <strong>DESCRIÇÂO</strong> {{ $pessoa->description }}
+            </li>
+            </ul>
+            </div>
+            </div>
+            @endsection
+
+-----------pessoasCONTROLLER
+<?php
+
+namespace App\Http\Controllers\Admin;
+use Illuminate\Support\Str;
+use App\Http\Controllers\Controller;
+use App\Models\Pessoa;
+use Illuminate\Http\Request;
+
+class PessoaController extends Controller
+{
+    //
+    private $repository;
+
+    public function __construct(Pessoa $pessoa)
+    {
+        $this->repository = $pessoa;
+
+      //  $this->middleware(['can:pessoas']);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $pessoas = $this->repository->latest()->paginate(5);
+
+        return view('admin.pages.pessoas.index', compact('pessoas'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('admin.pages.pessoas.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\StoreUpdatePessoa  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+       
+        $data = $request->all();
+        $data['url']= Str::kebab($request->name);
+        
+
+        $this->repository->create($data);
+
+        return redirect()->route('pessoas.index');
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        if (!$pessoa = $this->repository->find($id)) {
+            return redirect()->back();
+        }
+
+        return view('admin.pages.pessoas.show', compact('pessoa'));
+    }
+
+    
+
+}
+
+
+-------router
+
+<?php
+
+//ROTAS DE PESSOAS
+
+Route::get('/admin/pessoas/create', 'Admin\PessoaController@create')->name('pessoas.create');
+
+Route::delete('/admin/pessoas/{url}', 'Admin\PessoaController@destroy')->name('pessoas.destroy');
+Route::get('/admin/pessoas/{url}', 'Admin\PessoaController@show')->name('pessoas.show');
+Route::post('/admin/pessoas', 'Admin\PessoaController@store')->name('pessoas.store');
+
+Route::get('/admin/pessoas', 'Admin\PessoaController@index')->name('pessoas.index');
+
+
+
+//ROTAS DE GERAIS
+Route::get('/admin/gerals', 'Admin\GeralController@index')->name('gerals.index');
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Auth::routes();
+/*
+Route::get('/home', 'HomeController@index')->name('home');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+*/
+
+
+
+20----------------------------DELETAR Pessoa-------------------------------------------------------------
+-----------------CRIAR ROUTER de metodo delete
+
+Route::delete('/admin/pessoas/{url}', 'Admin\PessoaController@destroy')->name('pessoas.destroy');
+Route::get('/admin/pessoas/{url}', 'Admin\PessoaController@show')->name('pessoas.show');
+Route::post('/admin/pessoas', 'Admin\PessoaController@store')->name('pessoas.store');
+Route::get('/admin/pessoas/create', 'Admin\PessoaController@create')->name('pessoas.create');
+Route::get('/admin/pessoas', 'Admin\PessoaController@index')->name('pessoas.index');
+
+Route::get('/', function () {
+    return view('welcome');
+});
+---------------------------------------------------------------------------------------------------------
+----------EM PessoaCONTROLLER FAZ O METODO DETROY
+
+public function destroy($url)
+    {
+        $pessoa = $this->repository
+                        ->where('url', $url)
+                        ->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+        
+            $pessoa->delete();
+
+        return redirect()->route('pessoas.index');
+    }
+
+-------------------------------AGORA NO PAGINA Show CRIA UM FORM COM O BOTAO E METODO DELETE
+@extends('adminlte::page')
+@section('title', "DETALHE DO Pessoaos  {$pessoa->name} ")
+@section('content_header')
+<h1>Detalhe do PessoaO <b>{{ $pessoa->name }}</b>  </h1>
+@stop
+@section('content')
+
+            <div class="card">
+            <div class="card-body">
+            <ul>
+            <li>
+            <strong>NOME</strong> {{ $pessoa->name }}
+            </li>
+            <li>
+            <strong>Url</strong> {{ $pessoa->url }}
+            </li>
+            <li>
+            <strong>PREÇO</strong> R$ {{ $pessoa->price  }}
+            </li>
+            <li>
+            <strong>DESCRIÇÂO</strong> {{ $pessoa->description }}
+            </li>
+          
+            </ul>
+
+                <form action=" {{ route('pessoas.destroy', $pessoa->url) }}"  method="POST"  >
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger">DELETAR O PessoaO {{ $pessoa->name }}</button>
+               
+                </form>
+
+            </div>
+            </div>
+            @endsection
+---------------------------------------------------------OK.....DEU CERTO ...(pelo id)
+
+21-------------PESQUISAR Pessoa ----------------------------------------------
+
+----------CRIAR ROUTER TIPO Any===========================
+Route::any('/admin/pessoas/search', 'Admin\PessoaController@search')->name('pessoas.search');
+Route::delete('/admin/pessoas/{url}', 'Admin\PessoaController@destroy')->name('pessoas.destroy');
+Route::get('/admin/pessoas/{url}', 'Admin\PessoaController@show')->name('pessoas.show');
+Route::post('/admin/pessoas', 'Admin\PessoaController@store')->name('pessoas.store');
+Route::get('/admin/pessoas/create', 'Admin\PessoaController@create')->name('pessoas.create');
+Route::get('/admin/pessoas', 'Admin\PessoaController@index')->name('pessoas.index');
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+
+---------EM INDEX (sera usada essa view para receber) ONDE ESCREVEMOS E GUARDAMOS O LOCAL DE #FILTER, COLOCAREMOS UM FORM com mETODO POST E NOSSA DIRETRIZA @csrf
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-header">
+        <form action="{{ route('pessoas.search') }}" method="POST" class="form form-inline">
+        @csrf
+        <input type="text" name="filter" placeholder="NOME" class="form-control" >
+        <button type="submit" class="btn btn-dark">PESQUISAR</button>
+        </form>
+
+----------------EM MODELS\PessoaS VAMOS CRIAR UM METODO CHAMADO search (PODE COCACTENAT   $results = $this->where('name', 'LIKE', '%'.$filter.'%' ))
+ protected $table = 'pessoas';
+    protected $fillable = ['name', 'url', 'price', 'description'];
+
+     public function search($filter = null) {
+
+            $results = $this->where('name' , 'LIKE', "%{$filter}%" )
+                            ->orwhere('description' , 'LIKE', "%{$filter}%" )
+                            ->paginate(1);
+            return $results ;                
+    }
+}
+
+-------------------NO PessoaSCONTROLLER FAREMOS O METODO search
+ public function search(Request $request)
+    {
+         $filters = $request->except('_token');
+
+        $pessoas = $this->repository->search($request->filter);
+
+        return view('admin.pages.pessoas.index', [
+            'pessoas' => $pessoas,
+             'filters' => $filters,
+        ]);
+    }
+-------------------------------------------------------------------------------------OK ...DEU CERTO
+POREM ELE PERDE O FILTRO ... VAMOS CORRIGIR INDO NA PAGINA INDEX E VERIFICAR SE ESTAR FILTRANDO
+ANTES VAMOS  criar (LIBERAR) a variavel $filters - com todos os registros exceto o __Token
+public function search(Request $request)
+    {
+         $filters = $request->except('_token');
+
+        $pessoas = $this->repository->search($request->filter);
+
+        return view('admin.pages.pessoas.index', [
+            'pessoas' => $pessoas,
+             'filters' => $filters,
+        ]);
+    }
+
+--- E AGORA SIM CONDICIONAR NA PAGINA INDEX SE A VARIAVEL EXISTE
+se a variavel filters existe faça de uma forma se nao faça no modo DEFAULD
+   </div>
+            </div>
+
+            <div class="card-footer">
+
+                @if (isset ($filters)) 
+                {!! $pessoas->appends($filters)->links() !!}
+                @else
+                 {!! $pessoas->links() !!}
+                @endif
+
+               
+            </div>
+
+@stop
+----------------------------------------------------------------------------------OK PERFEITO -
+
+---TAMBEM PODEMOS PREENCHER O CAMPOS COM value=" xxxxxxx"...FICAR ASSIM NOA view INDEX
+ 
+        @csrf
+        <input type="text" name="filter" placeholder="NOME" class="form-control" value="{{ $filters ['filter']  ?? ''}}" >
+        <button type="submit" class="btn btn-dark">PESQUISAR</button>
+        </form>
+
+----TAMBEM LIBEREI A PAGINAÇÂO defauld na MODEL
+ ->orwhere('description' , 'LIKE', "%{$filter}%" )
+                            ->paginate();
+            return $results ;                
+    }
+
+------------------------------------------CRIAR BREADNDCRUMB---------------- JA FEITO
+CRIAR UMA ROTA Admin PARA O DASHBOARD
+Route::get('/admin/pessoas/create', 'Admin\PessoaController@create')->name('pessoas.create');
+Route::get('/admin/pessoas', 'Admin\PessoaController@index')->name('pessoas.index');
+
+Route::get('/admin', 'Admin\PessoaController@index')->name('admin.index');
+
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+----VAMOS NA view INDEX
+
+@section('title', 'Pessoaos')
+
+@section('content_header')
+
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{route('admin.index')}} ">Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a href="{{route('pessoas.index')}} ">Pessoaos</a></li>
+  </ol>
+</nav>
+
+<h1>PessoaOS  <a href="{{route('pessoas.create')}}" class="btn btn-dark">ADD<i class="far fa-plus-square"></i></a></h1>
+
+@stop
+
+@section('content')
+------------------------------------------------------------------------------OK FICOU COMO O DESEJADO
+
+------------ COLOCAR ICONE ----MAQUIAGEM--------------------------
+VAMOS NO SITE DE ICONE https://fontawesome.com/ COPIA O LINK E COLOCA ONDE DESEJAR (ADD e DELETAR)
+<h1>PessoaOS  <a href="{{route('pessoas.create')}}" class="btn btn-dark">ADD<i class="far fa-plus-square"></i></a></h1>
+<button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i>DELETAR O PessoaO {{ $pessoa->name }}</button>
+
+---E NO MENU TAMBEM Adminlte
+'icon' =>'fas fa-list-ol'
+-------------------------------------------------------------------------------------------------------------
+
+
+
+22-------------------EDITAR PessoaO------------------------------------------------------------------EDITAR
+------SEMPRE CRIAR Router NO INICIO OU FINAL. DEVE VEZ VAMOS CRIAR A router Edit e Upade (put)
+Route::put('/admin/pessoas/{url}', 'Admin\PessoaController@update')->name('pessoas.update');
+
+Route::get('/admin/pessoas/{url}/edit', 'Admin\PessoaController@edit')->name('pessoas.edit');
+------------------------------------------------------------------------------
+
+COLOCAR UM BOTÃO AO LADO DO BOTAO VER NA view INDEX e FAZER UM LINK PARA UMA ROTA EDITAR, passando
+ID ou Url
+                @foreach($pessoas as $pessoa)
+                 <tr>
+                    <td>{{ $pessoa->name }}</td>
+                    <td>{{ $pessoa->price }}</td>
+                    <td style="width: 50px;">
+                    <a href="{{ route('pessoas.edit', $pessoa->id) }}" class="btn btn-warning">EDITAR</a>
+                    <a href="{{ route('pessoas.show', $pessoa->id) }}" class="btn btn-warning">VER</a>
+                    </td>
+                    </tr>
+                @endforeach
+            </body>
+
+-------------FAZER NOSSA view Edit    
+NOTE QUE ESSEA View JA DEVE VIM TRAZENDO AS INFORMAÇÂO DO PessoaO DESEJADO (usar value="{{$pessoa->price}}"), E DEVE VIM DIZENDO O METODO DE ENVIO
+(@method('PUT')) ELA VAI REPASSAR PARA O METODO UPDATE PELA url {{route('pessoas.update $pessoa->url')}}",
+PODERIA SER POR ID (MAIS FREQUENTE)
+OBSERVE QUE O MIOLHO DO CODIGO É IGUALAO DO CREATE - PODERIAMOS FAZER UMA partials\form
+
+@extends('adminlte::page')
+
+@section('title', "EDITANDO Pessoaos {$pessoa->name}")
+
+@section('content_header')
+<h1>EDITANDO Pessoaos {{$pessoa->name}}  </h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+            <form action="{{route('pessoas.update', $pessoa->id)}}" class="form" method="POST" >
+@csrf
+@method('PUT')
+<div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Nome</label>
+      <input class="form-control" type="text" name="name" placeholder="name" value=" {{$pessoa->name ?? old('name')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Vulgo</label>
+      <input type="text" class="form-control" name="vulgo" placeholder="vulgo" value=" {{$pessoa->vulgo ?? old('vulgo')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Mãe</label>
+      <input class="form-control" type="text" name="mae" placeholder="mae" value=" {{$pessoa->mae ?? old('mae')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Nascimento</label>
+      <input type="text" class="form-control" name="nasc" placeholder="DLL" value=" {{$pessoa->nasc ?? old('nasc')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> RG - Identidade</label>
+      <input class="form-control" type="text" name="rg"  value=" {{$pessoa->rg ?? old('rg')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Expedidor</label>
+      <input type="text" class="form-control" name="exp" placeholder="DLL" value=" {{$pessoa->exp ?? old('exp')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="inputCity">CPF</label>
+      <input type="text" class="form-control" name="cpf" placeholder="cpf" value=" {{$pessoa->cpf ?? old('cpf')}} ">
+    </div>
+    <div class="form-group col-md-3">
+      <label >Genero</label>
+      <input type="text" class="form-control" name="genero" placeholder="genero" value=" {{$pessoa->genero ?? old('genero')}} ">
+     </div>
+     <div class="form-group col-md-3">
+      <label >Situação Penal</label>
+      <input type="text" class="form-control" name="situa" placeholder="situa" value=" {{$pessoa->situa ?? old('situa')}} ">
+     </div>
+    
+    </div>
+  <div class="form-group">
+    <label for="inputAddress">Observação</label>
+    <textarea type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"></textarea>
+ </div>
+   <button type="submit" class="btn btn-primary">EDITAR PESSOAS</button>
+</form>
+</div>
+</div>
+
+
+@endsection                      
+
+----------------CRIAR METODO EDIT e UPDATE NO PessoaSCONTROLLER
+---METODO EDITE
+   public function edit($id)
+    {
+        $pessoa = $this->repository->where('id', $id)->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+
+        return view('admin.pages.pessoas.edit', [
+            'pessoa' => $pessoa
+        ]);
+    }    
+----METODO UPDATE
+    public function update(Request $request,  $id)
+    {
+        $pessoa = $this->repository->where('id', $id)->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+
+        $pessoa->update($request->all());
+
+        return redirect()->route('pessoas.index');
+    }
+
+-----------------------------------------------------------------------------------OK EDITANDO
+---VOCE PODE PEGAR TUDO QUE `TIVER DE COMUM COLOCAR EM OUTROS FORMULARIOS (panels)
+CHAMANDO PELO @include NO LOCAL QUE DESEJAR
+
+
+---------------------IMPORTANTE NESSE MOMENTO--------------------------------
+---ERRARA ---A ROTA DE CREATE TEM QUE VIM ANTES DA CHAMADA DA URL, ENTAO VAMOS COLOCAR ANTES OU LA EM CIMA
+Route::get('/admin/pessoas/create', 'Admin\PessoaController@create')->name('pessoas.create');
+Route::put('/admin/pessoas/{url}', 'Admin\PessoaController@update')->name('pessoas.update');
+Route::get('/admin/pessoas/{url}/edit', 'Admin\PessoaController@edit')->name('pessoas.edit');
+Route::any('/admin/pessoas/search', 'Admin\PessoaController@search')->name('pessoas.search');
+Route::delete('/admin/pessoas/{url}', 'Admin\PessoaController@destroy')->name('pessoas.destroy');
+Route::get('/admin/pessoas/{url}', 'Admin\PessoaController@show')->name('pessoas.show');
+Route::post('/admin/pessoas', 'Admin\PessoaController@store')->name('pessoas.store');
+
+Route::get('/admin/pessoas', 'Admin\PessoaController@index')->name('pessoas.index');
+
+Route::get('/admin', 'Admin\PessoaController@index')->name('admin.index');
+
+
+Route::get('/', function () {
+    return view('welcome');
+});
+----------------------------------------------------------------------------------------------------
+
+23----------VALIDAR DADOS ------------------------------------------------IMPORTANTE
+ESTAR FUNCIONANDO MASI PRECISAMOS VALIDAR OS DADOS PARA SEGURANÇA, PARA  ISSO VAMOS CRIAR 
+UMA CLASSE REQUESTE PARA PROTEGER A INTEGRIDADE DOS DADOS
+
+# php artisan make:request StoreUpdatePessoa
+
+CRIAR UM METODO EM HTTP\REQUESTE ONDE FAZEMOS A LOGICA
+
+ public function authorize()
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+      public function rules()
+    {
+        $id= $this->segment(3);   //Posição na id (endereço)
+
+        return [
+            'name' => "required|min:3|max:255|unique:pessoas,name,{$id},id",
+            'vulgo'=> 'required|min:3|max:255',                               //  |regex:/^\d+(\.\d{1,2})?$/'
+           
+            'mae' => 'required|min:3|max:255',  
+            'genero' => 'required|min:3|max:255',  
+            'rg' => 'required|min:3|max:255',  
+            'exp' => 'required|min:3|max:255',  
+            'cpf' => 'required|min:11|max:255',  
+            'situa' => 'required|min:3|max:255',  
+            'nasc' => 'required|min:3|max:255',  
+           
+
+        ];
+    }
+}
+
+---E VAMOS LA NO PessoaSCONTROLLER e NO METODO STORE e UPDATE TEMOS QUE INGESTAR EL NO LUGAR DE REQUESTE
+
+----store
+       public function store(StoreUpdatePessoa $request)
+    {
+       
+        $data = $request->all();
+        $data['url']= Str::kebab($request->name);
+        
+
+        $this->repository->create($data);
+
+        return redirect()->route('pessoas.index');
+    }
+
+
+-------update
+public function update(StoreUpdatePessoa $request,  $id)
+    {
+        $pessoa = $this->repository->where('id', $id)->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+
+        $pessoa->update($request->all());
+
+        return redirect()->route('pessoas.index');
+    }
+
+
+
+---E IMPORTAR A CLASSE NO INICIO User
+
+
+namespace App\Http\Controllers\Admin;
+use App\Http\Requests\StoreUpadatPessoa;
+use Illuminate\Support\Str;
+use App\Http\Controllers\Controller;
+use App\Models\Pessoa;
+use Illuminate\Http\Request;
+
+
+---------------------------------OK PERFEITO (fiz pelo Id)
+
+
+--------------------ATENÇÂO --ATE AQUI NOSSO PessoaCOMTROLLER ESTA ASSIM:
+
+<?php
+
+namespace App\Http\Controllers\Admin;
+use Illuminate\Support\Str;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreUpdatePessoa;
+use App\Models\Pessoa;
+use Illuminate\Http\Request;
+
+class PessoaController extends Controller
+{
+    //
+    private $repository;
+
+    public function __construct(Pessoa $pessoa)
+    {
+        $this->repository = $pessoa;
+
+      //  $this->middleware(['can:pessoas']);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $pessoas = $this->repository->latest()->paginate(5);
+
+        return view('admin.pages.pessoas.index', compact('pessoas'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('admin.pages.pessoas.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\StoreUpdatePessoa  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(StoreUpdatePessoa $request)
+    {
+       
+        $data = $request->all();
+        $data['url']= Str::kebab($request->name);
+        
+
+        $this->repository->create($data);
+
+        return redirect()->route('pessoas.index');
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        if (!$pessoa = $this->repository->find($id)) {
+            return redirect()->back();
+        }
+
+        return view('admin.pages.pessoas.show', compact('pessoa'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $pessoa = $this->repository->where('id', $id)->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+
+        return view('admin.pages.pessoas.edit', [
+            'pessoa' => $pessoa
+        ]);
+    }    
+
+    public function update(StoreUpdatePessoa $request,  $id)
+    {
+        $pessoa = $this->repository->where('id', $id)->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+
+        $pessoa->update($request->all());
+
+        return redirect()->route('pessoas.index');
+    }
+
+    public function destroy($id)
+    {
+        $pessoa = $this->repository
+                        ->where('id', $id)
+                        ->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+        
+            $pessoa->delete();
+
+        return redirect()->route('pessoas.index');
+    }
+
+    public function search(Request $request)
+    {
+         $filters = $request->except('_token');
+
+        $pessoas = $this->repository->search($request->filter);
+
+        return view('admin.pages.pessoas.index', [
+            'pessoas' => $pessoas,
+             'filters' => $filters,
+        ]);
+    }
+
+    
+
+}
+
+--------------ACHO QUE JA FIZ------------------------------------VAMOS COLOCAR AS MENSAGENS DE ERROS -ALERT
+
+FAZ UM view so de ERROs Em admin\includes\alerts
+@if ($errors->any())
+    <div class="alert alert-warning">
+        @foreach ($errors->all() as $error)
+            <p>{{ $error }}</p>
+        @endforeach
+    </div>
+@endif
+
+@if (session('message'))
+    <div class="alert alert-success">
+        {{ session('message') }}
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+
+@if (session('info'))
+    <div class="alert alert-warning">
+        {{ session('info') }}
+    </div>
+@endif
+
+-------- E CHAMA A CLASSE ERROS ONDE DESEJAR PELO METODO @include
+EM CREATE.BLADE.PHP COMO EXEMPLO
+
 
 @stop
 
@@ -600,199 +1784,195 @@ criar e ou edit tem que ter  a diretriza @csrf)
 @include('admin.includes.alerts')
 <div class=form-group>
     <label>NOME</label>
-<input class="form-control" type="text" name="name" placeholder="name" value=" {{$pessoa->name ?? old('name')}} ">
+<input class="form-control" type="text" name="name" placeholder="name">
 </div>
 <div class=form-group>
-<label>PREÇO</label>
-<input type="text" class="form-control" name="price" placeholder="price" value=" {{$pessoa->price ?? old('price')}} ">
-</div> 
-<div class=form-group>
-<label>DESCRIÇÃO</label>
-<input type="text" class="form-control" name="description" placeholder="description" value="{{$pessoa->description ?? old('description')}} ">
-</div>
-<div class=form-group>
-<button type="submit" class="btn btn-success">Enviar</button>
-</div>
-</form>
 
-            </div>
-            </div>
+-----------------------FEITO TAMBEM-----------------------------OK ....AQUI DANDO CERTO  
 
+MAS SE FORMOS EDITAR DARÁ UM ERRO DE VALIDAÇÂO , ENTAO TEREMOS QUE FAZER UMA EXCESOA NO StoreUpadePessoas
+pois ele vai ver que existe um pessoao como mesmo nome e nao vai aceitar por isso vamos fazer a excessão
+PODE SER FEITO PELO ID ou url (vamos fazer url ja que estamos trabalhando com ela)
 
-@endsection   
-
--------------------------------------vamos CRIAR O METODO create e store em PlanController
-------- NETODO CREATE
-public function create(Request $request)
-        {
-            return view('admin.pages.plans.create');
-        }
-
------------------------------------------------ O METODO STORE PODE SER ASSIM, mais vai dar um erro pois colocamos
-no Fillable o CAMPO 'uri", mas podemos CORRIGIR COM O DEBAIXO
- public function store(Request $request)
-        {
-
-            $this->repository->create($request->all());
-            return redirect ()-> route('plans.index');
-        }
-    
------------------------------------------------------------------------Q STORE FIZ ESSE com uma VARIAVEL $data e usando 
-o KEBAB , para isso DEFININOS  A CLASSE NO INICIO (ACIMA)
-use Illuminate\Support\Str;
- public function store(Request $request)
-        {
-            $data = $request->all();
-            $data['url']= Str::kebab($request->name);
-            $this->repository->create($data);
-            return redirect ()-> route('plans.index');
-        }
----------------Confere o fillable na MODEL Plans
-protected $fillable = ['name', 'url', 'price', 'description'];
-
---------------------------------------------------------------------------OK...PRONTO...O CAMPO PREÇO nao aceita virgula
-somente ponto nos centavos
-
--------------------EXIBIR DETALHES DO PLANO-----------------------------------------------DETALHES
-
----Criar rotas tipo get passando a url, poderia ser o id (mais comun) PELO METODO Show
-
-Route::get('/admin/plans/{url}', 'Admin\PlanController@show')->name('plans.show');
-Route::post('/admin/plans', 'Admin\PlanController@store')->name('plans.store');
-Route::get('/admin/plans/create', 'Admin\PlanController@create')->name('plans.create');
-Route::get('/admin/plans', 'Admin\PlanController@index')->name('plans.index');
-
-Route::get('/', function () {
-    return view('welcome');
-});
-
--------------------------------NO PLANSCONTROLLER CRIAR O METODO Show------------------------
-
-public function show($url)
-        {
-            $plan = $this->repository->where('url', $url)->first();
-        if(!$plan)
-        {
-            return redirect ()-> back();
-            return view('admin.pages.plans.show', [
-                'plan'=>  $plan
-            ]);
-        }
-----------------------------------------------------E FAZENOS NOSSA ViEW Show em admin\pages\plans\
-
-@extends('adminlte::page')
-
-@section('title', "DETALHE Planos  {$plan->name} ")
-
-@section('content_header')
-<h1>Detalhe do Palno <b>{{ $plan->name }}</b>  </h1>
-
-@stop
-
-@section('content')
-   
-            <div class="card">
-            <div class="card-body">
-            <ul>
-            <li>
-            <strong>NOME</strong> {{ $plan->name }}
-            </li>
-            <li>
-            <strong>Url</strong> {{ $plan->url }}
-            </li>
-            <li>
-            <strong>PREÇO</strong> R$ {{ nunber_format($plan->price, 2, ',', .'')  }}
-            </li>
-            <li>
-            <strong>DESCRIÇÂO</strong> {{ $plan->description }}
-            </li>
-            </ul>
-            </div>
-            </div>
-            @endsection
---------------------------------------------------E NA view Index LEMBBAR DE FAZER OLINK PARA ROTA CORRETA 
-COM O PARAMETRO url (PODIA SER iD ----mais comun)
-
- @foreach($plans as $plan)
-                 <tr>
-                    <td>{{ $plan->name }}</td>
-                    <td>{{ $plan->price }}</td>
-                    <td>
-                    <a href="{{route ('plans.show', $plan->url)}}" class="btn btn-warning">VER</a>
-                    </td>
-                    </tr>
-                @endforeach
-
-----------------ESTAR DANDO ERRO NA ROTA DO ADD E NAO ACEITA FORMATO NUMBER-------------------------ERROR|
-
-
-----------------------------DELETAR PLANO-------------------------------------------------------------
------------------CRIAR ROUTER de metodo delete
-
-Route::delete('/admin/plans/{url}', 'Admin\PlanController@destroy')->name('plans.destroy');
-Route::get('/admin/plans/{url}', 'Admin\PlanController@show')->name('plans.show');
-Route::post('/admin/plans', 'Admin\PlanController@store')->name('plans.store');
-Route::get('/admin/plans/create', 'Admin\PlanController@create')->name('plans.create');
-Route::get('/admin/plans', 'Admin\PlanController@index')->name('plans.index');
-
-Route::get('/', function () {
-    return view('welcome');
-});
----------------------------------------------------------------------------------------------------------
-----------EM PLANCONTROLLER FAZ O METODO DETROY
-
-public function destroy($url)
+  public function rules()
     {
-        $plan = $this->repository
+
+                $url= $this->segment(3);   //Posição na Url (endereço)
+
+        return [
+            'name' => "required|min:4|max:255|unique:pessoas,name,{$url},url",
+            'price'=> 'required|regex:/^\d+(\.\d{1,2})?$/',   
+             'description' => 'required|min:4|max:255',
+        ];
+    }
+}
+
+
+--------------------------------------------------------------------------------------------OK PERFEITO
+
+-----------CRIAR OBSERVADOR------------------------------------------------ATENÇÂO VAMOS MUDAR PessoaCOMTROLLER (create e update)
+Ele fica monitorando o eloquente do laravel e realiza uma função, ante, durante ou DEPOIS
+no nosso caso vamos fazer com que ele ao cadastrar um pessoao crie uma url desse pessoao para nós (automaticamnete)
+
+# php artisan make:observer PessoaObserver --model=Models\Pessoa
+
+---CRIOU EM app\Obsercer\PessoaObserver
+
+-----VAMOS FAZER A AÇÂO ANTES, POR ISSO VAMOS USAR  EVENTO  creating e updating
+
+PRIMEIRO VAMOS NO PessoaCONTROLLER E TRAZER A DECLARAÇÂO CLAASE StoreUpadePessoa e Str PARA PessoaOBSERVER , pois nao vamos usar mais la
+use App\Http\Requests\StoreUpadatPessoa; 
+use Illuminate\Support\Str;
+O PessoaObserver FICA ASSIM
+
+<?php
+
+namespace App\Observers;
+use Illuminate\Support\Str;
+use App\Http\Requests\StoreUpadatPessoa;
+use App\Models\Pessoa;
+
+class PessoaObserver
+{
+    /**
+     * Handle the pessoa "creating" event.
+     *
+     * @param  \App\Models\Pessoa  $pessoa
+     * @return void
+     */
+    public function creating(Pessoa $pessoa)
+    {
+        $pessoa->url=Str::kebab($pessoa->name);
+    }
+
+    /**
+     * Handle the pessoa "updating" event.
+     *
+     * @param  \App\Models\Pessoa  $pessoa
+     * @return void
+     */
+    public function updating(Pessoa $pessoa)
+    {
+        $pessoa->url=Str::kebab($pessoa->name);
+    }
+
+   
+}
+------------------------------------------------------------------------------------------
+DECLARAMOS EM Provide\AppServiceProvider.php
+public function boot()
+    {
+        Schema::defaultStringLength(191);
+       // Schema::defaultStringlength(191);
+       Pessoa::observe(PessoaObserver::class);
+    }
+}
+
+VAMOS SUBSTITUIR NO PessoaCONTROLLER. FICANDO ASSIM (vou coloacar a pagina inteira, mas so muda o metodo Store e update)
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use Illuminate\Support\Str;
+use App\Http\Controllers\Controller;
+use App\Models\Pessoa;
+use Illuminate\Http\Request;
+
+class PessoaController extends Controller
+{
+
+       private $repository; 
+      
+       public function __construct(Pessoa $pessoa)
+       {
+           $this->repository= $pessoa;
+        }
+       public function index()
+        {
+                $pessoas = $this->repository->latest()->paginate();
+            return view('admin.pages.pessoas.index', [
+                'pessoas' => $pessoas,
+                ]);
+        }
+
+        public function create(Request $request)
+        {
+            return view('admin.pages.pessoas.create');
+           
+        }
+
+        public function store(Request $request)
+        {
+            // $data = $request->all();
+            // $data['url']= Str::kebab($request->name);
+            $this->repository->create($request->all());
+            return redirect ()-> route('pessoas.index');
+        }
+
+        public function show($url)
+    {
+        $pessoa = $this->repository->where('url', $url)->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+
+        return view('admin.pages.pessoas.show', [
+            'pessoa' => $pessoa
+        ]);
+    }
+                       
+    public function destroy($url)
+    {
+        $pessoa = $this->repository
                         ->where('url', $url)
                         ->first();
 
-        if (!$plan)
+        if (!$pessoa)
             return redirect()->back();
         
-            $plan->delete();
+            $pessoa->delete();
 
-        return redirect()->route('plans.index');
+        return redirect()->route('pessoas.index');
     }
 
--------------------------------AGORA NO PAGINA SHOR CRIA UM FORM COM O BOTAO E METODO DELETE
-@extends('adminlte::page')
-@section('title', "DETALHE DO Planos  {$plan->name} ")
-@section('content_header')
-<h1>Detalhe do PLANO <b>{{ $plan->name }}</b>  </h1>
-@stop
-@section('content')
+    public function search(Request $request)
+    {
+        $filters = $request->except('_token');
 
-            <div class="card">
-            <div class="card-body">
-            <ul>
-            <li>
-            <strong>NOME</strong> {{ $plan->name }}
-            </li>
-            <li>
-            <strong>Url</strong> {{ $plan->url }}
-            </li>
-            <li>
-            <strong>PREÇO</strong> R$ {{ $plan->price  }}
-            </li>
-            <li>
-            <strong>DESCRIÇÂO</strong> {{ $plan->description }}
-            </li>
-          
-            </ul>
+        $pessoas = $this->repository->search($request->filter);
 
-                <form action=" {{ route('plans.destroy', $plan->url) }}"  method="POST"  >
-                @csrf
-                @method('DELETE')
-                <button type="submit" class="btn btn-danger">DELETAR O PLANO {{ $plan->name }}</button>
-               
-                </form>
+        return view('admin.pages.pessoas.index', [
+            'pessoas' => $pessoas,
+             'filters' => $filters,
+        ]);
+    }
+   
+    public function edit($url)
+    {
+        $pessoa = $this->repository->where('url', $url)->first();
 
-            </div>
-            </div>
-            @endsection
----------------------------------------------------------OK.....DEU CERTO ...MAS CONTINUA INATIVO O BOTAO ADD
+        if (!$pessoa)
+            return redirect()->back();
 
--------------PESQUISAR PLANOS ----------------------------------------------
+        return view('admin.pages.pessoas.edit', [
+            'pessoa' => $pessoa
+        ]);
+    }
+ 
+    public function update(Request $request,  $url)
+    {
+        $pessoa = $this->repository->where('url', $url)->first();
 
-----------CRIAR ROUTER TIPO Any===========================
+        if (!$pessoa)
+            return redirect()->back();
+
+        $pessoa->update($request->all());
+
+        return redirect()->route('pessoas.index');
+    }
+
+}
+---------------------------------------------
+
+222222222-------------------EXIBIR DETALHES DO PessoaO-----------------------------------------------DETALHES
+
