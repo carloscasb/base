@@ -1,0 +1,71 @@
+    #cx1 {
+       position: relative;
+       width: 48%;
+       height: auto;
+       background-color:#ffffff;
+       float: left;
+       margin-right: 10px;
+       border: 2px  solid  #000000;
+    }
+  
+    #cx2 {
+      position: relative;
+           
+       width: 48%;
+       height: auto;
+       background-color: #ffffff;
+       float: left;
+       border: 2px  solid  #000000;
+      }
+  
+     #cx3 {
+       
+       position: relative;
+       width: 48%;
+       height: auto;
+       background-color:#ffffff;
+      float: left;
+      margin-right: 10px;
+      border: 2px  solid  #000000;
+    }
+  
+    #cx4{
+       
+       position: relative;
+       width: 48%;
+       height: auto;
+       background-color:#ffffff;
+       float: left;
+       border: 2px  solid  #000000;
+    }
+  
+    
+  #caixa2 {
+    left: 20px;
+      margin-top: 20px;
+      position: relative;
+      width: 88%;
+       height:auto;
+       background-color:#ffffff;
+       bottom: 20px;
+       border: 2px  solid  #000000;
+   }
+    
+  #caixa3 {
+      margin-top: 20px;
+      position: relative;
+      width: 98%;
+       height: auto;
+       background-color:#ffffff;
+       float: left;
+       bottom: 20px;
+       
+   }
+  
+  #caixa4 {
+       position: relative;
+      width: 98%;
+       height: auto;
+       background-color:#ffffff;
+       float: left;
+   }
