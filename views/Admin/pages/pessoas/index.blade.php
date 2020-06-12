@@ -14,7 +14,12 @@
    
             <div class="card">
             <div class="card-header">
-                #filtross
+            <form action="{{ route('pessoas.search') }}" method="POST" class="form form-inline">
+        @csrf
+        <input type="text" name="filter" placeholder="NOME" class="form-control" value="{{ $filters ['filter']  ?? ''}}" >
+        <button type="submit" class="btn btn-dark">PESQUISAR</button>
+        </form>
+
 
                 </div>
         <div class="card-body">
@@ -23,8 +28,8 @@
             <thead>
                 <tr>
                     <th>Nome</th>
-                    <th>Preço</th>
-                     <th style="width: 50px">Ação</th>
+                    <th>Vulgo</th>
+                     <th style="width: 200px">Ação</th>
 
                 </tr>
 
@@ -33,9 +38,11 @@
                 @foreach($pessoas as $pessoa)
                  <tr>
                     <td>{{ $pessoa->name }}</td>
-                    <td>{{ $pessoa->cpf }}</td>
+                    <td>{{ $pessoa->vulgo }}</td>
                     <td>
-                    <a href="url" class="btn btn-warning">Detalhe</a>
+                    <a href="{{ route('pessoas.edite', $pessoa->id) }}" class="btn btn-primary"><i class="fab fa-searchengin"></i></a>
+                    <a href="{{ route('pessoas.edit', $pessoa->id) }}" class="btn btn-info">Edit</a>
+                    <a href="{{ route('pessoas.show', $pessoa->id) }}" class="btn btn-warning">VER</a>
                     </td>
                     </tr>
                 @endforeach
@@ -44,6 +51,15 @@
        
     
                 </div>
+            </div>
+            <div class="card-footer">
+            <div class="card-footer">
+
+@if (isset ($filters)) 
+{!! $pessoas->appends($filters)->links() !!}
+@else
+ {!! $pessoas->links() !!}
+@endif
             </div>
 
 @stop
