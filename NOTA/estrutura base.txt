@@ -1,0 +1,4099 @@
+---------ACESSORIOS ------------------
+
+https://github.com/tutorialesvirtuales/Curso-Laravel
+https://github.com/jeroennoten/Laravel-AdminLTE
+fontawesone.io
+-------------------
+# composer dump-autoload
+# php artisan migrate:refresh
+php artisan migrate:fresh
+php artisan migrate:fresh
+
+
+
+----CRIA PROJETO base--------------------------
+
+C:\Users\barbosa>cd\
+
+C:\>cd wamp64\www\
+
+C:\wamp64\www>composer create-project --prefer-dist laravel/laravel base
+Installing laravel/laravel (v6.18.8)
+
+---------------CRIA ARQUIVO BAT-- > (faz um bloco de nota e salva com extensa�o .bat
+cd\
+cd wamp64\www\base
+
+php artisan serve
+
+
+------------------------------------------------------------------------------
+2. CONFIGURAR DB EM .env
+
+@...@
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=base
+DB_USERNAME=root
+DB_PASSWORD=
+@...@
+
+---------------------------------PULAR CERCADINHO TE item 5
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX---NÃO ERA PRA TER FEITO----FOI FEITO, VAMOS ENGENBRAR
+3. RODAR AS MIGRATYONS
+# php artisan migrate:refresh
+---------------------------------
+---------------------------------
+4. FAZER AUTENTICAÇÃO -> agora tem que ir na documentação Authentication em seguraty e ler pois foi desacoplado o processo de aitentixação
+automatico precisando rodar alguns comando ---> RODAR COMANDOS composer para instalar o componente
+
+
+# composer require laravel/ui --dev   //......INSTALA PACOTE...esse --dev é para dizer  que essa instalação em a nivel de DESENVOLVIMENTO
+
+RODAR A AUTHENTICATION PERSONALIZADA
+
+# php artisan ui bootstrap --auth    //.....SERÁ ESSA.......FAZ A AUTENTICAÇÃO so que mudaremos para Bookstrap (personalizamos)
+
+# php artisan ui vue --auth    //.....FAZ A AUTENTICAÇÃO so que mudaremos para Brostrap
+
+ELE VAI PEDIR PARA INSTALAR O "npm install && npm run dev"
+
+#npm install && npm run dev    //..... DEU UM ERRO MAS FEZ AS ROTAS E O LOGIN\ REGITRO --> vamos em grente
+
+---------------------------------
+
+
+4. REALIZAÇÃO A AUTENTICAçÃO PARDÃO
+# php artisan make:auth
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ---NÃO ERA PRA TER FEITO
+
+------------------------------------------------------------------------------
+
+5---------DEPOIS EM config\app.php
+ 'timezone' => 'America/Sao_Paulo',
+----------------------------------------------------------------------------
+CRIAR NOSSO DIRETORIO DE MODELS em app e ARRASTA O User.php PARA DENTRO MUDANDO O NAMESPACE
+namespace App\Models;
+----------------------------------------------------------------------------
+VAMOS EM config\auth.php e atualizamos o namespace do models User 
+        'providers' => [
+        'users' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\User::class,
+        ],
+
+6----------------INSTALAÇÂO ADMINLTE----------------------------------------AdminLT3
+VAMOS USAR O PACOTE AdminLT3 ENCONTAMOS NO LINK ABAIXO
+AdminLTE Laravel: https://github.com/jeroennoten/Laravel-AdminLTE
+
+INSTALAR O PACOTE VIA TERMINAL
+# composer require jeroennoten/laravel-adminlte
+E DEPOIS CONFERE A INSTALAÇÂO DEFINITIVA
+# php artisan adminlte:install
+
+MODIFICOU ALGUNAS COISA NO NOSSO PROJETO, PRINCIPALMENTE A CRIAÇÂO DE Vendor NO NOSSO DIRETORIO Public (DE TERCEIROS)
+EM Config ELE JA COLOCA UMA PASTA AdminLTE e em Resource\vendor\adminLte ja colocou os idiomas ETC...
+----------------------------------------------------------------------------
+VAMOS EM config\adminlte.php E DEFINIMOS NOSSO TEMPALTE CONFORME VONTADE ..exemplo
+ 'title' => 'Base 3',
+    'title_prefix' => '',
+    'title_postfix' => '',
+-----------
+ 'logo' => '<b>LAraFood1</b>LTE',
+    'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
+    'logo_img_class' => 'brand-image img-circle elevation-3',
+    'logo_img_xl' => null,
+    'logo_img_xl_class' => 'brand-image-xs',
+    'logo_img_alt' => 'Base 3',
+
+ -----------------------------------
+ MAIS O MAIS IMPRTANTE É A PARTE DE MENU e SUBMENU (ONDE TRABALHAMOS COM MENU DO DASHBOARD)
+ VAMOS MEXER COM O DESEVOLVIMENTO DO PROJETO
+
+    'menu' => [
+        [
+            'text' => 'search',
+            'search' => true,
+            'topnav' => true,
+        ],
+        [
+            'text' => 'blog',
+            'url'  => 'admin/blog',
+            'can'  => 'manage-blog',
+        ],
+        [
+            'text'        => 'pages',
+            'url'         => 'admin/pages',
+            'icon'        => 'far fa-fw fa-file',
+            'label'       => 4,
+            'label_color' => 'success',
+----------------------------------------------------------------AINDA NENHUM EFEITO VISUAL
+SE DESEJAR CUSTOMIZAR AS views ----- NAO FIZ (NAO RODEI)
+
+# php artisan adminlte:install --only=main_views
+-----------------------------------------------------
+7--------------------USER (migration)------------FIZ OU REFIZ MINHA MIGRATION User
+ public function up()
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->rememberToken();
+            $table->timestamps();
+        });
+    }
+
+8--------------CRIAR GERAL---------------------------------VAMOS TRABALHAR--FAZER AS MODELS JA COM AS MIGRATION
+# php artisan make:model Models\Geral -mc --resource 
+# php artisan make:model Models\Geral -m  --------------------------------USEI ESSA (MAS A DE CIMA PRETENDO)
+CRIOU A MODEL pessoa E A MIGRATION pessoa
+VAMOS EM NIGATTION pessoa e DEFININOS AS COLUNAS DE NOSSA TABELA
+  public function up()
+    {
+        Schema::create('gerals', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('name')->unique();
+            $table->string('url')->unique();
+            $table->double('price' , 10, 2);
+            $table->string('description')->nullable();
+            $table->timestamps();
+        });
+    }
+-------------------------------------------------------
+ E NA MODELS GERAL DEFININOS NOSSO fillable (permisao de dados no BD)
+ class Geral extends Model
+{
+    protected $fillable = ['name', 'url', 'price', 'description'];
+}
+
+9-------------------------------------CRIAR BD------------------------------------------------
+NESSE MOMENTO VAMOS CRIAR UM BD NO phpadmin COM o NOME DE base RECOMEDADO utf8mb4_unicode_ci
+
+
+
+10------------------------------------CRIAR TABELAS------------------------------------------------
+NO TERMINAL 
+# php artisan migrate          USEI ESSA   ----DEU UMA -EXCESÂO AQUI--PQ A MIGRATION JA TINHA SIDO GERADA
+
+ERRONEAMNENTE ANTES, MAS SE EDTIVER TUDO BEM DA CERTO
+
+# php artisan make:migration create_gerals_table    QUANDO FOR ESPECIFICA
+
+------------------------------------------------------------------------------------VAMOS TENTAR RESOLVER -  
+------------------FIZ VARIAS TENTATIVAS, TINHA ERROS DE CODIGOS, AI FIZ A PROFILE provider\appServiceProvider
+public function boot()
+    {        
+      // 
+       Schema::defaultStringLength(191);
+    }
+}
+
+--------------------- E RODEI 
+composer dump-autoload
+php artisan migrate:fresh
+php artisan migrate:refresh
+--------------------------------------------BINGO--- DEU CERTO E CRIOU AS TABELAS, Users, Gerals
+-----------------------------------------------------------MAS TENHO QUE TER CUIDADO COM A migrate
+-----VAMOS CONTINUAR----------------------------------------
+
+11------------PRIMEIRAMENTE VAMOS CRIAR UM SEEDER User
+# php artisan make:seeder UsersTableSeeder
+E CODIFICAR , NAO ESQUECER O ---use App\Models\User; LA EM CIMA (pois mudamos o namespace de user para dentro da MODELS)
+<?php
+
+use Illuminate\Database\Seeder;
+use App\Models\User; 
+class UsersTableSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        User::Create([
+            'name' => 'carlos',
+            'email' => 'carlos@gmail.com',
+            'password' => bcrypt('casb'),
+        ]);
+    }
+    
+}
+
+-----NAO ESQUECER O ---use App\Models\User; LA EM CIMA
+---------EM DATABASEEDER LIBERE O THIS
+public function run()
+    {
+        $this->call(UsersTableSeeder::class);
+        
+    }
+}
+
+-----RODAR SEEDER PARA POPULAR A TELA User
+# php artisan db:seed
+
+# php artisan db:seed --class=UsersTableSeeder
+
+-------------------------------------------------------------------POPULOU A TABRELA User 
+-------------------------------------------------------------------ATE AQUI FUNCIOMOU
+
+
+12------------------CRIAR AS ROTAS-----------------------------------
+--INICIALMENTE FAREMOS UMA POR UMA-------
+--Antes recomendado criar o GeralController --(nesse caso que ainda nao criamos os Metodos, quando for ressouse ja fica criado)
+com vai ficar no diretorio Admin colocamos o namespace
+
+# php artisan make:controller Admin\GeralController
+
+CRIA Admin\pessoaController FALTANDO PREENCHER SEUS METODOS
+class GeralController extends Controller
+{
+    public function index()
+            {
+            return view('admin.pages.gerals.index');
+        }
+}
+    
+
+-----LIBERE A ROUTER EM WEB.php  ----- (PODERIA SER Resource)
+Route::get('/admin/gerals', 'Admin\GeralController@index')->name('gerals.index');
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+----------------E VAMOS CRIAR A View index em Resource\views\admin\pages\gerals
+
+----------------------PEGA O 4. Usage DO AdminLTE E COLOCA (NA DOCUMENTAÇÃO)
+@extends('adminlte::page')
+
+@section('title', 'Dashboard')
+
+@section('content_header')
+    <h1>Dashboard</h1>
+@stop
+
+@section('content')
+    <p>Welcome to this beautiful admin panel.</p>
+@stop
+
+------------------------------------------ OK PERFEITO  A PAGINA index JA ESTA FUNCIONANDO COM A ROUTER
+13----------------------------COMEÇAR A CONFIGURA OAdminLTE - Dashboard ------------------
+
+Vamos em Config\AdminLT3.php
+menu' => [
+        [
+            'text' => 'search',
+            'search' => true,
+            'topnav' => true,
+        ],
+        [
+            'text' => 'pessoaos',
+            'url'  => 'admin/gerals',
+            
+        ],
+
+14------------------------------------- VAMOS PARA O MODULO PESSOA (fazer realmente os metodos do CRUD)-----------------------
+
+----------COMEÇANDO PELO NOSSA MODEL E MIGRATION 
+
+# php artisan make:model Models\Pessoa -m
+
+---NA MIGRATION VOCE TEM QUE SABER PERFEITAMENTE OS CAMPOS QUE A TABELA VAI TER 
+ public function up()
+    {
+        Schema::create('pessoas', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('name')->required();
+            $table->string('url')->unique();
+            $table->string('vulgo')->required();
+            $table->string('mae')->nullable();
+            $table->string('genero')->nullable();
+            $table->string('rg')->unique();
+            $table->string('exp')->nullable();
+            $table->string('cpf')->unique();
+            $table->string('situa')->uninullableque();
+            $table->string('nasc')->nullable();
+            $table->string('description')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('pessoas');
+    }
+}
+
+
+-------------------NA MODEL 
+
+class Pessoa extends Model
+{
+    //
+    protected $fillable = ['name', 'url', 'vulgo', 'mae', 'genero', 'rg', 'exp', 'cpf', 'situa', 'nasc', 'description'];
+}
+
+15 - RODAR MIGRATE PARA CRIAR NOSSA TABELA pessoas  NO BD 
+
+# php artisAN migrate
+
+-------------------------ok perfeito criou a tabela PESSOAS no BD
+
+16------CRIAR O CONTROLLER PessoaController ---AQUI VAMOS APENAS FAZER TESTE PARA DEPOIS OTIMIZAR NOSSO CRUD
+
+# php artisan make:controller Admin\PessoaController
+
+CRIA Admin\pessoaController FALTANDO PREENCHER SEUS METODOS
+
+--------------------------------------------------------SE LOCALIZAR 
+class PessoaController extends Controller
+{
+    public function index()
+            {
+            return view('admin.pages.pessoas.index');
+        }
+}
+    
+
+---CRIAR E LIBERE A ROUTER EM WEB.php
+Route::get('/admin/pessoas', 'Admin\pessoaController@index')->name('pessoas.index');
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+----------------E VAMOS CRIAR A View index em Resource\views\admin\pages\pessoas
+
+----------------------PEGA O 4. Usage DO AdminLTE E COLOCA (NA DOCUMENTAÇÃO)
+@extends('adminlte::page')
+
+@section('title', 'Dashboard')
+
+@section('content_header')
+    <h1>Dashboard</h1>
+@stop
+
+@section('content')
+    <p>Welcome to this beautiful admin panel.</p>
+@stop
+------------------------------------------   A PAGINA index JA ESTA FUNCIONANDO COM A ROUTER
+--------------VAMOS ESTILIZAR A PAGINA index
+@extends('adminlte::page')
+
+@section('title', 'pessoaos')
+
+@section('content_header')
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Perfis</a></li>
+    </ol>
+<h1>pessoaOS</h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-header">
+                #filtross
+
+                </div>
+        <div class="card-body">
+
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Preço</th>
+                     <th style="width: 50px">Ação</th>
+
+                </tr>
+
+            </thead>
+            <body>
+               
+            </body>
+        </table>
+       
+    
+                </div>
+            </div>
+
+@stop
+
+
+----------------------ATE AQUI FOI TESTE NA index
+17------------------------------------- VAMOS LISTAR NOSSOS pessoas (fazer realmente os metodos do CRUD)-----------------------
+
+----CODIFICANDO NOSSO CONTROLLER PessoaController, view e model -  ja foi feita parcialmente
+
+------------- vamos trabalhar com CONTROLLER PessoaController
+
+----NO PessoasContoller FARENOS UM __CONSTRUTOR ---CRIAMOS UM 
+Atributo repository PEGAR NOSSO OBJETO Pessoa e JOGAR NA VARIAVEL $pessoa , E NOSSO ATRIBUTO repository RECEBE UM OBJETO DE Pessoa
+ARMAZENADA NA VARIAVEL $Pessoa
+--Numa VARIAVEL $pessoas VOU RECUPERAR TODOS o REPOSITIRO (do atributo repository) E PASSAR PARA NOSSA View (poderia ser por conpact)
+
+@
+ class PessoaController extends Controller
+{
+
+       private $repository; 
+      
+       public function __construct(Pessoa $pessoa)
+       {
+           $this->repository= $pessoa;
+        }
+       public function index()
+        {
+                $pessoas = $this->repository->all();
+            return view('admin.pages.pessoas.index', [
+                'pessoas' => $pessoas,
+                ]);
+        }
+}
+
+-----------------------------E AGORA PARA LISTAR OS PessoaOS NA views (admin.pages.pessoas.index) FAZ UM foreach NA view ja estilizada
+@extends('adminlte::page')
+
+@section('title', 'Pessoaos')
+
+@section('content_header')
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Perfis</a></li>
+    </ol>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-header">
+                #filtross
+
+                </div>
+        <div class="card-body">
+
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Preço</th>
+                     <th style="width: 50px">Ação</th>
+
+                </tr>
+
+            </thead>
+            <body>
+                @foreach($pessoas as $pessoa)
+                 <tr>
+                    <td>{{ $pessoa->name }}</td>
+                    <td>{{ $pessoa->cpf }}</td>
+                    <td>
+                    <a href="url" class="btn btn-warning">Detalhe</a>
+                    </td>
+                    </tr>
+                @endforeach
+            </body>
+        </table>
+       
+    
+                </div>
+            </div>
+
+@stop
+---------------------------------------------------------------------Não VAI APARECER REGISTRO POIS NOSSO BD ESTA VAZIO
+-------------PODEMOS PREENCHER MANUALEMENTE SOMENTE PARA VISUALIZAR ---NÃO FAREI ISSO
+
+---------------------------------------------------------VAMOS PAGINAR
+VAI EM PessoaController e troca all por paginate SEGUIDO PELO NUMERO DE REGISTRO POR PAGINA, O PADRAO È 15
+public function index()
+        {
+                $pessoas = $this->repository->paginate(1);
+            return view('admin.pages.pessoas.index', [
+                'pessoas' => $pessoas,
+                ]);
+        }
+
+
+
+----------VAI NA View index e acrecentar NO FINAL UMA div CONTENDO A NOSSA PAGINAÇÂO
+
+      </tr>
+                @endforeach
+            </body>
+        </table>
+       
+    
+                </div>
+            </div>
+
+            <div class="card-footer">
+                {!! $pessoas->links() !!}
+            </div>
+
+@stop
+
+----------------------------------VAMOS DEIXAR DEFAULD E DO REGITRO DO MAIS ANTIGO PAR O MAIS NOVO, METODO Latext
+public function index()
+        {
+                $pessoas = $this->repository->latest()->paginate();
+            return view('admin.pages.pessoas.index', [
+                'pessoas' => $pessoas,
+                ]);
+        }
+}
+
+ATENÇÂO : NO FINAL RESOLVIR DEIXAR O METODO index DO PessoasContoller COMO ABAIXO:
+
+public function index()
+    {
+        $pessoas = $this->repository->latest()->paginate();
+
+        return view('admin.pages.pessoas.index', compact('pessoas'));
+    }
+
+
+18-----------------VAMOS FAZER UM PARENTESES E CRIAR NOSSOS ALERTAS (alerts) -
+ DENTRO DE resource\view\admin\includes\alerts.blade.php
+
+@if ($errors->any())
+    <div class="alert alert-warning">
+        @foreach ($errors->all() as $error)
+            <p>{{ $error }}</p>
+        @endforeach
+    </div>
+@endif
+
+@if (session('message'))
+    <div class="alert alert-success">
+        {{ session('message') }}
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+
+@if (session('info'))
+    <div class="alert alert-warning">
+        {{ session('info') }}
+    </div>
+@endif
+
+
+19-------------------------------INSERIR REGISTRO EM Pessoa (CADASTRAR NOVO PessoaO)
+---CRIAMOS UM BOTAO DE ADD NO INICIO DA PAGINA index
+
+@extends('adminlte::page')
+
+@section('title', 'Pessoaos')
+
+@section('content_header')
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Perfis</a></li>
+    </ol>
+<a href="{{route('pessoas.create')}}" class="btn btn-dark">CADASTRAR PESSOAS</a>
+@stop
+
+------- CRIAR A Router CREATE QUE AINDA NAO EXISTE e tambem a router Store TIPO (post) QUE REALMENTE FAZ A GRAVAÇÂO
+
+
+Route::post('/admin/pessoas', 'Admin\PessoaController@store')->name('pessoas.store');
+Route::get('/admin/pessoas/create', 'Admin\PessoaController@create')->name('pessoas.create');
+Route::get('/admin/pessoas', 'Admin\PessoaController@index')->name('pessoas.index');
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+------------------------------------TESTAR
+
+---ATENÇÂO: A routre criar tem que esta acima da show DEIXAREMOS COMO ABAIXO
+//ROTAS DE PESSOAS
+
+Route::get('/admin/pessoas/create', 'Admin\PessoaController@create')->name('pessoas.create');
+
+Route::delete('/admin/pessoas/{url}', 'Admin\PessoaController@destroy')->name('pessoas.destroy');
+Route::get('/admin/pessoas/{url}', 'Admin\PessoaController@show')->name('pessoas.show');
+Route::post('/admin/pessoas', 'Admin\PessoaController@store')->name('pessoas.store');
+
+Route::get('/admin/pessoas', 'Admin\PessoaController@index')->name('pessoas.index');
+
+
+
+-------------------------------------E VAMOS CRIAR NOSSA View de Create com FORMULARIO DE CADASTRO E @csrf (quando for 
+criar e ou edit tem que ter  a diretriza @csrf)
+
+@extends('adminlte::page')
+
+@section('title', 'Cadastrando Novo Pessoaos')
+
+@section('content_header')
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Pessoas</a></li>
+    </ol>
+<h1>Cadastrando Novo Pessoaos  </h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+            <form action="{{route('pessoas.store')}}" class="form" method="POST" >
+@csrf
+@include('admin.includes.alerts')
+
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Nome</label>
+      <input class="form-control" type="text" name="name" placeholder="name" value=" {{$pessoa->name ?? old('name')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Vulgo</label>
+      <input type="text" class="form-control" name="vulgo" placeholder="vulgo" value=" {{$pessoa->vulgo ?? old('vulgo')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Mãe</label>
+      <input class="form-control" type="text" name="mae" placeholder="mae" value=" {{$pessoa->mae ?? old('mae')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Nascimento</label>
+      <input type="text" class="form-control" name="nasc" placeholder="DLL" value=" {{$pessoa->nasc ?? old('nasc')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> RG - Identidade</label>
+      <input class="form-control" type="text" name="rg"  value=" {{$pessoa->rg ?? old('rg')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Expedidor</label>
+      <input type="text" class="form-control" name="exp" placeholder="DLL" value=" {{$pessoa->exp ?? old('exp')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="inputCity">CPF</label>
+      <input type="text" class="form-control" name="cpf" placeholder="cpf" value=" {{$pessoa->cpf ?? old('cpf')}} ">
+    </div>
+    <div class="form-group col-md-3">
+      <label >Genero</label>
+      <select id="inputState" class="form-control">
+        <option selected>Choose...</option>
+        <option>Masculino</option>
+        <option>Feminino</option>
+      </select>
+    </div>
+    <div class="form-group col-md-3">
+      <label >Situação Penal</label>
+      <select id="inputState" class="form-control">
+        <option selected>Choose...</option>
+        <option>Preso</option>
+        <option>Solto</option>
+        <option>Mandado</option>
+        <option>Provisorio</option>
+
+      </select>
+    </div>
+    </div>
+  <div class="form-group">
+    <label for="inputAddress">Address</label>
+    <textarea type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"></textarea>
+  </div>
+  
+  
+  
+  <button type="submit" class="btn btn-primary">CADASTRAR PESSOAS in</button>
+
+</form>
+
+
+</div>
+</div>
+
+
+@endsection  
+------------------------------------TESTAR
+
+
+-------------------------------------vamos CRIAR O METODO create e store em PessoaController
+------- NETODO CREATE - somente testar router
+//public function create(Request $request) ---NOTE QUE TIREI OS Request
+
+/**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('admin.pages.pessoas.create');
+    }
+
+----------------------------------------------- O METODO STORE (quem vai realmente cadastra) PODE SER ASSIM, mais dessa forma daria 
+um erro pois colocamos no Fillable o CAMPO 'url", que ainda nao temos, mas podemos CORRIGIR COM O item 19.1
+ public function store(Request $request)
+        {
+
+            $this->repository->create($request->all());
+            return redirect ()-> route('pessoas.index');
+        }
+    
+19.1----------------------------------O STORE PODERIA SER ASSIM  ESSE com uma VARIAVEL $data e usando 
+o KEBAB (que pega no endereco da url o request name), para isso DEFININOS  A CLASSE NO INICIO (ACIMA) ---FIZ
+COMO MOSTRAR O ITEM 19.2
+use Illuminate\Support\Str;
+ public function store(Request $request)
+        {
+            $data = $request->all();
+            $data['url']= Str::kebab($request->name);
+            $this->repository->create($data);
+            return redirect ()-> route('pessoas.index');
+        }
+
+19.2 ---ATENÇÃO --FICOU ASSIM O METODO store DO pessoaController
+/**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\StoreUpdatePessoa  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+       
+        $data = $request->all();
+        $data['url']= Str::kebab($request->name);
+        
+
+        $this->repository->create($data);
+
+        return redirect()->route('pessoas.index');
+    }
+
+
+
+---------------Confere o fillable na MODEL pessoas
+ protected $fillable = ['name', 'url', 'vulgo', 'mae', 'genero', 'rg', 'exp', 'cpf', 'situa', 'nasc', 'description'];
+}
+
+--------------------------------------------------------------------------OK...PRONTO TESTAR (nao consegui
+por select aption , mudei para textbox e a VIEW create FICOU ASSIM )
+
+@extends('adminlte::page')
+
+@section('title', 'Cadastrando Novo Pessoas')
+
+@section('content_header')
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Pessoas</a></li>
+    </ol>
+<h1>Cadastrando Novo Pessoas  </h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+            <form action="{{route('pessoas.store')}}" class="form" method="POST" >
+@csrf
+@include('admin.includes.alerts')
+
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Nome</label>
+      <input class="form-control" type="text" name="name" placeholder="name" value=" {{$pessoa->name ?? old('name')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Vulgo</label>
+      <input type="text" class="form-control" name="vulgo" placeholder="vulgo" value=" {{$pessoa->vulgo ?? old('vulgo')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Mãe</label>
+      <input class="form-control" type="text" name="mae" placeholder="mae" value=" {{$pessoa->mae ?? old('mae')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Nascimento</label>
+      <input type="text" class="form-control" name="nasc" placeholder="DLL" value=" {{$pessoa->nasc ?? old('nasc')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> RG - Identidade</label>
+      <input class="form-control" type="text" name="rg"  value=" {{$pessoa->rg ?? old('rg')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Expedidor</label>
+      <input type="text" class="form-control" name="exp" placeholder="DLL" value=" {{$pessoa->exp ?? old('exp')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="inputCity">CPF</label>
+      <input type="text" class="form-control" name="cpf" placeholder="cpf" value=" {{$pessoa->cpf ?? old('cpf')}} ">
+    </div>
+    <div class="form-group col-md-3">
+      <label >Genero</label>
+      <input type="text" class="form-control" name="genero" placeholder="genero" value=" {{$pessoa->genero ?? old('genero')}} ">
+     </div>
+     <div class="form-group col-md-3">
+      <label >Situação Penal</label>
+      <input type="text" class="form-control" name="situa" placeholder="situa" value=" {{$pessoa->situa ?? old('situa')}} ">
+     </div>
+    
+    </div>
+  <div class="form-group">
+    <label for="inputAddress">Observação</label>
+    <textarea type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"></textarea>
+ </div>
+   <button type="submit" class="btn btn-primary">CADASTRAR PESSOAS</button>
+</form>
+</div>
+</div>
+@endsection   
+
+----------------------------------------------------------------------OK PERFEITO CADASTROU E EXIBIU pelo id (ficou o link VER)
+NOSSA PAGINAS FICARAM ASSIM ;
+
+-------ViEW index 
+@extends('adminlte::page')
+
+@section('title', 'Pessoaos')
+
+@section('content_header')
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Pessoas</a></li>
+    </ol>
+    <a href="{{route('pessoas.create')}}" class="btn btn-dark">CADASTRAR PESSOAS</a>
+        @stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-header">
+                #filtross
+
+                </div>
+        <div class="card-body">
+
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Vulgo</th>
+                     <th style="width: 50px">Ação</th>
+
+                </tr>
+
+            </thead>
+            <body>
+                @foreach($pessoas as $pessoa)
+                 <tr>
+                    <td>{{ $pessoa->name }}</td>
+                    <td>{{ $pessoa->vulgo }}</td>
+                    <td>
+                    <a href="{{ route('pessoas.show', $pessoa->id) }}" class="btn btn-warning">VER</a>
+                    </td>
+                    </tr>
+                @endforeach
+            </body>
+        </table>
+       
+    
+                </div>
+            </div>
+            <div class="card-footer">
+                {!! $pessoas->links() !!}
+            </div>
+
+@stop
+
+----  View Create
+
+@extends('adminlte::page')
+
+@section('title', 'Cadastrando Novo Pessoas')
+
+@section('content_header')
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Pessoas</a></li>
+    </ol>
+<h1>Cadastrando Novo Pessoas  </h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+            <form action="{{route('pessoas.store')}}" class="form" method="POST" >
+@csrf
+@include('admin.includes.alerts')
+
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Nome</label>
+      <input class="form-control" type="text" name="name" placeholder="name" value=" {{$pessoa->name ?? old('name')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Vulgo</label>
+      <input type="text" class="form-control" name="vulgo" placeholder="vulgo" value=" {{$pessoa->vulgo ?? old('vulgo')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Mãe</label>
+      <input class="form-control" type="text" name="mae" placeholder="mae" value=" {{$pessoa->mae ?? old('mae')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Nascimento</label>
+      <input type="text" class="form-control" name="nasc" placeholder="DLL" value=" {{$pessoa->nasc ?? old('nasc')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> RG - Identidade</label>
+      <input class="form-control" type="text" name="rg"  value=" {{$pessoa->rg ?? old('rg')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Expedidor</label>
+      <input type="text" class="form-control" name="exp" placeholder="DLL" value=" {{$pessoa->exp ?? old('exp')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="inputCity">CPF</label>
+      <input type="text" class="form-control" name="cpf" placeholder="cpf" value=" {{$pessoa->cpf ?? old('cpf')}} ">
+    </div>
+    <div class="form-group col-md-3">
+      <label >Genero</label>
+      <input type="text" class="form-control" name="genero" placeholder="genero" value=" {{$pessoa->genero ?? old('genero')}} ">
+     </div>
+     <div class="form-group col-md-3">
+      <label >Situação Penal</label>
+      <input type="text" class="form-control" name="situa" placeholder="situa" value=" {{$pessoa->situa ?? old('situa')}} ">
+     </div>
+    
+    </div>
+  <div class="form-group">
+    <label for="inputAddress">Observação</label>
+    <textarea type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"></textarea>
+ </div>
+   <button type="submit" class="btn btn-primary">CADASTRAR PESSOAS</button>
+</form>
+</div>
+</div>
+@endsection  
+-------ViEW Show 
+
+@extends('adminlte::page')
+
+@section('title', "DETALHE Pessoaos  {$pessoa->name} ")
+
+@section('content_header')
+<h1>Detalhe do Palno <b>{{ $pessoa->name }}</b>  </h1>
+
+@stop
+
+@section('content')
+
+            <div class="card">
+            <div class="card-body">
+            <ul>
+            <li>
+            <strong>NOME</strong> {{ $pessoa->name }}
+            </li>
+            <li>
+            <strong>Url</strong> {{ $pessoa->url }}
+            </li>
+           
+            <li>
+            <strong>DESCRIÇÂO</strong> {{ $pessoa->description }}
+            </li>
+            </ul>
+            </div>
+            </div>
+            @endsection
+
+-----------pessoasCONTROLLER
+<?php
+
+namespace App\Http\Controllers\Admin;
+use Illuminate\Support\Str;
+use App\Http\Controllers\Controller;
+use App\Models\Pessoa;
+use Illuminate\Http\Request;
+
+class PessoaController extends Controller
+{
+    //
+    private $repository;
+
+    public function __construct(Pessoa $pessoa)
+    {
+        $this->repository = $pessoa;
+
+      //  $this->middleware(['can:pessoas']);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $pessoas = $this->repository->latest()->paginate(5);
+
+        return view('admin.pages.pessoas.index', compact('pessoas'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('admin.pages.pessoas.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\StoreUpdatePessoa  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+       
+        $data = $request->all();
+        $data['url']= Str::kebab($request->name);
+        
+
+        $this->repository->create($data);
+
+        return redirect()->route('pessoas.index');
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        if (!$pessoa = $this->repository->find($id)) {
+            return redirect()->back();
+        }
+
+        return view('admin.pages.pessoas.show', compact('pessoa'));
+    }
+
+    
+
+}
+
+
+-------router
+
+<?php
+
+//ROTAS DE PESSOAS
+
+Route::get('/admin/pessoas/create', 'Admin\PessoaController@create')->name('pessoas.create');
+
+Route::delete('/admin/pessoas/{url}', 'Admin\PessoaController@destroy')->name('pessoas.destroy');
+Route::get('/admin/pessoas/{url}', 'Admin\PessoaController@show')->name('pessoas.show');
+Route::post('/admin/pessoas', 'Admin\PessoaController@store')->name('pessoas.store');
+
+Route::get('/admin/pessoas', 'Admin\PessoaController@index')->name('pessoas.index');
+
+
+
+//ROTAS DE GERAIS
+Route::get('/admin/gerals', 'Admin\GeralController@index')->name('gerals.index');
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Auth::routes();
+/*
+Route::get('/home', 'HomeController@index')->name('home');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+*/
+
+
+
+20----------------------------DELETAR Pessoa-------------------------------------------------------------
+-----------------CRIAR ROUTER de metodo delete
+
+Route::delete('/admin/pessoas/{url}', 'Admin\PessoaController@destroy')->name('pessoas.destroy');
+Route::get('/admin/pessoas/{url}', 'Admin\PessoaController@show')->name('pessoas.show');
+Route::post('/admin/pessoas', 'Admin\PessoaController@store')->name('pessoas.store');
+Route::get('/admin/pessoas/create', 'Admin\PessoaController@create')->name('pessoas.create');
+Route::get('/admin/pessoas', 'Admin\PessoaController@index')->name('pessoas.index');
+
+Route::get('/', function () {
+    return view('welcome');
+});
+---------------------------------------------------------------------------------------------------------
+----------EM PessoaCONTROLLER FAZ O METODO DETROY
+
+public function destroy($url)
+    {
+        $pessoa = $this->repository
+                        ->where('url', $url)
+                        ->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+        
+            $pessoa->delete();
+
+        return redirect()->route('pessoas.index');
+    }
+
+-------------------------------AGORA NO PAGINA Show CRIA UM FORM COM O BOTAO E METODO DELETE
+@extends('adminlte::page')
+@section('title', "DETALHE DO Pessoaos  {$pessoa->name} ")
+@section('content_header')
+<h1>Detalhe do PessoaO <b>{{ $pessoa->name }}</b>  </h1>
+@stop
+@section('content')
+
+            <div class="card">
+            <div class="card-body">
+            <ul>
+            <li>
+            <strong>NOME</strong> {{ $pessoa->name }}
+            </li>
+            <li>
+            <strong>Url</strong> {{ $pessoa->url }}
+            </li>
+            <li>
+            <strong>PREÇO</strong> R$ {{ $pessoa->price  }}
+            </li>
+            <li>
+            <strong>DESCRIÇÂO</strong> {{ $pessoa->description }}
+            </li>
+          
+            </ul>
+
+                <form action=" {{ route('pessoas.destroy', $pessoa->url) }}"  method="POST"  >
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger">DELETAR O PessoaO {{ $pessoa->name }}</button>
+               
+                </form>
+
+            </div>
+            </div>
+            @endsection
+---------------------------------------------------------OK.....DEU CERTO ...(pelo id)
+
+21-------------PESQUISAR Pessoa ----------------------------------------------
+
+----------CRIAR ROUTER TIPO Any===========================
+Route::any('/admin/pessoas/search', 'Admin\PessoaController@search')->name('pessoas.search');
+Route::delete('/admin/pessoas/{url}', 'Admin\PessoaController@destroy')->name('pessoas.destroy');
+Route::get('/admin/pessoas/{url}', 'Admin\PessoaController@show')->name('pessoas.show');
+Route::post('/admin/pessoas', 'Admin\PessoaController@store')->name('pessoas.store');
+Route::get('/admin/pessoas/create', 'Admin\PessoaController@create')->name('pessoas.create');
+Route::get('/admin/pessoas', 'Admin\PessoaController@index')->name('pessoas.index');
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+
+---------EM INDEX (sera usada essa view para receber) ONDE ESCREVEMOS E GUARDAMOS O LOCAL DE #FILTER, COLOCAREMOS UM FORM com mETODO POST E NOSSA DIRETRIZA @csrf
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-header">
+        <form action="{{ route('pessoas.search') }}" method="POST" class="form form-inline">
+        @csrf
+        <input type="text" name="filter" placeholder="NOME" class="form-control" >
+        <button type="submit" class="btn btn-dark">PESQUISAR</button>
+        </form>
+
+----------------EM MODELS\PessoaS VAMOS CRIAR UM METODO CHAMADO search (PODE COCACTENAT   $results = $this->where('name', 'LIKE', '%'.$filter.'%' ))
+ protected $table = 'pessoas';
+    protected $fillable = ['name', 'url', 'price', 'description'];
+
+     public function search($filter = null) {
+
+            $results = $this->where('name' , 'LIKE', "%{$filter}%" )
+                            ->orwhere('description' , 'LIKE', "%{$filter}%" )
+                            ->paginate(1);
+            return $results ;                
+    }
+}
+
+-------------------NO PessoaSCONTROLLER FAREMOS O METODO search
+ public function search(Request $request)
+    {
+         $filters = $request->except('_token');
+
+        $pessoas = $this->repository->search($request->filter);
+
+        return view('admin.pages.pessoas.index', [
+            'pessoas' => $pessoas,
+             'filters' => $filters,
+        ]);
+    }
+-------------------------------------------------------------------------------------OK ...DEU CERTO
+POREM ELE PERDE O FILTRO ... VAMOS CORRIGIR INDO NA PAGINA INDEX E VERIFICAR SE ESTAR FILTRANDO
+ANTES VAMOS  criar (LIBERAR) a variavel $filters - com todos os registros exceto o __Token
+public function search(Request $request)
+    {
+         $filters = $request->except('_token');
+
+        $pessoas = $this->repository->search($request->filter);
+
+        return view('admin.pages.pessoas.index', [
+            'pessoas' => $pessoas,
+             'filters' => $filters,
+        ]);
+    }
+
+--- E AGORA SIM CONDICIONAR NA PAGINA INDEX SE A VARIAVEL EXISTE
+se a variavel filters existe faça de uma forma se nao faça no modo DEFAULD
+   </div>
+            </div>
+
+            <div class="card-footer">
+
+                @if (isset ($filters)) 
+                {!! $pessoas->appends($filters)->links() !!}
+                @else
+                 {!! $pessoas->links() !!}
+                @endif
+
+               
+            </div>
+
+@stop
+----------------------------------------------------------------------------------OK PERFEITO -
+
+---TAMBEM PODEMOS PREENCHER O CAMPOS COM value=" xxxxxxx"...FICAR ASSIM NOA view INDEX
+ 
+        @csrf
+        <input type="text" name="filter" placeholder="NOME" class="form-control" value="{{ $filters ['filter']  ?? ''}}" >
+        <button type="submit" class="btn btn-dark">PESQUISAR</button>
+        </form>
+
+----TAMBEM LIBEREI A PAGINAÇÂO defauld na MODEL
+ ->orwhere('description' , 'LIKE', "%{$filter}%" )
+                            ->paginate();
+            return $results ;                
+    }
+
+------------------------------------------CRIAR BREADNDCRUMB---------------- JA FEITO
+CRIAR UMA ROTA Admin PARA O DASHBOARD
+Route::get('/admin/pessoas/create', 'Admin\PessoaController@create')->name('pessoas.create');
+Route::get('/admin/pessoas', 'Admin\PessoaController@index')->name('pessoas.index');
+
+Route::get('/admin', 'Admin\PessoaController@index')->name('admin.index');
+
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+----VAMOS NA view INDEX
+
+@section('title', 'Pessoaos')
+
+@section('content_header')
+
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{route('admin.index')}} ">Dashboard</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a href="{{route('pessoas.index')}} ">Pessoaos</a></li>
+  </ol>
+</nav>
+
+<h1>PessoaOS  <a href="{{route('pessoas.create')}}" class="btn btn-dark">ADD<i class="far fa-plus-square"></i></a></h1>
+
+@stop
+
+@section('content')
+------------------------------------------------------------------------------OK FICOU COMO O DESEJADO
+
+------------ COLOCAR ICONE ----MAQUIAGEM--------------------------
+VAMOS NO SITE DE ICONE https://fontawesome.com/ COPIA O LINK E COLOCA ONDE DESEJAR (ADD e DELETAR)
+<h1>PessoaOS  <a href="{{route('pessoas.create')}}" class="btn btn-dark">ADD<i class="far fa-plus-square"></i></a></h1>
+<button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i>DELETAR O PessoaO {{ $pessoa->name }}</button>
+
+---E NO MENU TAMBEM Adminlte
+'icon' =>'fas fa-list-ol'
+-------------------------------------------------------------------------------------------------------------
+
+
+
+22-------------------EDITAR PessoaO------------------------------------------------------------------EDITAR
+------SEMPRE CRIAR Router NO INICIO OU FINAL. DEVE VEZ VAMOS CRIAR A router Edit e Upade (put)
+Route::put('/admin/pessoas/{url}', 'Admin\PessoaController@update')->name('pessoas.update');
+
+Route::get('/admin/pessoas/{url}/edit', 'Admin\PessoaController@edit')->name('pessoas.edit');
+------------------------------------------------------------------------------
+
+COLOCAR UM BOTÃO AO LADO DO BOTAO VER NA view INDEX e FAZER UM LINK PARA UMA ROTA EDITAR, passando
+ID ou Url
+                @foreach($pessoas as $pessoa)
+                 <tr>
+                    <td>{{ $pessoa->name }}</td>
+                    <td>{{ $pessoa->price }}</td>
+                    <td style="width: 50px;">
+                    <a href="{{ route('pessoas.edit', $pessoa->id) }}" class="btn btn-warning">EDITAR</a>
+                    <a href="{{ route('pessoas.show', $pessoa->id) }}" class="btn btn-warning">VER</a>
+                    </td>
+                    </tr>
+                @endforeach
+            </body>
+
+-------------FAZER NOSSA view Edit    
+NOTE QUE ESSEA View JA DEVE VIM TRAZENDO AS INFORMAÇÂO DO PessoaO DESEJADO (usar value="{{$pessoa->price}}"), E DEVE VIM DIZENDO O METODO DE ENVIO
+(@method('PUT')) ELA VAI REPASSAR PARA O METODO UPDATE PELA url {{route('pessoas.update $pessoa->url')}}",
+PODERIA SER POR ID (MAIS FREQUENTE)
+OBSERVE QUE O MIOLHO DO CODIGO É IGUALAO DO CREATE - PODERIAMOS FAZER UMA partials\form
+
+@extends('adminlte::page')
+
+@section('title', "EDITANDO Pessoaos {$pessoa->name}")
+
+@section('content_header')
+<h1>EDITANDO Pessoaos {{$pessoa->name}}  </h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+            <form action="{{route('pessoas.update', $pessoa->id)}}" class="form" method="POST" >
+@csrf
+@method('PUT')
+<div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Nome</label>
+      <input class="form-control" type="text" name="name" placeholder="name" value=" {{$pessoa->name ?? old('name')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Vulgo</label>
+      <input type="text" class="form-control" name="vulgo" placeholder="vulgo" value=" {{$pessoa->vulgo ?? old('vulgo')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Mãe</label>
+      <input class="form-control" type="text" name="mae" placeholder="mae" value=" {{$pessoa->mae ?? old('mae')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Nascimento</label>
+      <input type="text" class="form-control" name="nasc" placeholder="DLL" value=" {{$pessoa->nasc ?? old('nasc')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> RG - Identidade</label>
+      <input class="form-control" type="text" name="rg"  value=" {{$pessoa->rg ?? old('rg')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Expedidor</label>
+      <input type="text" class="form-control" name="exp" placeholder="DLL" value=" {{$pessoa->exp ?? old('exp')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="inputCity">CPF</label>
+      <input type="text" class="form-control" name="cpf" placeholder="cpf" value=" {{$pessoa->cpf ?? old('cpf')}} ">
+    </div>
+    <div class="form-group col-md-3">
+      <label >Genero</label>
+      <input type="text" class="form-control" name="genero" placeholder="genero" value=" {{$pessoa->genero ?? old('genero')}} ">
+     </div>
+     <div class="form-group col-md-3">
+      <label >Situação Penal</label>
+      <input type="text" class="form-control" name="situa" placeholder="situa" value=" {{$pessoa->situa ?? old('situa')}} ">
+     </div>
+    
+    </div>
+  <div class="form-group">
+    <label for="inputAddress">Observação</label>
+    <textarea type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"></textarea>
+ </div>
+   <button type="submit" class="btn btn-primary">EDITAR PESSOAS</button>
+</form>
+</div>
+</div>
+
+
+@endsection                      
+
+----------------CRIAR METODO EDIT e UPDATE NO PessoaSCONTROLLER
+---METODO EDITE
+   public function edit($id)
+    {
+        $pessoa = $this->repository->where('id', $id)->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+
+        return view('admin.pages.pessoas.edit', [
+            'pessoa' => $pessoa
+        ]);
+    }    
+----METODO UPDATE
+    public function update(Request $request,  $id)
+    {
+        $pessoa = $this->repository->where('id', $id)->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+
+        $pessoa->update($request->all());
+
+        return redirect()->route('pessoas.index');
+    }
+
+-----------------------------------------------------------------------------------OK EDITANDO
+---VOCE PODE PEGAR TUDO QUE `TIVER DE COMUM COLOCAR EM OUTROS FORMULARIOS (panels)
+CHAMANDO PELO @include NO LOCAL QUE DESEJAR
+
+
+---------------------IMPORTANTE NESSE MOMENTO--------------------------------
+---ERRARA ---A ROTA DE CREATE TEM QUE VIM ANTES DA CHAMADA DA URL, ENTAO VAMOS COLOCAR ANTES OU LA EM CIMA
+Route::get('/admin/pessoas/create', 'Admin\PessoaController@create')->name('pessoas.create');
+Route::put('/admin/pessoas/{url}', 'Admin\PessoaController@update')->name('pessoas.update');
+Route::get('/admin/pessoas/{url}/edit', 'Admin\PessoaController@edit')->name('pessoas.edit');
+Route::any('/admin/pessoas/search', 'Admin\PessoaController@search')->name('pessoas.search');
+Route::delete('/admin/pessoas/{url}', 'Admin\PessoaController@destroy')->name('pessoas.destroy');
+Route::get('/admin/pessoas/{url}', 'Admin\PessoaController@show')->name('pessoas.show');
+Route::post('/admin/pessoas', 'Admin\PessoaController@store')->name('pessoas.store');
+
+Route::get('/admin/pessoas', 'Admin\PessoaController@index')->name('pessoas.index');
+
+Route::get('/admin', 'Admin\PessoaController@index')->name('admin.index');
+
+
+Route::get('/', function () {
+    return view('welcome');
+});
+----------------------------------------------------------------------------------------------------
+
+23----------VALIDAR DADOS ------------------------------------------------IMPORTANTE
+ESTAR FUNCIONANDO MASI PRECISAMOS VALIDAR OS DADOS PARA SEGURANÇA, PARA  ISSO VAMOS CRIAR 
+UMA CLASSE REQUESTE PARA PROTEGER A INTEGRIDADE DOS DADOS
+
+# php artisan make:request StoreUpdatePessoa
+
+CRIAR UM METODO EM HTTP\REQUESTE ONDE FAZEMOS A LOGICA
+
+ public function authorize()
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+      public function rules()
+    {
+        $id= $this->segment(3);   //Posição na id (endereço)
+
+        return [
+            'name' => "required|min:3|max:255|unique:pessoas,name,{$id},id",
+            'vulgo'=> 'required|min:3|max:255',                               //  |regex:/^\d+(\.\d{1,2})?$/'
+           
+            'mae' => 'required|min:3|max:255',  
+            'genero' => 'required|min:3|max:255',  
+            'rg' => 'required|min:3|max:255',  
+            'exp' => 'required|min:3|max:255',  
+            'cpf' => 'required|min:11|max:255',  
+            'situa' => 'required|min:3|max:255',  
+            'nasc' => 'required|min:3|max:255',  
+           
+
+        ];
+    }
+}
+
+---E VAMOS LA NO PessoaSCONTROLLER e NO METODO STORE e UPDATE TEMOS QUE INGESTAR EL NO LUGAR DE REQUESTE
+
+----store
+       public function store(StoreUpdatePessoa $request)
+    {
+       
+        $data = $request->all();
+        $data['url']= Str::kebab($request->name);
+        
+
+        $this->repository->create($data);
+
+        return redirect()->route('pessoas.index');
+    }
+
+
+-------update
+public function update(StoreUpdatePessoa $request,  $id)
+    {
+        $pessoa = $this->repository->where('id', $id)->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+
+        $pessoa->update($request->all());
+
+        return redirect()->route('pessoas.index');
+    }
+
+
+
+---E IMPORTAR A CLASSE NO INICIO User
+
+
+namespace App\Http\Controllers\Admin;
+use App\Http\Requests\StoreUpadatPessoa;
+use Illuminate\Support\Str;
+use App\Http\Controllers\Controller;
+use App\Models\Pessoa;
+use Illuminate\Http\Request;
+
+
+---------------------------------OK PERFEITO (fiz pelo Id)
+
+
+--------------------ATENÇÂO --ATE AQUI NOSSO PessoaCOMTROLLER ESTA ASSIM:
+
+<?php
+
+namespace App\Http\Controllers\Admin;
+use Illuminate\Support\Str;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreUpdatePessoa;
+use App\Models\Pessoa;
+use Illuminate\Http\Request;
+
+class PessoaController extends Controller
+{
+    //
+    private $repository;
+
+    public function __construct(Pessoa $pessoa)
+    {
+        $this->repository = $pessoa;
+
+      //  $this->middleware(['can:pessoas']);
+    }
+
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $pessoas = $this->repository->latest()->paginate(5);
+
+        return view('admin.pages.pessoas.index', compact('pessoas'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        return view('admin.pages.pessoas.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\StoreUpdatePessoa  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(StoreUpdatePessoa $request)
+    {
+       
+        $data = $request->all();
+        $data['url']= Str::kebab($request->name);
+        
+
+        $this->repository->create($data);
+
+        return redirect()->route('pessoas.index');
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        if (!$pessoa = $this->repository->find($id)) {
+            return redirect()->back();
+        }
+
+        return view('admin.pages.pessoas.show', compact('pessoa'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        $pessoa = $this->repository->where('id', $id)->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+
+        return view('admin.pages.pessoas.edit', [
+            'pessoa' => $pessoa
+        ]);
+    }    
+
+    public function update(StoreUpdatePessoa $request,  $id)
+    {
+        $pessoa = $this->repository->where('id', $id)->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+
+        $pessoa->update($request->all());
+
+        return redirect()->route('pessoas.index');
+    }
+
+    public function destroy($id)
+    {
+        $pessoa = $this->repository
+                        ->where('id', $id)
+                        ->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+        
+            $pessoa->delete();
+
+        return redirect()->route('pessoas.index');
+    }
+
+    public function search(Request $request)
+    {
+         $filters = $request->except('_token');
+
+        $pessoas = $this->repository->search($request->filter);
+
+        return view('admin.pages.pessoas.index', [
+            'pessoas' => $pessoas,
+             'filters' => $filters,
+        ]);
+    }
+
+    
+
+}
+
+--------------ACHO QUE JA FIZ------------------------------------VAMOS COLOCAR AS MENSAGENS DE ERROS -ALERT
+
+FAZ UM view so de ERROs Em admin\includes\alerts
+@if ($errors->any())
+    <div class="alert alert-warning">
+        @foreach ($errors->all() as $error)
+            <p>{{ $error }}</p>
+        @endforeach
+    </div>
+@endif
+
+@if (session('message'))
+    <div class="alert alert-success">
+        {{ session('message') }}
+    </div>
+@endif
+
+@if (session('error'))
+    <div class="alert alert-danger">
+        {{ session('error') }}
+    </div>
+@endif
+
+@if (session('info'))
+    <div class="alert alert-warning">
+        {{ session('info') }}
+    </div>
+@endif
+
+-------- E CHAMA A CLASSE ERROS ONDE DESEJAR PELO METODO @include
+EM CREATE.BLADE.PHP COMO EXEMPLO
+
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+            <form action="{{route('pessoas.store')}}" class="form" method="POST" >
+@csrf
+@include('admin.includes.alerts')
+<div class=form-group>
+    <label>NOME</label>
+<input class="form-control" type="text" name="name" placeholder="name">
+</div>
+<div class=form-group>
+
+-----------------------FEITO TAMBEM-----------------------------OK ....AQUI DANDO CERTO  
+
+MAS SE FORMOS EDITAR DARÁ UM ERRO DE VALIDAÇÂO , ENTAO TEREMOS QUE FAZER UMA EXCESOA NO StoreUpadePessoas
+pois ele vai ver que existe um pessoao como mesmo nome e nao vai aceitar por isso vamos fazer a excessão
+PODE SER FEITO PELO ID ou url (vamos fazer url ja que estamos trabalhando com ela)
+
+  public function rules()
+    {
+
+                $url= $this->segment(3);   //Posição na Url (endereço)
+
+        return [
+            'name' => "required|min:4|max:255|unique:pessoas,name,{$url},url",
+            'price'=> 'required|regex:/^\d+(\.\d{1,2})?$/',   
+             'description' => 'required|min:4|max:255',
+        ];
+    }
+}
+
+
+--------------------------------------------------------------------------------------------OK PERFEITO
+
+-----------CRIAR OBSERVADOR------------------------------------------------ATENÇÂO VAMOS MUDAR PessoaCOMTROLLER (create e update)
+Ele fica monitorando o eloquente do laravel e realiza uma função, ante, durante ou DEPOIS
+no nosso caso vamos fazer com que ele ao cadastrar um pessoao crie uma url desse pessoao para nós (automaticamnete)
+
+# php artisan make:observer PessoaObserver --model=Models\Pessoa
+
+---CRIOU EM app\Obsercer\PessoaObserver
+
+-----VAMOS FAZER A AÇÂO ANTES, POR ISSO VAMOS USAR  EVENTO  creating e updating
+
+PRIMEIRO VAMOS NO PessoaCONTROLLER E TRAZER A DECLARAÇÂO CLAASE StoreUpadePessoa e Str PARA PessoaOBSERVER , pois nao vamos usar mais la
+use App\Http\Requests\StoreUpadatPessoa; 
+use Illuminate\Support\Str;
+O PessoaObserver FICA ASSIM
+
+<?php
+
+namespace App\Observers;
+use Illuminate\Support\Str;
+use App\Http\Requests\StoreUpadatPessoa;
+use App\Models\Pessoa;
+
+class PessoaObserver
+{
+    /**
+     * Handle the pessoa "creating" event.
+     *
+     * @param  \App\Models\Pessoa  $pessoa
+     * @return void
+     */
+    public function creating(Pessoa $pessoa)
+    {
+        $pessoa->url=Str::kebab($pessoa->name);
+    }
+
+    /**
+     * Handle the pessoa "updating" event.
+     *
+     * @param  \App\Models\Pessoa  $pessoa
+     * @return void
+     */
+    public function updating(Pessoa $pessoa)
+    {
+        $pessoa->url=Str::kebab($pessoa->name);
+    }
+
+   
+}
+------------------------------------------------------------------------------------------
+DECLARAMOS EM Provide\AppServiceProvider.php
+public function boot()
+    {
+        Schema::defaultStringLength(191);
+       // Schema::defaultStringlength(191);
+       Pessoa::observe(PessoaObserver::class);
+    }
+}
+
+VAMOS SUBSTITUIR NO PessoaCONTROLLER. FICANDO ASSIM (vou coloacar a pagina inteira, mas so muda o metodo Store e update)
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use Illuminate\Support\Str;
+use App\Http\Controllers\Controller;
+use App\Models\Pessoa;
+use Illuminate\Http\Request;
+
+class PessoaController extends Controller
+{
+
+       private $repository; 
+      
+       public function __construct(Pessoa $pessoa)
+       {
+           $this->repository= $pessoa;
+        }
+       public function index()
+        {
+                $pessoas = $this->repository->latest()->paginate();
+            return view('admin.pages.pessoas.index', [
+                'pessoas' => $pessoas,
+                ]);
+        }
+
+        public function create(Request $request)
+        {
+            return view('admin.pages.pessoas.create');
+           
+        }
+
+        public function store(Request $request)
+        {
+            // $data = $request->all();
+            // $data['url']= Str::kebab($request->name);
+            $this->repository->create($request->all());
+            return redirect ()-> route('pessoas.index');
+        }
+
+        public function show($url)
+    {
+        $pessoa = $this->repository->where('url', $url)->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+
+        return view('admin.pages.pessoas.show', [
+            'pessoa' => $pessoa
+        ]);
+    }
+                       
+    public function destroy($url)
+    {
+        $pessoa = $this->repository
+                        ->where('url', $url)
+                        ->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+        
+            $pessoa->delete();
+
+        return redirect()->route('pessoas.index');
+    }
+
+    public function search(Request $request)
+    {
+        $filters = $request->except('_token');
+
+        $pessoas = $this->repository->search($request->filter);
+
+        return view('admin.pages.pessoas.index', [
+            'pessoas' => $pessoas,
+             'filters' => $filters,
+        ]);
+    }
+   
+    public function edit($url)
+    {
+        $pessoa = $this->repository->where('url', $url)->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+
+        return view('admin.pages.pessoas.edit', [
+            'pessoa' => $pessoa
+        ]);
+    }
+ 
+    public function update(Request $request,  $url)
+    {
+        $pessoa = $this->repository->where('url', $url)->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+
+        $pessoa->update($request->all());
+
+        return redirect()->route('pessoas.index');
+    }
+
+}
+---------------------------------------------
+
+22--EXPERIMENTAL--------------EXIBIR CONTAS DO Pessoa (modo diferente pela lupa como se fosse edit---------------------------CONTAS
+
+---VAMOS CRIAR UMA ROUTER E UM ViEW (Admin\pages\pessoas\edite)
+-------ROTA
+Route::get('/admin/pessoas/{url}/edite', 'Admin\PessoaController@edit')->name('pessoas.edite');  //EXPERIMENTAL
+Route::get('/admin/pessoas/{url}/edit', 'Admin\PessoaController@edit')->name('pessoas.edit');
+
+----Na view Admin\pages\pessoas\index MUDAR O BOTAO DETALHE PARA LUPA (icon) E INDICAR ROTA edite
+
+    <th>Vulgo</th>
+                     <th style="width: 200px">Ação</th>
+
+                </tr>
+
+            </thead>
+            <body>
+                @foreach($pessoas as $pessoa)
+                 <tr>
+                    <td>{{ $pessoa->name }}</td>
+                    <td>{{ $pessoa->vulgo }}</td>
+                    <td>
+                    <a href="{{ route('pessoas.edite', $pessoa->id) }}" class="btn btn-primary"><i class="fab fa-searchengin"></i></a>
+                    <a href="{{ route('pessoas.edit', $pessoa->id) }}" class="btn btn-info">Edit</a>
+                    <a href="{{ route('pessoas.show', $pessoa->id) }}" class="btn btn-warning">VER</a>
+                    </td>
+----------------------- CRIAR NOSSA View EXPERIMENTAL EDTIE  (Admin\pages\pessoas\edite  ) ---(provalvemente mudara)
+com o preenchimento das outra 3 div
+
+@extends('adminlte::page')
+
+@section('title', "EDITANDO Pessoaos {$pessoa->name}")
+
+@section('content_header')
+<link rel="stylesheet" type="text/css" href="/css/base.css">
+
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Pessoas</a></li>
+        <li> ...   {!!$pessoa->name!!}</li>
+    </ol>
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+
+<div id="caixa2">
+	<button type="button"  class="btn btn-secondary">Left</button>
+          <button type="button" class="btn btn-secondary">Middle</button>
+          <a href="{{ route('contas.pessoa.index', $pessoa->id) }}" class="btn btn-primary">Dados bancários</a>
+            
+                  <button type="button" class="btn btn-light">Telefone</button>
+</div>
+
+
+
+<div id="caixa3">
+	<div id="cx1">
+
+	</div>
+	<div id="cx2">
+    <form action="{{route('pessoas.update', $pessoa->id)}}" class="form" method="POST" >
+@csrf
+@method('PUT')
+<div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Nome</label>
+      <input class="form-control" type="text" name="name" placeholder="name" value=" {{$pessoa->name ?? old('name')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Vulgo</label>
+      <input type="text" class="form-control" name="vulgo" placeholder="vulgo" value=" {{$pessoa->vulgo ?? old('vulgo')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Mãe</label>
+      <input class="form-control" type="text" name="mae" placeholder="mae" value=" {{$pessoa->mae ?? old('mae')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Nascimento</label>
+      <input type="text" class="form-control" name="nasc" placeholder="DLL" value=" {{$pessoa->nasc ?? old('nasc')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> RG - Identidade</label>
+      <input class="form-control" type="text" name="rg"  value=" {{$pessoa->rg ?? old('rg')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Expedidor</label>
+      <input type="text" class="form-control" name="exp" placeholder="DLL" value=" {{$pessoa->exp ?? old('exp')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="inputCity">CPF</label>
+      <input type="text" class="form-control" name="cpf" placeholder="cpf" value=" {{$pessoa->cpf ?? old('cpf')}} ">
+    </div>
+    <div class="form-group col-md-3">
+      <label >Genero</label>
+      <input type="text" class="form-control" name="genero" placeholder="genero" value=" {{$pessoa->genero ?? old('genero')}} ">
+     </div>
+     <div class="form-group col-md-3">
+      <label >Situação Penal</label>
+      <input type="text" class="form-control" name="situa" placeholder="situa" value=" {{$pessoa->situa ?? old('situa')}} ">
+     </div>
+    
+    </div>
+  <div class="form-group">
+    <label for="inputAddress">Observação</label>
+    <textarea type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"></textarea>
+ </div>
+   <button type="submit" class="btn btn-primary">EDITAR PESSOAS</button>
+</form>
+	</div>
+
+
+</div>
+
+<div id="caixa4">
+	<div id="cx3">222</div>
+	<div id="cx4">
+		222eeeeee
+	</div>
+</div>
+
+            </div>
+            </div>
+@endsection        
+
+
+--------------------CRIAMOS EM public\css um CSS (base.css) PARA ESTILIZAR ESSA VIEW E O CHAMARMOS NA View
+#cx1 {
+       position: relative;
+       width: 48%;
+       height: auto;
+       background-color:#ffffff;
+       float: left;
+       margin-right: 10px;
+       border: 2px  solid  #000000;
+    }
+  
+    #cx2 {
+      position: relative;
+           
+       width: 48%;
+       height: auto;
+       background-color: #ffffff;
+       float: left;
+       border: 2px  solid  #000000;
+      }
+  
+     #cx3 {
+       
+       position: relative;
+       width: 48%;
+       height: auto;
+       background-color:#ffffff;
+      float: left;
+      margin-right: 10px;
+      border: 2px  solid  #000000;
+    }
+  
+    #cx4{
+       
+       position: relative;
+       width: 48%;
+       height: auto;
+       background-color:#ffffff;
+       float: left;
+       border: 2px  solid  #000000;
+    }
+  
+    
+  #caixa2 {
+    left: 20px;
+      margin-top: 20px;
+      position: relative;
+      width: 88%;
+       height:auto;
+       background-color:#ffffff;
+       bottom: 20px;
+       border: 2px  solid  #000000;
+   }
+    
+  #caixa3 {
+      margin-top: 20px;
+      position: relative;
+      width: 98%;
+       height: auto;
+       background-color:#ffffff;
+       float: left;
+       bottom: 20px;
+       
+   }
+  
+  #caixa4 {
+       position: relative;
+      width: 98%;
+       height: auto;
+       background-color:#ffffff;
+       float: left;
+   }
+
+----------------------CRIAR METODO EDITE NO pessoaController
+ public function edite($id)
+    {
+        $pessoa = $this->repository->where('id', $id)->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+
+        return view('admin.pages.pessoas.edite', [
+            'pessoa' => $pessoa
+        ]);
+    }   
+
+    ---------ATÉ AQUI FUNCINANDO ---POIS FIZEMOS APENAS TRAZER O EDITE E OUTRAS DIV PARA ViEW EDITE (nela vamos colar os 
+    CONTAS DA PESSOA_ TELEFONE< DADOS BANCARIOS...ETC)
+
+    23-------------VAMOS ORGANIZAR AS NOSSAS ROTAS--------
+    ESTA ASSIM:
+//ROTAS DE PESSOAS
+
+Route::get('/admin/pessoas/create', 'Admin\PessoaController@create')->name('pessoas.create');
+
+Route::put('/admin/pessoas/{url}', 'Admin\PessoaController@update')->name('pessoas.update');
+Route::get('/admin/pessoas/{url}/edite', 'Admin\PessoaController@edite')->name('pessoas.edite');  //EXPERIMENTAL
+Route::get('/admin/pessoas/{url}/edit', 'Admin\PessoaController@edit')->name('pessoas.edit');
+Route::any('/admin/pessoas/search', 'Admin\PessoaController@search')->name('pessoas.search');
+Route::delete('/admin/pessoas/{url}', 'Admin\PessoaController@destroy')->name('pessoas.destroy');
+Route::get('/admin/pessoas/{url}', 'Admin\PessoaController@show')->name('pessoas.show');
+Route::post('/admin/pessoas', 'Admin\PessoaController@store')->name('pessoas.store');
+
+Route::get('/admin/pessoas', 'Admin\PessoaController@index')->name('pessoas.index');
+
+
+
+//ROTAS DE GERAIS
+Route::get('/admin/gerals', 'Admin\GeralController@index')->name('gerals.index');
+
+//ROTAS DE Acessorios
+Route::get('/admin', 'Admin\PessoaController@index')->name('admin.index');
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Auth::routes();
+/*
+Route::get('/home', 'HomeController@index')->name('home');
+
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
+*/
+
+------------------FICA ASSIM ----------------------------------------------    
+Route::prefix('admin')
+        ->namespace('Admin')
+         //->middleware('auth')
+        ->group(function() {
+
+    //ROTAS DE PESSOAS
+
+    Route::get('pessoas/create', 'PessoaController@create')->name('pessoas.create');
+
+    Route::put('pessoas/{url}', 'PessoaController@update')->name('pessoas.update');
+    Route::get('pessoas/{url}/edite', 'PessoaController@edite')->name('pessoas.edite');  //EXPERIMENTAL
+    Route::get('pessoas/{url}/edit', 'PessoaController@edit')->name('pessoas.edit');
+    Route::any('pessoas/search', 'PessoaController@search')->name('pessoas.search');
+    Route::delete('pessoas/{url}', 'PessoaController@destroy')->name('pessoas.destroy');
+    Route::get('pessoas/{url}', 'PessoaController@show')->name('pessoas.show');
+    Route::post('pessoas', 'PessoaController@store')->name('pessoas.store');
+    
+    Route::get('pessoas', 'PessoaController@index')->name('pessoas.index');
+    
+    
+    
+    //ROTAS DE GERAIS
+    Route::get('/gerals', 'GeralController@index')->name('gerals.index');
+
+
+
+    //ROTAS DE base
+    Route::get('/', 'PessoaController@index')->name('admin.index');
+
+});
+
+
+
+//ROTAS DE Acessorios
+//
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Auth::routes();
+/*
+
+
+24--------------------------------CRIAR CONTAS---------------------
+
+-------------------------CRIAR MODEL CONTABANPESSOA DENTRO DE MODELS--------------------------------------
+# php artisan make:model Models\ContaPessoa -m
+
+-------------------CODIFICA A Model  ---ESPECIFICA QUE A TABELA VAI SE CHAMAR contas_pessoa PELO protected
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class ContaPessoa extends Model
+{
+        protected $table = 'contas_pessoa';          //     MODIFICAMOS O NOME DA TABELA AQUI (opcional)
+         protected $fillable = [ 'banco', 'agencia','conta'];
+}
+---------------------CODIFICA A MIGARTION (com relacionamneto) ---NAO ESQUECER DE MUDAR O NOME DA TABELA EM 
+Schema---contas_pessoa
+
+  public function up()
+    {
+        Schema::create('contas_pessoa', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('pessoa_id');;
+             $table->string('banco');    
+            $table->string('agencia'); 
+            $table->string('conta'); ;
+            $table->timestamps();
+                                          //   (fazendo o relacioamaneto)
+            $table->foreign('pessoa_id')
+                    ->references('id')
+                    ->on('pessoas')
+                    ->onDelete('cascade');
+
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('contas_pessoa');
+    }
+}
+
+25---------AGORA VAMOS FAZER(declarar) UM RELACIONAMNETO DE Pessoa COM Conta--------------------------------ATENÇÂO IMPORTANTE
+O relacionamneto entre essa duas tabelas vai ser de 1:1 para Pessoa pois tera so tera varios detalhe
+----O RELACIONAMNETO  VAI SER NA Model Pessoa.php  
+class Pessoa extends Model
+{
+    // CAMPOS QUE PODEM SER PREENCHIDOS
+    protected $fillable = ['name', 'url', 'vulgo', 'mae', 'genero', 'rg', 'exp', 'cpf', 'situa', 'nasc', 'description'];
+
+        // RELACIONAMENTO COM Conta   ----- UMA PESSOA PODE TER VARIAS CONTAS
+
+    public function contas() {
+        return $this->hasMany(ContaPessoa::class);
+}   
+
+
+// FILTRO DE PESSOAS
+    public function search($filter = null) {
+
+        $results = $this->where('name' , 'LIKE', "%{$filter}%" )
+                        ->orwhere('description' , 'LIKE', "%{$filter}%" )
+                        ->paginate(1);
+        return $results ;                
+}
+
+}
+-----------E NA Model Conta VAI SER MUITOS PARA UM N:1 pois a CONTA é espcifico de um pessoao
+
+class ContaPessoa extends Model
+{
+    protected $table = 'contas_pessoa';
+    protected $fillable = ['name', 'agencia', 'banco'];
+
+    // RELACIONAMENTO COM PESSOAS   ----- UMA CONTA SÓ PODE PERTENCER UMA PESSOA 
+   
+    public function pessoa() {
+        return $this->belongsTo(Pessoa::class);
+}   
+
+}
+
+
+-------------------RODAR MIGRATE PARA CRIAR TABELA
+
+# php artisan migrate
+
+-----------------------------------------------------------------OK TABELA CRIADA
+
+26-------------------------------------VAMOS CRIAR O ContaCONTROLLER ----------------------------
+# php artisan make:controller Admin\ContaPessoaController
+
+--------------E CRIAR A ROuter INDEX DO DETALHE (acima das rotas do PessoaO)
+Route::get('pessoas/{id}/contas', 'ContaPessoaController@index')->name('contas.pessoa.index');
+
+---VAMOS TRABALHAR NO ContaCONTROLLER ---IMPORTANTE
+--FAREMOS O METODO CONSTRUCTOR PRIMEIRAMENTE COM DOIS OBJETO repository e Pessoa
+class ContaPessoaController extends Controller
+{
+     private $repository, $pessoa;
+
+    public function __construct(ContaPessoa $contapessoa, Pessoa $pessoa )
+       {
+           $this->repository= $contapessoa;
+           $this->pessoa = $pessoa;
+        }
+
+-------DEPOIS COMECAREMOS PELO METODO iNDEX DO ContaPessoaCOMTROLLER (pela id)
+
+ public function index($idPessoa)
+        {
+              If(!$pessoa = $this->pessoa->where ('id', $idPessoa)->first()) {         //SE NÃo ACHOU (recuperando pela url)
+                return redirect()->back();
+              }                                                                   //SE ACHOU (recuperando pela url)
+                     
+              // $contas = $pessoa->contas();
+              $contas = $pessoa->contas()->paginate(); 
+              
+            return view('admin.pages.pessoas.contas.index', [
+                'pessoa' => $pessoa,
+                'contas'=> $contas,
+
+                ]);
+                
+--------------------------------------------CRIAREMOS A view Conta\INDEX -LISTAR - (dentro de (admin\pages\pessoas\contas\index,blade.php)
+ @foreach($pessoas as $pessoa))   
+
+
+@extends('adminlte::page')
+
+@section('title', "Detalhes do Pessoaos {$pessoa->name}")
+
+@section('content_header')
+
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{route('admin.index')}} ">Dashboard</a></li>
+    <li class="breadcrumb-item" aria-current="page"><a href="{{route('pessoas.index')}}" >Pessoaos</a></li>
+    <li class="breadcrumb-item" aria-current="page"><a href="{{route('pessoas.show', $pessoa->id)}}" >{{$pessoa->name}}</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a href="{{route('contas.pessoa.index', $pessoa->id)}}" class="active">Detalhes</a></li>
+  </ol>
+</nav>
+
+
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            
+        <div class="card-body">
+
+ @include ('admin\includes\alerts')
+
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Banco</th>
+                    <th>Agencia</th>
+                    <th>Conta</th>
+                    <th style="width: 50px">Ação</th>
+
+                </tr>
+
+            </thead>
+            <body>
+                @foreach($contas as $conta)
+                 <tr>
+                    <td>{{ $conta->banco }}</td>
+                    <td>{{ $conta->agencia }}</td>
+                    <td>{{ $conta->conta }}</td>
+                    
+                    <td style="width: 250px;">
+                    <a href="{{ route('pessoas.edit', $pessoa->id) }}" class="btn btn-warning">EDITAR</a>
+                    <a href="{{ route('pessoas.show', $pessoa->id) }}" class="btn btn-warning">VER</a>
+                    </td>
+                    </tr>
+                @endforeach
+            </body>
+        </table>
+       
+    
+                </div>
+            </div>
+
+            <div class="card-footer">
+
+                @if (isset ($filters)) 
+                {!! $contas->appends($filters)->links() !!}
+                @else
+                 {!! $contas->links() !!}
+                @endif
+
+               
+            </div>
+
+@stop
+
+
+
+------ANTES POREM DE USAR-LA - VAMOS NA INDEX DO Pessoa (admin\pages\pessoas\index.blade.php) COLOCA UM BOTAO (lupa) COM LINK PARA O CONTAS (admin\pages\contas\edite.blade.php) da PESOOA 
+  @foreach($pessoas as $pessoa)
+                 <tr>
+                    <td>{{ $pessoa->name }}</td>
+                    <td>{{ $pessoa->vulgo }}</td>
+                    <td>
+                        <a href="{{ route('pessoas.edite', $pessoa->id) }}" class="btn btn-primary"><i class="fab fa-searchengin"></i></a>
+                    <a href="{{ route('pessoas.edit', $pessoa->id) }}" class="btn btn-info">Edit</a>
+                    <a href="{{ route('pessoas.show', $pessoa->id) }}" class="btn btn-warning">VER</a>
+                    </td>
+                    </tr>
+                @endforeach
+-----------------------------VEJA BEM, A ROTA ESTA APONTANDO PARA View EDITE -- <a href="{{ route('pessoas\edite', $pessoa->id) }}" ---
+ENTAO ANTES DE CRIAR A view outras View QUE SERIA O NATURAL VAMOS CRIAR A View EDITE  DENTRO DO DIRETORIO PESSOAS
+(admin\pages\pessoas\edite.blade.php) - ESSA View vai ter a SINOPSE DA PESSOA (foto, dados, vinculos e eventos) ALEM DE UM BOTÃO
+COM LINKs PRA AS PARICULARIDADES DE PESSOA COMO POR EXEMPLO NA DIV caixa2 (foto, documento, conta caria, etc) ---<a href="{{ route('contas.pessoa.index', $pessoa->id) }}" class="btn btn-primary">Dados bancários</a>
+ 
+ 
+ @extends('adminlte::page')
+
+@section('title', "EDITANDO Pessoaos {$pessoa->name}")
+
+@section('content_header')
+<link rel="stylesheet" type="text/css" href="/css/base.css">
+
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Pessoas</a></li>
+        <li> ...   {!!$pessoa->name!!}</li>
+    </ol>
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+
+<div id="caixa2">
+	<button type="button"  class="btn btn-secondary">Left</button>
+          <button type="button" class="btn btn-secondary">Middle</button>
+          <a href="{{ route('contas.pessoa.index', $pessoa->id) }}" class="btn btn-primary">Dados bancários</a>
+            
+                  <button type="button" class="btn btn-light">Telefone</button>
+</div>
+
+
+
+<div id="caixa3">
+	<div id="cx1">
+
+	</div>
+	<div id="cx2">
+    <form action="{{route('pessoas.update', $pessoa->id)}}" class="form" method="POST" >
+@csrf
+@method('PUT')
+<div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Nome</label>
+      <input class="form-control" type="text" name="name" placeholder="name" value=" {{$pessoa->name ?? old('name')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Vulgo</label>
+      <input type="text" class="form-control" name="vulgo" placeholder="vulgo" value=" {{$pessoa->vulgo ?? old('vulgo')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> Mãe</label>
+      <input class="form-control" type="text" name="mae" placeholder="mae" value=" {{$pessoa->mae ?? old('mae')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Nascimento</label>
+      <input type="text" class="form-control" name="nasc" placeholder="DLL" value=" {{$pessoa->nasc ?? old('nasc')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label> RG - Identidade</label>
+      <input class="form-control" type="text" name="rg"  value=" {{$pessoa->rg ?? old('rg')}} ">
+    </div>
+    <div class="form-group col-md-6">
+      <label >Expedidor</label>
+      <input type="text" class="form-control" name="exp" placeholder="DLL" value=" {{$pessoa->exp ?? old('exp')}} ">
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="inputCity">CPF</label>
+      <input type="text" class="form-control" name="cpf" placeholder="cpf" value=" {{$pessoa->cpf ?? old('cpf')}} ">
+    </div>
+    <div class="form-group col-md-3">
+      <label >Genero</label>
+      <input type="text" class="form-control" name="genero" placeholder="genero" value=" {{$pessoa->genero ?? old('genero')}} ">
+     </div>
+     <div class="form-group col-md-3">
+      <label >Situação Penal</label>
+      <input type="text" class="form-control" name="situa" placeholder="situa" value=" {{$pessoa->situa ?? old('situa')}} ">
+     </div>
+    
+    </div>
+  <div class="form-group">
+    <label for="inputAddress">Observação</label>
+    <textarea type="text" class="form-control" id="inputAddress" placeholder="1234 Main St"></textarea>
+ </div>
+   <button type="submit" class="btn btn-primary">EDITAR PESSOAS</button>
+</form>
+	</div>
+
+
+</div>
+
+<div id="caixa4">
+	<div id="cx3">222</div>
+	<div id="cx4">
+		222eeeeee
+	</div>
+</div>
+
+            </div>
+            </div>
+@endsection         
+
+---------------------------------------------------------------------------OK PERFEITO  --(vamos ajustar)
+
+27---------------------CADASTRAR NOVOS CONTAS DE Pessoa-------------------------------CADASTRAR CONTAS
+---------CRIAR router Create e store (que cadastra realmente)
+
+//ROTAS DE contas
+    
+    Route::post('pessoas/{id}/Contas', 'ContaPessoaController@store')->name('contas.pessoa.store');
+    Route::get('pessoas/{id}/Contas/create', 'ContaPessoaController@create')->name('contas.pessoa.create');
+     Route::get('pessoas/{id}/contas', 'ContaPessoaController@index')->name('contas.pessoa.index');
+
+
+
+ --------------------------EM ContaPessoaController VAMOS FAZER NOSSO METODO create e story------------
+------METODO create
+p   public function create($idPessoa)
+            {
+                if (!$pessoa = $this->pessoa->where('id', $idPessoa)->first()) {
+                    return redirect()->back();
+                }
+        
+                return view('admin.pages.pessoas.contas.create', [
+                    'pessoa' => $pessoa,
+                ]);
+            }
+-------------------METODO Store  VAMOS DEIXAR PRA FAZER UM POUQUINHO ADIANTE    
+        
+  public function store(Request $request, $idPessoa )
+        {
+            if (!$pessoa = $this->pessoa->where('id', $idPessoa)->first()) {
+                return redirect()->back();
+            }
+    
+            // $data = $request->all();
+            // $data['pessoa_id'] = $pessoa->id;
+            // $this->repository->create($data);
+            $pessoa->contas()->create($request->all());
+    
+            return redirect()->route('contas.pessoa.index', $pessoa->id);
+        }
+
+-----------------APROVEITAMOS E VAMOS NA MODEL Contaspessoa.php AGORA DEFINIR OS ATRIBUTOS QUE PODEM SER PREECHIDOS COM OS DADOS
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class ContaPessoa extends Model
+{
+    protected $table = 'contas_pessoa';
+    protected $fillable = [ 'banco', 'agencia','conta'];
+
+    // RELACIONAMENTO COM PESSOAS   ----- UMA CONTA SÓ PODE PERTENCER UMA PESSOA 
+   
+    public function pessoa() {
+        return $this->belongsTo(Pessoa::class);
+}   
+
+}
+
+ -------CRIAR view create EM resource\views\admin\pages\pessoas\contas\create.bçade.php--------------------
+ -------ATENÇÂO
+ a view create, sera criada normalmente mais sera inserida parte do seu codigo na view index (listage) - FAREMOS 
+ UMA View SÓ MOSTRANDO OS DOIS METODOS (cadastrar e listar) --CRIAREMOS NORMAL (passando para  rota contas.pessoa.create e o argumento da id do PessoaO $pessoa->id)
+ 
+ @extends('adminlte::page')
+
+@section('title', 'Cadastrando Nova Conta')
+
+@section('content_header')
+<link rel="stylesheet" type="text/css" href="/css/base.css">
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Pessoas</a></li>
+        
+    </ol>
+<h1>Cadastrando Novo Conta {{$pessoa->name}}  </h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+            <form action="{{route('contas.pessoa.store',  $pessoa->id)}}" class="form" method="POST" >
+@csrf
+@include('admin.includes.alerts')
+
+  <div class="form-row">
+    <div class="form-group col-md-3">
+      <label> Banco</label>
+      <input class="form-control" type="text" name="banco" placeholder="banco" value=" {{$pessoa->banco ?? old('banco')}} ">
+    </div>
+    <div class="form-group col-md-3">
+      <label >Agencia</label>
+      <input type="text" class="form-control" name="agencia" placeholder="agencia" value=" {{$pessoa->agencia ?? old('vulgo')}} ">
+    </div>
+      <div class="form-group col-md-3">
+      <label> Conta</label>
+      <input class="form-control" type="text" name="conta" placeholder="conta" value=" {{$pessoa->conta ?? old('conta')}} ">
+    </div>
+   
+   </div>
+    <button type="submit" class="btn btn-primary"  >ADD CONTAS</button>
+</form>
+</div>
+</div>
+@endsection   
+ 
+ --VAMOS AGORA MODIFICAR A View Index (admin\pages\pessoas\contas\index.blade.php) para receber PARTE DO CODIGO DE 
+ INSERÇÂO DA View CREATE (admin\pages\pessoas\contas\create,blade.php) - CADASTRANDO E LISTANDO
+  MUDAR A ROTA EM INDEX (conta) E PASSAR A id (link do botao ADD)
+
+@extends('adminlte::page')
+
+@section('title', "Detalhes do Pessoaos {$pessoa->name}")
+
+@section('content_header')
+
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{route('admin.index')}} ">Dashboard</a></li>
+    <li class="breadcrumb-item" aria-current="page"><a href="{{route('pessoas.index')}}" >Pessoas</a></li>
+  //  <li class="breadcrumb-item" aria-current="page"><a href="{{route('pessoas.show', $pessoa->id)}}" >{{$pessoa->name}}</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a href="{{route('contas.pessoa.index', $pessoa->id)}}" class="active">Detalhes</a></li>
+  </ol>
+</nav>
+
+<div id="cx1">
+
+<div class="card">
+            <div class="card-body">
+            <form action="{{route('contas.pessoa.store',  $pessoa->id)}}" class="form" method="POST" >
+@csrf
+@include('admin.includes.alerts')
+
+  <div class="form-row">
+    <div class="form-group col-md-3">
+      <label> Banco</label>
+      <input class="form-control" type="text" name="banco" placeholder="banco" value=" {{$pessoa->banco ?? old('banco')}} ">
+    </div>
+    <div class="form-group col-md-3">
+      <label >Agencia</label>
+      <input type="text" class="form-control" name="agencia" placeholder="agencia" value=" {{$pessoa->agencia ?? old('vulgo')}} ">
+    </div>
+      <div class="form-group col-md-3">
+      <label> Conta</label>
+      <input class="form-control" type="text" name="conta" placeholder="conta" value=" {{$pessoa->conta ?? old('conta')}} ">
+    </div>
+   
+   </div>
+    <button type="submit" class="btn btn-primary"  >ADD CONTAS</button>
+</form>
+</div>
+</div>
+
+</div>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            
+        <div class="card-body">
+
+ @include ('admin\includes\alerts')
+
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Banco</th>
+                    <th>Agencia</th>
+                    <th>Conta</th>
+                    <th style="width: 50px">Ação</th>
+
+                </tr>
+
+            </thead>
+            <body>
+                @foreach($contas as $conta)
+                 <tr>
+                    <td>{{ $conta->banco }}</td>
+                    <td>{{ $conta->agencia }}</td>
+                    <td>{{ $conta->conta }}</td>
+                    
+                    <td style="width: 200px;">
+                    <a href="{{ route('contas.pessoa.edit', [$pessoa->id, $conta->id]) }}" class="btn btn-warning">EDITAR</a>
+                   <a href="{{ route('contas.pessoa.show', [$pessoa->id, $conta->id]) }}" class="btn btn-warning"><i class="fas fa-trash-alt"></i></a>
+                    </td>
+                    </tr>
+                @endforeach
+            </body>
+        </table>
+       
+    
+                </div>
+            </div>
+
+            <div class="card-footer">
+
+                @if (isset ($filters)) 
+                {!! $contas->appends($filters)->links() !!}
+                @else
+                 {!! $contas->links() !!}
+                @endif
+
+               
+            </div>
+
+@stop
+ -----------------------------OK PERFEITO - DA LUPA EM MODULO PESSOA VAI PARA View EDITE (sinopse da pessoa)
+ONDE TEM LINJ PARA INSERÇÂO DE PARTICULARIDADESS ...EX: CONTA BANCARIA - NA view IndeX Onde CADASTRAMOS E VISUALIZAMOS A LISTAGEM
+
+------------------------------------------------------------------------------------Ok PERFEITO (sem restrição) - PRECISO AJUSTAR
+
+28---------------EDITAR CONTA BANCARIA DE UM Pessoa------
+---PRIMERO CRIA AS ROTAS
+
+ //ROTAS DE contas
+
+    Route::put('pessoas/{id}/contas/{idconta}', 'ContaPessoaController@update')->name('contas.pessoa.update');
+    Route::get('pessoas/{id}/contas/{idconta}/edit', 'ContaPessoaController@edit')->name('contas.pessoa.edit');
+    Route::post('pessoas/{id}/contas', 'ContaPessoaController@store')->name('contas.pessoa.store');
+    Route::get('pessoas/{id}/contas/create', 'ContaPessoaController@create')->name('contas.pessoa.create');
+    Route::get('pessoas/{id}/contas', 'ContaPessoaController@index')->name('contas.pessoa.index');
+
+
+-------------------------VAMOS FAZER o METODO edit e update no ContaPessoaController
+ public function edit($idPessoa, $idConta)
+        {
+            $pessoa = $this->pessoa->where('id', $idPessoa)->first();
+            $conta = $this->repository->find($idConta);
+    
+            if (!$pessoa || !$conta) {
+                return redirect()->back();
+            }
+    
+            return view('admin.pages.pessoas.contas.edit', [
+                'pessoa' => $pessoa,
+                'conta' => $conta,
+            ]);
+        }
+
+
+        public function update(Request $request, $idPessoa, $idConta)
+         //public function update(StoreUpdateContaPessoa $request, $urlPessoa, $idConta)
+        {
+            $pessoa = $this->pessoa->where('id', $idPessoa)->first();
+            $conta = $this->repository->find($idConta);
+    
+            if (!$pessoa || !$conta) {
+                return redirect()->back();
+            }
+    
+            $conta->update($request->all());
+    
+            return redirect()->route('contas.pessoa.index', $pessoa->id);
+        }
+
+-----------------CRIAR A view edit DO ContaS ------
+--ATENÇÂO temos que passar a id do pessoao e o id do Conta NO LINK      
+  <li class="breadcrumb-item active" aria-current="page"><a href="{{route('Contas.pessoas.edit', [$pessoa->url, $Conta->id])}}" class="active">Edit</a></li>
+E O METODO PUT NO FORM  @method('PUT')
+-------AQUI A view edit---------------------------
+
+@extends('adminlte::page')
+
+@section('title', 'Cadastrando Nova Conta')
+
+@section('content_header')
+<link rel="stylesheet" type="text/css" href="/css/base.css">
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Pessoas</a></li>
+        
+    </ol>
+<h1>Editando Conta {{$pessoa->name}}  </h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+            <form action="{{route('contas.pessoa.update', [$pessoa->id, $conta->id])}}" class="form" method="POST" >
+            @method('PUT')
+@csrf
+@include('admin.includes.alerts')
+
+  <div class="form-row">
+    <div class="form-group col-md-3">
+      <label> Banco</label>
+      <input class="form-control" type="text" name="banco" placeholder="banco" value=" {{$conta->banco ?? old('banco')}} ">
+    </div>
+    <div class="form-group col-md-3">
+      <label >Agencia</label>
+      <input type="text" class="form-control" name="agencia" placeholder="agencia" value=" {{$conta->agencia ?? old('vulgo')}} ">
+    </div>
+      <div class="form-group col-md-3">
+      <label> Conta</label>
+      <input class="form-control" type="text" name="conta" placeholder="conta" value=" {{$conta->conta ?? old('conta')}} ">
+    </div>
+   
+   </div>
+    <button type="submit" class="btn btn-primary"  >EDITAR CONTAS</button>
+</form>
+</div>
+</div>
+@endsection   
+
+-------------VAMOS EM index do ContaS DO Pessoa (onde exibe a listagem) E ATUALIZAR AS URL para as ROTAS CERTAS , PASSANDO A 
+URL DO Pessoa e O ID DO ContaS EM UMA RAIS  --JA FEITO
+
+  @foreach($Contas as $Conta)
+                 <tr>
+                    <td>{{ $Conta->name }}</td>
+                    
+                    <td style="width: 250px;">
+                    <a href="{{ route('contas.pessoas.edit', [$pessoa->id, $conta->id]) }}" class="btn btn-warning">EDITAR</a>
+                    <a href="{{ route('pessoas.show', $pessoa->url) }}" class="btn btn-warning">VER</a>
+                    </td>
+                    </tr>
+                @endforeach
+            </body>
+        </table>
+
+--------------------------------------------------- OK PERFEITO  - EDITOU
+
+29---------------VALIDAR CONTA (validação) ---------------------------
+-----ATENÇÃO : // ERREI O NOME NA HORA DE FAZER O REQUESTE MAIS O CERTO SERIA StoreUpdateContaPessoa
+----CRIAR REQUEST
+# php artisan make:request StoreUpadeContaPessoa
+E CODIFICA    
+
+
+  public function authorize()
+    {
+        return true;
+    }
+ //
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            'banco' => "required|min:3|max:255",
+            'agencia' => "required|min:4|max:255",
+            'conta' => "required|min:4|max:255",
+
+
+
+        ];
+
+---------------------------EM SEGUIDA VAMOS EM ContaPessoaController
+DECLARAMOS A CLASSE (la em cima ) E SUBISTITUIMOS (o Request por StoreUpadeContaPessoa)  NOS METODOS strore e upade         
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Requests\StoreUpadeContaPessoa;
+use App\Http\Controllers\Controller;
+
+---NOS METODOS store e update (a subistituição)
+ public function store(StoreUpadeContaPessoa $request, $idPessoa)
+       // public function store(Request $request, $idPessoa )
+
+-------update
+
+ // public function update(Request $request, $idPessoa, $idConta)
+        public function update(StoreUpadeContaPessoa $request, $idPessoa, $idConta)
+        {
+-----------------------------------------------------------------------------------------OK PERFEITO
+
+30------------------DELETAR ContaS (em VER)---------------------
+
+----COMO SEMPRE VAMOS CRIAR AS Route (vai ter a url do pessoa, o detalis e o id do detalis)
+     Route::delete('pessoas/{id}/contas/{idconta}', 'ContaPessoaController@destroy')->name('contas.pessoa.destroy');
+    Route::get('pessoas/{id}/contas/{idconta}', 'ContaPessoaController@show')->name('contas.pessoa.show');        
+    Route::put('pessoas/{url}/Contas/{idConta}', 'ContaPessoaController@update')->name('Contas.pessoas.update');
+    Route::get('pessoas/{url}/Contas/{idConta}/edit', 'ContaPessoaController@edit')->name('Contas.pessoas.edit');
+    Route::post('pessoas/{url}/Contas', 'ContaPessoaController@store')->name('Contas.pessoas.store');
+    Route::get('pessoas/{url}/Contas/create', 'ContaPessoaController@create')->name('Contas.pessoas.create');
+    Route::get('pessoas/{url}/Contas', 'ContaPessoaController@index')->name('Contas.pessoas.index');
+
+---VAMOS EM ContaSPessoaCONTROLLER e FAZEMOS O METODO SHOW E DETROY
+ public function show($idPessoa, $idConta)
+        {
+            $pessoa = $this->pessoa->where('id', $idPessoa)->first();
+            $conta = $this->repository->find($idConta);
+    
+            if (!$pessoa || !$conta) {
+                return redirect()->back();
+            }
+    
+            return view('admin.pages.pessoas.contas.show', [
+                'pessoa' => $pessoa,
+                'conta' => $conta,
+            ]);
+        }
+    
+    
+        public function destroy($idPessoa, $idConta)
+        {
+            $pessoa = $this->pessoa->where('id', $idPessoa)->first();
+            $conta = $this->repository->find($idConta);
+    
+            if (!$pessoa || !$conta) {
+                return redirect()->back();
+            }
+    
+            $conta->delete();
+    
+            return redirect()
+                        ->route('contas.pessoa.index', $pessoa->id)
+                        ->with('message', 'Registro detalado com sucesso');
+
+                        
+        }
+
+-------E FAZER NOSSA view SHOW     ***DICA (podemos copiar da view edit dando um cTL+SHIT+S - salvar como e nomear-la
+show.blade.php) ..AI FAZ AS ALERAÇÔES  
+@extends('adminlte::page')
+
+@section('title', "Detalhes da Conta de {$pessoa->name}")
+
+@section('content_header')
+
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{route('admin.index')}} ">Dashboard</a></li>
+    <li class="breadcrumb-item" aria-current="page"><a href="{{route('pessoas.index')}}" >Pessoaos</a></li>
+   // <li class="breadcrumb-item" aria-current="page"><a href="{{route('pessoas.show', $pessoa->id)}}" >{{$pessoa->name}}</a></li>
+    <li class="breadcrumb-item" aria-current="page"><a href="{{route('contas.pessoa.index', $pessoa->id)}}" class="active">Detalhes</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a href="{{route('contas.pessoa.edit', [$pessoa->id, $conta->id])}}" class="active">Detalhes</a></li>
+</ol>
+</nav>
+
+<h1> Detalhes da Conta de {{$pessoa->name}} </h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            
+        <div class="card-body">
+       <ul>
+       <li><strong>NOME</strong>{{$conta->banco}}
+       </li>
+       </ul> 
+       
+       </div>
+       </div>
+       @endsection
+
+---------------------TEMOS QUE IR NA LISTAGEM (index) E MODIFICAMOS A ROTA DA NOSA URL (contas.pessoa.show) E 
+pASSA DOS PARAMNETRO EM UMA RAIS - A URL DO PessoaO E O ID DO CONTAS [$pessoa->id, $Conta->id] - ACHO QUE JA FEITO
+        @foreach($Contas as $Conta)
+                 <tr>
+                    <td>{{ $Conta->name }}</td>
+                    
+                    <td style="width: 250px;">
+                    <a href="{{ route('Contas.pessoas.edit', [$pessoa->url, $conta->id]) }}" class="btn btn-warning">EDITAR</a>
+                  <a href="{{ route('contas.pessoa.show', [$pessoa->id, $conta->id]) }}" class="btn btn-warning"><i class="fas fa-trash-alt"></i></a>
+                    </td>
+                    </tr>
+                @endforeach
+            </body>
+
+---------------------------AQUI JA ESTA EXIBINDO Detalhes da Conta da PESSOA EM BOTAO (lixeira)
+PARA REMOVER O REGISTRO (DELETAR) FAREMOS UM FORMULARIO NO FINAL DA view show.blade.php DO CONTAS DO PessoaO
+PERCEBA QUE JA CODIFICAMOS O METODO DETROY NA ContaPessoaController
+O FORMULARIO VAI PAR ROTA DE DETROY COM OS DOIS PARAMENTROS, id DO Pessoa E ID DO DETALHE
+NÂO ESQUECER AS DIRETRIZES @csrf e O METHOD (DELETE)
+
+  @section('content')
+   
+            <div class="card">
+            
+        <div class="card-body">
+       <ul>
+       <li><strong>NOME  :  </strong>{{$conta->banco}}</li>
+       <li><strong>AGENCIA  :  </strong>{{$conta->agencia}}</li>
+       <li><strong>CONTA  :  </strong>{{$conta->conta}}</li>
+       </ul> 
+       
+       </div>
+       <div class="car-footer">
+            <form action="{{route('contas.pessoa.destroy', [$pessoa->id, $conta->id])}}" method="post">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-danger">Deletar a conta {{$conta->conta}} de {{$pessoa->name}} </button>
+            </form>
+
+           </div>
+       </div>
+       @endsection
+------------------------------------------------------------OK CONFERIR - NÃO PAROU DE ADD DETALHE
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxxxXXXXXXXXXXXXXXXXXXXN   NÃO FOI FEITO
+-----------ERRARA ---A ROTA DE CREATE TEM QUE VIM ANTES DA CHAMADA DA URL, ENTAO VAMOS COLOCAR ANTES OU LA EM CIMA
+Route::get('pessoas/{url}/Contas/create', 'ContaPessoaController@create')->name('Contas.pessoas.create');
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx - NÃO FOI FEITO
+
+-----------------------------------------------------------------------------OK PERFEITO
+
+31---------------VAMOS AGORA EVITAR QUE UM PessoaO COM CONTA SEJA DELETADO, ANTES DO DELETE DOS CONTAS
+vamos no metodo que DELETA o PessoaO em PessoaController e no metodo Detroy podemos passar todos os relacionamentos
+numa rais ou apenas um relacionamento 
+public function destroy($url)
+    {
+        $pessoa = $this->repository
+                        ->with ('contas')
+                        ->where('id', $id)
+                        ->first();
+
+E DEPOIS FAZ UM CONDICIONAL COM IF (se existir Pessoaos com detalhes maior que ZERO redirecione para tras e 
+mande a mensagem)    FICANDO ASSIM NOSSO DETROY METODO do PessoaController
+ public function destroy($id)
+    {
+        $pessoa = $this->repository
+                        ->with ('contas')
+                        ->where('id', $id)
+                        ->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+        
+        if($pessoa->contas->count>0) {
+                     return redirect()
+                     ->back()    
+                     ->with('error', 'Existe detalhes relacionado a este pessoao, delete primeiro os detalhes');  
+                    }
+
+            $pessoa->delete();
+
+        return redirect()->route('pessoas.index');
+    }
+---PARA EXIBIR A MENSAGEM VAMOS TER QUE IR NA view SHOW DO MODULO Pessoa E EXIBE NO LOCAL DESEJADA
+CHAMANDO PELO  @include ('admin\includes\alerts')
+@extends('adminlte::page')
+
+@section('title', "DETALHE Pessoaos  {$pessoa->name} ")
+
+@section('content_header')
+<h1>Detalhe do Palno <b>{{ $pessoa->name }}</b>  </h1>
+
+@stop
+
+@section('content')
+
+            <div class="card">
+            <div class="card-body">
+            <ul>
+            <li>
+            <strong>NOME</strong> {{ $pessoa->name }}
+            </li>
+            <li>
+            <strong>Url</strong> {{ $pessoa->vulgo }}
+            </li>
+           
+            <li>
+            <strong>DESCRIÇÂO</strong> {{ $pessoa->description }}
+            </li>
+            </ul>
+            @include ('admin\includes\alerts')
+            <form action=" {{ route('pessoas.destroy', $pessoa->id) }}"  method="POST"  >
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger">DELETAR O PessoaO {{ $pessoa->name }}</button>
+               
+                </form>
+            </div>
+            </div>
+            @endsection
+
+--------------------------------------------------------------OK NÃO FOI TESTADO  
+
+-----------------------MODULO TELEFONE-----------------------------------------------TELEFONE
+
+1MT--------------------------------CRIAR TELEFONES---------------------
+
+-------------------------CRIAR MODEL TelefonePESSOA DENTRO DE MODELS--------------------------------------
+# php artisan make:model Models\TelefonePessoa -m
+
+-------------------CODIFICA A Model  ---ESPECIFICA QUE A TABELA VAI SE CHAMAR celefones_pessoa PELO protected
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class CelefonePessoa extends Model
+{
+        protected $table = 'telefones_pessoa';          //     MODIFICAMOS O NOME DA TABELA AQUI (opcional)
+         protected $fillable = [ 'numero','description'];
+}
+---------------------CODIFICA A MIGARTION (com relacionamneto) ---NAO ESQUECER DE MUDAR O NOME DA TABELA EM 
+Schema---telefones_pessoa , POIS FOI ASSIM QUE A DECLAREI NA MODEL
+
+  public function up()
+    {
+        Schema::create('telefones_pessoa', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('pessoa_id');;
+            $table->string('numero');    
+            $table->string('description'); 
+            $table->timestamps();
+                                          //   (fazendo o relacioamaneto)
+            $table->foreign('pessoa_id')
+                    ->references('id')
+                    ->on('pessoas')
+                    ->onDelete('cascade');
+
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('telefones_pessoa');
+    }
+}
+
+2MT---------AGORA VAMOS FAZER(declarar) UM RELACIONAMNETO DE Pessoa COM Telefone------------------ATENÇÂO IMPORTANTE
+O relacionamneto entre essa duas tabelas vai ser de 1:1 para Pessoa pois tera so tera varios detalhe
+----O RELACIONAMNETO  VAI SER NA Model Pessoa.php  
+class Pessoa extends Model
+{
+    // CAMPOS QUE PODEM SER PREENCHIDOS
+    protected $fillable = ['name', 'url', 'vulgo', 'mae', 'genero', 'rg', 'exp', 'cpf', 'situa', 'nasc', 'description'];
+
+        // RELACIONAMENTO COM Telefone   ----- UMA PESSOA PODE TER VARIAS TELEFONES
+
+    public function telefones() {
+        return $this->hasMany(TelefonePessoa::class);
+}   
+
+
+// FILTRO DE PESSOAS
+    public function search($filter = null) {
+
+        $results = $this->where('name' , 'LIKE', "%{$filter}%" )
+                        ->orwhere('description' , 'LIKE', "%{$filter}%" )
+                        ->paginate(1);
+        return $results ;                
+}
+
+}
+-----------E NA Model TelefonePessoa  VAI SER MUITOS PARA UM N:1 pois a Telefoneé espcifico de um pessoao
+
+class CelefonePessoa extends Model
+{
+    protected $table = 'telefones_pessoa';          //     MODIFICAMOS O NOME DA TABELA AQUI (opcional)
+    protected $fillable = [ 'numero','description'];
+
+
+      // RELACIONAMENTO COM PESSOAS   ----- UMA Telefone SÓ PODE PERTENCER UMA PESSOA 
+   
+      public function pessoa() {
+        return $this->belongsTo(Pessoa::class);
+}   
+
+
+-------------------RODAR MIGRATE PARA CRIAR TABELA
+
+# php artisan migrate
+
+-----------------------------------------------------------------OK PERFEITO - TABELA CRIADA
+
+3MT-------------------------------------VAMOS CRIAR O TelefoneCONTROLLER ----------------------------
+# php artisan make:controller Admin\TelefonePessoaController
+
+--------------E CRIAR A ROuter INDEX DO TELEFONE (acima das rotas da Contas)
+Route::get('pessoas/{id}/telefones', 'TelefonePessoaController@index')->name('telefones.pessoa.index');
+
+---VAMOS TRABALHAR NO TelefoneCONTROLLER ---IMPORTANTE
+--FAREMOS O METODO CONSTRUCTOR PRIMEIRAMENTE COM DOIS OBJETO repository e Pessoa
+class TelefonePessoaController extends Controller
+{
+     private $repository, $pessoa;
+
+    public function __construct(TelefonePessoa $telefonepessoa, Pessoa $pessoa )
+       {
+           $this->repository= $telefonepessoa;
+           $this->pessoa = $pessoa;
+        }
+
+-------DEPOIS COMECAREMOS PELO METODO iNDEX DO TelefonePessoaCOMTROLLER (pela id)
+
+ public function index($idPessoa)
+        {
+              If(!$pessoa = $this->pessoa->where ('id', $idPessoa)->first()) {         //SE NÃo ACHOU (recuperando pela url)
+                return redirect()->back();
+              }                                                                   //SE ACHOU (recuperando pela url)
+                     
+              // $telefones = $pessoa->telefones();
+              $telefones = $pessoa->telefones()->paginate(); 
+              
+            return view('admin.pages.pessoas.telefones.index', [
+                'pessoa' => $pessoa,
+                'telefones'=> $telefones,
+
+                ]);
+                
+--------------------------------------------CRIAREMOS A view Telefone\INDEX -LISTAR - (dentro de (admin\pages\pessoas\telefones\index,blade.php)
+ 
+@extends('adminlte::page')
+
+@section('title', "Detalhes do Pessoaos {$pessoa->name}")
+
+@section('content_header')
+
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{route('admin.index')}} ">Dashboard</a></li>
+    <li class="breadcrumb-item" aria-current="page"><a href="{{route('pessoas.index')}}" >Pessoas</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><a href="{{route('telefones.pessoa.index', $pessoa->id)}}" class="active">Detalhes</a></li>
+  </ol>
+</nav>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            
+        <div class="card-body">
+
+ @include ('admin\includes\alerts')
+
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Banco</th>
+                    <th>Agencia</th>
+                   
+                    <th style="width: 50px">Ação</th>
+
+                </tr>
+
+            </thead>
+            <body>
+                @foreach($telefones as $telefone)
+                 <tr>
+                    <td>{{ $telefone->numero }}</td>
+                    <td>{{ $telefone->discrypton }}</td>
+                   
+                    
+                    <td style="width: 250px;">
+                    <a href="{{ route('pessoas.edit', $pessoa->id) }}" class="btn btn-warning">EDITAR</a>
+                    <a href="{{ route('pessoas.show', $pessoa->id) }}" class="btn btn-warning">VER</a>
+                    </td>
+                    </tr>
+                @endforeach
+            </body>
+        </table>
+       
+    
+                </div>
+            </div>
+
+            <div class="card-footer">
+
+                @if (isset ($filters)) 
+                {!! $telefones->appends($filters)->links() !!}
+                @else
+                 {!! $telefones->links() !!}
+                @endif
+
+               
+            </div>
+
+@stop
+
+
+--------AGORA VAMOS NA View edite que é a SINOPSE DA PESSOA (foto, dados, vinculos e eventos) , COMO TAMBEM LINK DE 
+BOTÃO COM LINKs PARA AS PARICULARIDADES DE PESSOA COMO POR EXEMPLO NA DIV caixa2 (foto, documento, telefone, caria, etc) ---<a href="{{ route('celefones.pessoa.index', $pessoa->id) }}" class="btn btn-primary">Dados bancários</a>
+E COLOCAREMOS O LINK DE TELEFONES PARA ROUTER 
+ <a href="{{ route('celefones.pessoa.index', $pessoa->id) }}" class="btn btn-primary">Dados bancários</a>
+ 
+ @stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+
+<div id="caixa2">
+	<button type="button"  class="btn btn-primary">Foto</button>
+          <a href="{{ route('telefones.pessoa.index', $pessoa->id) }}" class="btn btn-primary">Telefones</a>
+          <a href="{{ route('contas.pessoa.index', $pessoa->id) }}" class="btn btn-primary">Dados bancários</a>
+ 
+</div>      
+
+---------------------------------------------------------------------------OK PERFEITO  --(vamos ajustar)
+
+4MT---------------------CADASTRAR NOVOS TELEFONES DE Pessoa-------------------------------CADASTRAR TELEFONES
+---------CRIAR router Create e store (que cadastra realmente)
+
+   //ROTAS DE TELEFONE
+
+    Route::post('pessoas/{id}/telefones', 'TelefonePessoaController@store')->name('telefones.pessoa.store');
+    Route::get('pessoas/{id}/telefones/create', 'TelefonePessoaController@create')->name('telefones.pessoa.create');        
+    Route::get('pessoas/{id}/telefones', 'TelefonePessoaController@index')->name('telefones.pessoa.index');       
+
+
+ --------------------------EM TelefonePessoaController VAMOS FAZER NOSSO METODO create e story------------
+------METODO create
+       public function create($idPessoa)
+            {
+                if (!$pessoa = $this->pessoa->where('id', $idPessoa)->first()) {
+                    return redirect()->back();
+                }
+        
+                return view('admin.pages.pessoas.telefones.create', [
+                    'pessoa' => $pessoa,
+                ]);
+            }
+-------------------METODO Store  
+        
+   public function store(Request $request, $idPessoa )
+        {
+            if (!$pessoa = $this->pessoa->where('id', $idPessoa)->first()) {
+                return redirect()->back();
+            }
+    
+            // $data = $request->all();
+            // $data['pessoa_id'] = $pessoa->id;
+            // $this->repository->create($data);
+            $pessoa->telefones()->create($request->all());
+    
+            return redirect()->route('telefones.pessoa.index', $pessoa->id);
+        }
+-----------------APROVEITAMOS E VAMOS NA MODEL Telefonespessoa.php AGORA DEFINIR OS ATRIBUTOS QUE PODEM SER PREECHIDOS COM OS DADOS
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+    class TelefonePessoa extends Model
+{
+    //
+    protected $table = 'telefones_pessoa';          //     MODIFICAMOS O NOME DA TABELA AQUI (opcional)
+    protected $fillable = [ 'numero','description'];
+
+      // RELACIONAMENTO COM PESSOAS   ----- UMA Telefone SÓ PODE PERTENCER UMA PESSOA 
+   
+      public function pessoa() {
+        return $this->belongsTo(Pessoa::class);
+}   
+
+}
+
+ -------CRIAR view create EM resource\views\admin\pages\pessoas\celefones\create.blade.php--------------------
+ -------ATENÇÂO
+ a view create, sera criada normalmente mais sera inserida parte do seu codigo na view index (listagem) - FAREMOS 
+ UMA View SÓ MOSTRANDO OS DOIS METODOS (cadastrar e listar) --CRIAREMOS NORMAL (passando para  rota telefones.pessoa.create e o argumento da id do PessoaO $pessoa->id)
+ 
+@extends('adminlte::page')
+
+@section('title', 'Cadastrando Nova Telefone')
+
+@section('content_header')
+<link rel="stylesheet" type="text/css" href="/css/base.css">
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Pessoas</a></li>
+        
+    </ol>
+<h1>Cadastrando Novo Telefone {{$pessoa->name}}  </h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+            <form action="{{route('telefones.pessoa.store',  $pessoa->id)}}" class="form" method="POST" >
+@csrf
+@include('admin.includes.alerts')
+
+  <div class="form-row">
+    <div class="form-group col-md-3">
+      <label> Numero</label>
+      <input class="form-control" type="text" name="numero" placeholder="numero" value=" {{$pessoa->numero ?? old('numero')}} ">
+    </div>
+    <div class="form-group col-md-3">
+      <label >Descrição</label>
+      <input type="text" class="form-control" name="description" placeholder="description" value=" {{$pessoa->description ?? old('description')}} ">
+    </div>
+        
+   </div>
+    <button type="submit" class="btn btn-primary"  >ADD TELEFONES</button>
+</form>
+</div>
+</div>
+@endsection   
+ 
+5MT----------VAMOS AGORA MODIFICAR A View Index (admin\pages\pessoas\telefones\index.blade.php) para receber PARTE DO CODIGO DE 
+ INSERÇÂO DA View CREATE (admin\pages\pessoas\celefones\create,blade.php) - CADASTRANDO E LISTANDO
+  MUDAR A ROTA EM INDEX telefone) E PASSAR A id (link do botao ADD)
+
+@extends('adminlte::page')
+
+@section('title', "Detalhes do Pessoaos {$pessoa->name}")
+
+@section('content_header')
+
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{route('admin.index')}} ">Dashboard</a></li>
+    <li class="breadcrumb-item" aria-current="page"><a href="{{route('pessoas.index')}}" >Pessoas</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><a href="{{route('telefones.pessoa.index', $pessoa->id)}}" class="active">Detalhes</a></li>
+  </ol>
+</nav>
+
+<div id="cx1">
+<div class="card">
+            <div class="card-body">
+            <form action="{{route('telefones.pessoa.store',  $pessoa->id)}}" class="form" method="POST" >
+@csrf
+@include('admin.includes.alerts')
+
+  <div class="form-row">
+    <div class="form-group col-md-3">
+      <label> Numero</label>
+      <input class="form-control" type="text" name="numero" placeholder="numero" value=" {{$pessoa->numero ?? old('numero')}} ">
+    </div>
+    <div class="form-group col-md-3">
+      <label >Descrição</label>
+      <input type="text" class="form-control" name="description" placeholder="description" value=" {{$pessoa->description ?? old('description')}} ">
+    </div>
+        
+   </div>
+    <button type="submit" class="btn btn-primary"  >ADD TELEFONES</button>
+</form>
+</div>
+</div>
+</div>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            
+        <div class="card-body">
+
+ @include ('admin\includes\alerts')
+
+        <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>Numero</th>
+                    <th>Descrição</th>
+                   
+                    <th style="width: 50px">Ação</th>
+
+                </tr>
+
+            </thead>
+            <body>
+                @foreach($telefones as $telefone)
+                 <tr>
+                    <td>{{ $telefone->numero }}</td>
+                    <td>{{ $telefone->discrypton }}</td>
+                   
+                    
+                    <td style="width: 250px;">
+                    <a href="{{ route('pessoas.edit', $pessoa->id) }}" class="btn btn-warning">EDITAR</a>
+                    <a href="{{ route('pessoas.show', $pessoa->id) }}" class="btn btn-warning">VER</a>
+                    </td>
+                    </tr>
+                @endforeach
+            </body>
+        </table>
+       
+    
+                </div>
+            </div>
+
+            <div class="card-footer">
+
+                @if (isset ($filters)) 
+                {!! $telefones->appends($filters)->links() !!}
+                @else
+                 {!! $telefones->links() !!}
+                @endif
+
+               
+            </div>
+
+@stop
+  -----------------------------OK PERFEITO - DA LUPA EM MODULO PESSOA VAI PARA View EDITE (sinopse da pessoa)
+ONDE TEM LINK PARA INSERÇÂO DE PARTICULARIDADESS ...EX: telefone , CONTA BANCARIA - NA view IndeX Onde CADASTRAMOS E VISUALIZAMOS A LISTAGEM
+
+------------------------------------------------------------------------------------Ok PERFEITO (sem restrição) - PRECISO AJUSTAR
+
+6MT---------------EDITAR Celefone BANCARIA DE UM Pessoa------
+---PRIMERO CRIA AS ROTAS edit e update
+
+ //ROTAS DE telefones
+
+    Route::put('pessoas/{id}/telefones/{idtelefone}', 'TelefonePessoaController@update')->name('telefones.pessoa.update');
+    Route::get('pessoas/{id}/telefones/{idtelefone}/edit', 'TelefonePessoaController@edit')->name('telefones.pessoa.edit');
+    Route::post('pessoas/{id}/celefones', 'CelefonePessoaController@store')->name('celefones.pessoa.store');
+    Route::get('pessoas/{id}/celefones/create', 'CelefonePessoaController@create')->name('celefones.pessoa.create');
+    Route::get('pessoas/{id}/celefones', 'CelefonePessoaController@index')->name('celefones.pessoa.index');
+
+
+-------------------------VAMOS FAZER o METODO edit e update no CelefonePessoaController
+ public function edit($idPessoa, $idTelefone)
+        {
+            $pessoa = $this->pessoa->where('id', $idPessoa)->first();
+            $telefone = $this->repository->find($idTelefone);
+    
+            if (!$pessoa || !$telefone) {
+                return redirect()->back();
+            }
+    
+            return view('admin.pages.pessoas.telefones.edit', [
+                'pessoa' => $pessoa,
+                'telefone' => $telefone,
+            ]);
+        }
+
+
+        public function update(Request $request, $idPessoa, $idTelefone)
+         //public function update(StoreUpdateCelefonePessoa $request, $urlPessoa, $idTelefone)
+        {
+            $pessoa = $this->pessoa->where('id', $idPessoa)->first();
+            $telefone = $this->repository->find($idTelefone);
+    
+            if (!$pessoa || !$telefone) {
+                return redirect()->back();
+            }
+    
+            $telefone->update($request->all());
+    
+            return redirect()->route('telefones.pessoa.index', $pessoa->id);
+        }
+
+-----------------CRIAR A view edit DO TELEFONES------
+--ATENÇÂO temos que passar a id do pessoao e o id do Telefone NO LINK      
+  <li class="breadcrumb-item active" aria-current="page"><a href="{{route('telefones.pessoas.edit', [$pessoa->url, $telefone->id])}}" class="active">Edit</a></li>
+E O METODO PUT NO FORM  @method('PUT')
+-------AQUI A view edit---------------------------
+
+@extends('adminlte::page')
+
+@section('title', 'Cadastrando Nova Telefone')
+
+@section('content_header')
+<link rel="stylesheet" type="text/css" href="/css/base.css">
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Pessoas</a></li>
+        
+    </ol>
+<h1>Editando Telefone {{$pessoa->name}}  </h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+            <form action="{{route('telefones.pessoa.update', [$pessoa->id, $telefone->id])}}" class="form" method="POST" >
+            @method('PUT')
+@csrf
+@include('admin.includes.alerts')
+
+<div class="card">
+            <div class="card-body">
+            <form action="{{route('telefones.pessoa.store',  $pessoa->id)}}" class="form" method="POST" >
+@csrf
+@include('admin.includes.alerts')
+
+  <div class="form-row">
+    <div class="form-group col-md-3">
+      <label> Numero</label>
+      <input class="form-control" type="text" name="numero" placeholder="numero" value=" {{$telefone->numero ?? old('numero')}} ">
+    </div>
+    <div class="form-group col-md-3">
+      <label >Descrição</label>
+      <input type="text" class="form-control" name="description" placeholder="description" value=" {{$telefone->description ?? old('description')}} ">
+    </div>
+    
+</form>
+</div>
+<button type="submit" class="btn btn-primary"  >EDITAR TELEFONES</button>
+</div>
+@endsection     
+
+-------------VAMOS EM index do TELEFONES DO Pessoa (onde exibe a listagem) E ATUALIZAR AS URL para as ROTAS CERTAS , PASSANDO A 
+URL DO Pessoa e O ID DO TELEFONESEM UMA RAIS  --JA FEITO
+
+  @foreach($telefones as $telefone)
+                 <tr>
+                    <td>{{ $Celefone->name }}</td>
+                    
+                    <td style="width: 250px;">
+                    <a href="{{ route('telefones.pessoa.edit', [$pessoa->id, $telefone->id]) }}" class="btn btn-warning">EDITAR</a>
+                    <a href="{{ route('pessoas.show', $pessoa->id) }}" class="btn btn-warning">VER</a>
+                    </td>
+                    </tr>
+                @endforeach
+            </body>
+        </table>
+
+--------------------------------------------------- OK PERFEITO  - EDITOU
+
+7MT---------------VALIDAR Telefone (validação) ---------------------------
+
+----CRIAR REQUEST
+# php artisan make:request StoreUpdateTelefonePessoa
+E CODIFICA    
+public function authorize()
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            //
+            'numero' => "required|min:13|max:255",
+            'description' => "required|min:4|max:255",
+           
+        ];
+    }
+}
+
+---------------------------EM SEGUIDA VAMOS EM TelefonePessoaController
+DECLARAMOS A CLASSE (la em cima ) E SUBISTITUIMOS (o Request por StoreUpdateTelefonePessoa)  NOS METODOS strore e upade         
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Requests\StoreUpadeCelefonePessoa;
+use App\Http\Controllers\Controller;
+
+---NOS METODOS store e update (a subistituição)
+  public function store(StoreUpdateTelefonePessoa $request, $idPessoa)
+             // public function store(Request $request, $idPessoa )
+-------update
+
+  // public function update(Request $request, $idPessoa, $idTelefone)
+         public function update(StoreUpdateTelefonePessoa $request, $idPessoa, $idTelefone)
+-----------------------------------------------------------------------------------------OK PERFEITO
+
+8MT------------------DELETAR TELEFONES(em VER)---------------------
+
+----COMO SEMPRE VAMOS CRIAR AS Route (vai ter a id do pessoa, o detalis e o id do detalis)
+   //ROTAS DE TELEFONE
+
+
+    Route::delete('pessoas/{id}/telefones/{idtelefone}', 'TelefonePessoaController@destroy')->name('telefones.pessoa.destroy');
+    Route::get('pessoas/{id}/telefones/{idtelefone}', 'TelefonePessoaController@show')->name('telefones.pessoa.show');        
+    Route::put('pessoas/{id}/telefones/{idtelefone}', 'TelefonePessoaController@update')->name('telefones.pessoa.update');
+    Route::get('pessoas/{id}/telefones/{idtelefone}/edit', 'TelefonePessoaController@edit')->name('telefones.pessoa.edit');
+     Route::post('pessoas/{id}/telefones', 'TelefonePessoaController@store')->name('telefones.pessoa.store');
+    Route::get('pessoas/{id}/telefones/create', 'TelefonePessoaController@create')->name('telefones.pessoa.create');
+    Route::get('pessoas/{id}/telefones', 'TelefonePessoaController@index')->name('telefones.pessoa.index');   
+
+---VAMOS EM TELEFONESPessoaCONTROLLER e FAZEMOS O METODO SHOW E DETROY
+
+ public function show($idPessoa, $idTelefone)
+        {
+            $pessoa = $this->pessoa->where('id', $idPessoa)->first();
+            $telefone = $this->repository->find($idTelefone);
+    
+            if (!$pessoa || !$telefone) {
+                return redirect()->back();
+            }
+    
+            return view('admin.pages.pessoas.telefones.show', [
+                'pessoa' => $pessoa,
+                'telefone' => $telefone,
+            ]);
+        }
+    
+    
+        public function destroy($idPessoa, $idTelefone)
+        {
+            $pessoa = $this->pessoa->where('id', $idPessoa)->first();
+            $telefone = $this->repository->find($idTelefone);
+    
+            if (!$pessoa || !$telefone) {
+                return redirect()->back();
+            }
+    
+            $telefone->delete();
+    
+            return redirect()
+                        ->route('telefones.pessoa.index', $pessoa->id)
+                        ->with('message', 'Registro detalado com sucesso');
+
+                        
+        }
+
+-------E FAZER NOSSA view SHOW     ***DICA (podemos copiar da view edit dando um cTL+SHIT+S - salvar como e nomear-la
+show.blade.php) ..  OLHAR SE PRECISA ALTERAR ALGO ----AI FAZ AS ALERAÇÔES  
+
+@extends('adminlte::page')
+
+@section('title', "Detalhes da Telefone de {$pessoa->name}")
+
+@section('content_header')
+
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{route('admin.index')}} ">Dashboard</a></li>
+    <li class="breadcrumb-item" aria-current="page"><a href="{{route('pessoas.index')}}" >Pessoaos</a></li>
+   
+    <li class="breadcrumb-item" aria-current="page"><a href="{{route('telefones.pessoa.index', $pessoa->id)}}" class="active">Detalhes</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a href="{{route('telefones.pessoa.edit', [$pessoa->id, $telefone->id])}}" class="active">Detalhes</a></li>
+</ol>
+</nav>
+
+<h1> Detalhes da Telefone de {{$pessoa->name}} </h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            
+        <div class="card-body">
+       <ul>
+       <li><strong>NOME</strong>{{$telefone->numero}}</li>
+       <li><strong>DESCRIÇÃO</strong>{{$telefone->description}}</li>
+       
+       </ul> 
+       
+       </div>
+       </div>
+       @endsection
+       
+
+---------------------TEMOS QUE IR NA LISTAGEM (index) E MODIFICAMOS A ROTA DA NOSA URL (telefones.pessoa.show) E 
+pASSA DOS PARAMNETRO EM UMA RAIS - A id DO Pessoa E O ID DO TELEFONES[$pessoa->id, $telefone->id] -
+        <body>
+                @foreach($telefones as $telefone)
+                 <tr>
+                    <td>{{ $telefone->numero }}</td>
+                    <td>{{ $telefone->description }}</td>
+                   
+                    
+                    <td style="width: 200px;">
+                    <a href="{{ route('telefones.pessoa.edit', [$pessoa->id, $telefone->id]) }}" class="btn btn-warning">EDITAR</a>
+                    <a href="{{ route('telefones.pessoa.show', [$pessoa->id, $telefone->id]) }}" class="btn btn-warning"><i class="fas fa-trash-alt"></i></a>
+                    </td>
+                     </tr>
+                @endforeach
+            </body>
+
+---------------------------AQUI JA ESTA EXIBINDO Detalhes da Telefone da PESSOA EM BOTAO (lixeira)
+PARA REMOVER O REGISTRO (DELETAR) FAREMOS UM FORMULARIO NO FINAL DA view show.blade.php DO TELEFONESDO PessoaO
+PERCEBA QUE JA CODIFICAMOS O METODO DETROY NA CelefonePessoaController
+O FORMULARIO VAI PAR ROTA DE DETROY COM OS DOIS PARAMENTROS, id DO Pessoa E ID DO DETALHE
+NÂO ESQUECER AS DIRETRIZES @csrf e O METHOD (DELETE)
+
+  @section('content')
+   
+            <div class="card">
+            
+        <div class="card-body">
+       <ul>
+       <li><strong>NOME  :  </strong>{{$celefone->banco}}</li>
+       <li><strong>AGENCIA  :  </strong>{{$celefone->agencia}}</li>
+       <li><strong>Telefone  :  </strong>{{$celefone->celefone}}</li>
+       </ul> 
+       
+       </div>
+        <div class="car-footer">
+            <form action="{{route('telefones.pessoa.destroy', [$pessoa->id, $telefone->id])}}" method="post">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-danger">Deletar a telefone {{$telefone->telefone}} de {{$pessoa->name}} </button>
+            </form>
+
+           </div>
+       </div>
+       @endsection
+
+---A view admin\pages\pessoas\telefone\show.blade.php FICA ASSIM 
+@extends('adminlte::page')
+
+@section('title', "Detalhes da Telefone de {$pessoa->name}")
+
+@section('content_header')
+
+
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{{route('admin.index')}} ">Dashboard</a></li>
+    <li class="breadcrumb-item" aria-current="page"><a href="{{route('pessoas.index')}}" >Pessoaos</a></li>
+   
+    <li class="breadcrumb-item" aria-current="page"><a href="{{route('telefones.pessoa.index', $pessoa->id)}}" class="active">Detalhes</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a href="{{route('telefones.pessoa.edit', [$pessoa->id, $telefone->id])}}" class="active">Detalhes</a></li>
+</ol>
+</nav>
+
+<h1> Detalhes da Telefone de {{$pessoa->name}} </h1>
+
+@stop
+
+@section('content')
+   
+            <div class="card">
+            
+        <div class="card-body">
+       <ul>
+       <li><strong>NOME   ...</strong>{{$telefone->numero}} </li>
+       <li><strong>DESCRIÇÃO   ...</strong>{{$telefone->description}} </li>
+      
+       </ul> 
+       
+       </div>
+       <div class="car-footer">
+            <form action="{{route('telefones.pessoa.destroy', [$pessoa->id, $telefone->id])}}" method="post">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="btn btn-danger">Deletar a telefone {{$telefone->telefone}} de {{$pessoa->name}} </button>
+            </form>
+
+           </div>
+       </div>
+       @endsection
+
+------------------------------------------------------------OK CONFERIR --
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXxxxXXXXXXXXXXXXXXXXXXXN   NÃO FOI FEITO
+-----------ERRARA ---A ROTA DE CREATE TEM QUE VIM ANTES DA CHAMADA DA URL, ENTAO VAMOS COLOCAR ANTES OU LA EM CIMA
+Route::get('pessoas/{url}/Celefones/create', 'CelefonePessoaController@create')->name('Celefones.pessoas.create');
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXx - NÃO FOI FEITO
+
+-----------------------------------------------------------------------------OK PERFEITO
+
+9MT---------------VAMOS AGORA EVITAR QUE UM Pessoa COM Telefone SEJA DELETADO, ANTES DO DELETE DOS TELEFONES
+vamos no metodo que DELETA o Pessoa em PessoaController e no metodo Detroy podemos passar todos os relacionamentos
+numa rais ou apenas um relacionamento 
+public function destroy($url)
+    {
+        $pessoa = $this->repository
+                        ->with ('telefones')
+                        ->where('id', $id)
+                        ->first();
+
+E DEPOIS FAZ UM CONDICIONAL COM IF (se existir Pessoaos com TElefone maior que ZERO redirecione para tras e 
+mande a mensagem)    FICANDO ASSIM NOSSO DETROY METODO do PessoaController
+ public function destroy($id)
+    {
+        $pessoa = $this->repository
+                        ->with ('telefones')
+                        ->where('id', $id)
+                        ->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+        
+        if($pessoa->telefones->count>0) {
+                     return redirect()
+                     ->back()    
+                     ->with('error', 'Existe telefone relacionado a este pessoao, delete primeiro os telefones');  
+                    }
+
+            $pessoa->delete();
+
+        return redirect()->route('pessoas.index');
+    }
+
+----------------------------- PARA CONHECIMENTO O METODO DESTROY DE PESSOA ESTA ASSIM 
+public function destroy($id)
+    {
+
+     /*
+
+        $pessoa = $this->repository
+                        ->where('id', $id)
+                        ->first();
+
+        if (!$pessoa)
+            return redirect()->back();
+        
+            $pessoa->delete();
+
+        return redirect()->route('pessoas.index');
+
+     */
+             //FAREMOS ISSO SO NO FINAL---EVITAR QUE UM Pessoa COM CONTA SEJA DELETADO, ANTES DO DELETE DOS CONTAS
+
+             $pessoa = $this->repository
+             ->with ('contas')
+             ->where('id', $id)
+             ->first();
+
+                if (!$pessoa)
+                return redirect()->back();
+
+                if($pessoa->contas->count>0) {
+                        return redirect()
+                        ->back()    
+                        ->with('error', 'Existe detalhes relacionado a este pessoao, delete primeiro os detalhes');  
+                        }
+
+                $pessoa->delete();
+
+                return redirect()->route('pessoas.index');
+           
+                //F FASE 3 DE DELETAR --FAREMOS ISSO SO NO FINAL---EVITAR QUE UM Pessoa COM TELEFONE SEJA DELETADO, ANTES DO DELETE DOS TELEFONES
+                   $pessoa = $this->repository
+                                    ->with ('telefones')
+                                    ->where('id', $id)
+                                    ->first();
+            
+                    if (!$pessoa)
+                        return redirect()->back();
+                    
+                    if($pessoa->telefones->count>0) {
+                                return redirect()
+                                ->back()    
+                                ->with('error', 'Existe telefone relacionado a este pessoao, delete primeiro os telefones');  
+                                }
+                         
+    }
+
+------------------PARA EXIBIR A MENSAGEM VAMOS TER QUE IR NA view SHOW DO MODULO Pessoa E EXIBE NO LOCAL DESEJADA
+CHAMANDO PELO  @include ('admin\includes\alerts')
+@extends('adminlte::page')
+
+@section('title', "DETALHE Pessoaos  {$pessoa->name} ")
+
+@section('content_header')
+<h1>Detalhe do Palno <b>{{ $pessoa->name }}</b>  </h1>
+
+@stop
+
+@section('content')
+
+            <div class="card">
+            <div class="card-body">
+            <ul>
+            <li>
+            <strong>NOME</strong> {{ $pessoa->name }}
+            </li>
+            <li>
+            <strong>Url</strong> {{ $pessoa->vulgo }}
+            </li>
+           
+            <li>
+            <strong>DESCRIÇÂO</strong> {{ $pessoa->description }}
+            </li>
+            </ul>
+            @include ('admin\includes\alerts')
+            <form action=" {{ route('pessoas.destroy', $pessoa->id) }}"  method="POST"  >
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger">DELETAR O PessoaO {{ $pessoa->name }}</button>
+               
+                </form>
+            </div>
+            </div>
+            @endsection
+
+---------------------------------------------------------  OK FEITO - NAO TESTADO, ATE AQUI NAO INTERVIU NAS OUTRAS FUNCIONALIDADES
+
+0MO----------------------------------------MODULO ORGANIZAÇÃO----------------------------------
