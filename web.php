@@ -18,9 +18,36 @@ Route::prefix('admin')
         ->group(function() {
 
 
-        
- //ROTAS DE TELEFONE
 
+            // ROTA DAS ORCRIM X PESSOA 
+
+           Route::get('orcrims/{id}/pessoa/{idPessoa}/detach', 'OrcrimPessoaController@detachPessoaOrcrim')->name('orcrims.pessoa.detach');
+           Route::post('orcrims/{id}/pessoas', 'OrcrimPessoaController@attachPessoasOrcrim')->name('orcrims.pessoas.attach');         
+           Route::any('orcrims/{id}/pessoas/create', 'OrcrimPessoaController@pessoasAvailable')->name('orcrims.pessoas.available');  
+           Route::get('orcrims/{id}/pessoas', 'OrcrimPessoaController@pessoas')->name('orcrims.pessoas');
+          /*   ESSA ROTA È ASSOCIADA A PAGINA PESSOA>INDEX (para exibir as orcrim que pertence a pessoa) */
+           Route::get('pessoas/{id}/orcrims', 'OrcrimPessoaController@orcrims')->name('pessoas.orcrims');
+
+              //ROTAS DE MEMBROS DA  ORCRIM
+
+
+              Route::post('orcrims/{id}/membros', 'MenbroOrcrimController@store')->name('membros.orcrim.store');
+              Route::get('orcrims/{id}/membros/create', 'MenbroOrcrimController@create')->name('membros.orcrim.create'); 
+              Route::get('orcrims/{id}/membros', 'MenbroOrcrimController@index')->name('membros.orcrim.index'); 
+
+
+              //ROTAS DE ORCRIM
+        
+        Route::put('orcrims/{id}', 'OrcrimController@update')->name('orcrims.update');
+        Route::get('orcrims/{id}/edit', 'OrcrimController@edit')->name('orcrims.edit');
+        Route::any('orcrims/search', 'OrcrimController@search')->name('orcrims.search');
+        Route::delete('orcrims/{id}', 'OrcrimController@destroy')->name('orcrims.destroy');
+        Route::get('orcrims/{id}', 'OrcrimController@show')->name('orcrims.show'); 
+        Route::post('orcrims', 'OrcrimController@store')->name('orcrims.store');
+        Route::get('orcrims/create', 'OrcrimController@create')->name('orcrims.create');         
+        Route::get('orcrims', 'OrcrimController@index')->name('orcrims.index');
+        
+           //ROTAS DE TELEFONE
 
     Route::delete('pessoas/{id}/telefones/{idtelefone}', 'TelefonePessoaController@destroy')->name('telefones.pessoa.destroy');
     Route::get('pessoas/{id}/telefones/{idtelefone}', 'TelefonePessoaController@show')->name('telefones.pessoa.show');        
