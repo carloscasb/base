@@ -9,6 +9,12 @@ class Pessoa extends Model
     // CAMPOS QUE PODEM SER PREENCHIDOS
     protected $fillable = ['name', 'url', 'vulgo', 'mae', 'genero', 'rg', 'exp', 'cpf', 'situa', 'nasc', 'description'];
 
+
+    // RELACIONAMENTO DAS PESSOAS COM A ORCRIMS- (as orcrims possivel de uma pessoa - muito para muito)
+        public function orcrims() {
+            return $this->belongsToMany(Orcrim::class);
+        }   
+
         // RELACIONAMENTO COM Conta   ----- UMA PESSOA PODE TER VARIAS CONTAS
 
     public function contas() {
