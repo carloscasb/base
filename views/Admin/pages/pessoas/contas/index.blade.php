@@ -10,7 +10,7 @@
     <li class="breadcrumb-item"><a href="{{route('admin.index')}} ">Dashboard</a></li>
     <li class="breadcrumb-item" aria-current="page"><a href="{{route('pessoas.index')}}" >Pessoas</a></li>
    
-    <li class="breadcrumb-item active" aria-current="page"><a href="{{route('contas.pessoa.index', $pessoa->id)}}" class="active">Detalhes</a></li>
+    <li class="breadcrumb-item active" aria-current="page"><a href="{{route('contas.pessoa.index', $pessoa->id)}}" class="active">Contas</a></li>
   </ol>
 </nav>
 

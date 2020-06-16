@@ -29,7 +29,7 @@
                 <tr>
                     <th>Nome</th>
                     <th>Vulgo</th>
-                     <th style="width: 200px">Ação</th>
+                     <th style="width: 250px">Ação</th>
 
                 </tr>
 
@@ -43,6 +43,7 @@
                     <a href="{{ route('pessoas.edite', $pessoa->id) }}" class="btn btn-primary"><i class="fab fa-searchengin"></i></a>
                     <a href="{{ route('pessoas.edit', $pessoa->id) }}" class="btn btn-info">Edit</a>
                     <a href="{{ route('pessoas.show', $pessoa->id) }}" class="btn btn-warning">VER</a>
+                    <a href="{{ route('pessoas.orcrims',  $pessoa->id) }}" class="btn btn-warning" title="ORCRIM assocadas"><i class="fas fa-users"></i></a>
                     </td>
                     </tr>
                 @endforeach
