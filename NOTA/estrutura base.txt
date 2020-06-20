@@ -6169,7 +6169,7 @@ class OrcrimPessoaController extends Controller
 
 }
 
----NOSSA VIEW orcrims.prssoas.pessoa.blade FICOU ASSIM 
+---NOSSA VIEW orcrims.pessoas.pessoa.blade FICOU ASSIM 
 
 @extends('adminlte::page')
 
@@ -6344,31 +6344,50 @@ class OrcrimPessoaController extends Controller
     </div>
 @stop
 
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX ABAIXO TENTEI FAZER UM RELACIONAMNETO MODULO
+MEMBRO_ORCRIM (nao conseguir dessa forma vamos pular e tentar de outra forma)  --ACREDITO QUE FOI A FORMA DA MIGARTION
+QUE NAO INCLUIR O RELACIONAMNETO COM PESSOA (vou deixar aqui para ditatico ou aparecer uma solução)
+
+
+
 0MMORC--------MODULO MEMBROS DA ORCRIM------------------------------ (experimetal)
 TENTAR COLOCAR AS FUNCIONALIDADES  E DETALHES  DA PESSOA DENTRO DE UMA ORCRIM
+
+---Antes de TUDO coloremos um icones para realizar o link da PAgina membros.orcrim.index - PAGINA COM DETALHES E FUNCIONALIDADAES 
+PARA INDEXAR
+----- VAMOS FAZER  NO LINK COM O icom SECRET DA PAGINA pages.orcrims.index para a pagina pages.orcrims.acesso (DIRETO)
+----VAMOS EM ORCRIMS.INDEX 
+  <body>
+                @foreach($orcrims as $orcrim)
+                 <tr>
+                     <td>
+                    <a href="{{ route('orcrims.pessoas', $orcrim->id) }}" class="btn btn-warning" title="Vincular Membros"><i class="fas fa-users"></i>Menbros</a>
+                    </td>
+                    <td>{{ $orcrim->name }}</td>
+                    <td>{{ $orcrim->sigla }}</td>
+                    <td>
+                    <a href="{{ route('orcrims.edit', $orcrim->id) }}" title="Editar"><i class="fas fa-edit"></i></a>
+                    </td>
+                     <td>
+                    <a href="{{ route('orcrims.show', $orcrim->id) }}" title="Deletar"><i class="fas fa-trash-alt"></i></a>
+                    </td>
+                    
+                    <td>
+                    <a href="{{ route('orcrims.membros.acesso', $orcrim->id) }}", title="função dentro da Orcrim" ><i class="fas fa-user-secret"></i></a>
+                    </td>
+                  </tr>
+                @endforeach
+            </body>
+------ATENÇÃO ESSE LINK PODE SER DIRETO DO ICOME (botao) MEMBROS Na mesma view pages.orcrims.index 
 
 1MMORC------------------CRIAR MODEL MembroOrcrim DENTRO DE MODELS--------------------------------------
 # php artisan make:model Models\MembroOrcrim -m
 
--------------------CODIFICA A Model  ---ESPECIFICA QUE A TABELA VAI SE CHAMAR membros_orcrim PELO protected
-<?php
+--------E CODIFICAR A MIGRATION membros_orcrim COM AS CHAVES ESTRANGEIRA PELO iD DAS TABELAS Orcrims e pessoas
+que ja temos no BD  ----ERRI AQUI E SO COLOQUEI UMA CHAVE ESTRANGEIRO  $table->unsignedBigInteger('orcrim_id');;)  - vamos seguir
 
-namespace App\Models;
-
-use Illuminate\Database\Eloquent\Model;
-
-class MembroOrcrim extends Model
-{
-    //
-
-    protected $table = 'membros_orcrim';          //     MODIFICAMOS O NOME DA TABELA AQUI (opcional)
-    protected $fillable = [ 'name', 'func', 'lidera', 'quebrada', 'padrinho', 'databast', 'localbast', 'atua',  'description'];
-}
-
----------------------CODIFICA A MIGARTION (com relacionamneto) ---NAO ESQUECER DE MUDAR O NOME DA TABELA EM 
-Schema---membros_orcrim , POIS FOI ASSIM QUE A DECLAREI NA MODEL
-
-   public function up()
+public function up()
     {
         Schema::create('membros_orcrim', function (Blueprint $table) {
             $table->bigIncrements('id');
@@ -6405,745 +6424,378 @@ Schema---membros_orcrim , POIS FOI ASSIM QUE A DECLAREI NA MODEL
     }
 }
 
-
-2MMORC------------------AGORA VAMOS FAZER(declarar) UM RELACIONAMNETO DE Pessoa COM Tembro------------------ATENÇÂO IMPORTANTE
-O relacionamneto entre essa duas tabelas vai ser de 1:1 para Pessoa pois tera so tera varios detalhe
-----O RELACIONAMNETO  VAI SER NA Model Orcrim.php  
-class Orcrim extends Model
-{
-    //
-    protected $fillable = ['name', 'url', 'estado', 'sigla',  'description'];
-
-     // RELACIONAMENTO COM Membro   ----- UMA ORCRIM PODE TER VARIAS MembroS
-
-     public function membros() {
-        return $this->hasMany(MembroOrcrim::class);
-}   
-
-    public function search($filter = null) {
-
-        $results = $this->where('name' , 'LIKE', "%{$filter}%" )
-                        ->orwhere('description' , 'LIKE', "%{$filter}%" )
-                        ->paginate(1);
-        return $results ;                
-}
-
-
-}
-
------------E NA Model MenbroOrcrim  VAI SER MUITOS PARA UM N:1 pois a Tembroé espcifico de um pessoao
-
-class MembroOrcrim extends Model
-{
-    //
-
-    protected $table = 'membros_orcrim';          //     MODIFICAMOS O NOME DA TABELA AQUI (opcional)
-    protected $fillable = [ 'name', 'func', 'lidera', 'quebrada', 'padrinho', 'databast', 'localbast', 'atua',  'description'];
-
-            // RELACIONAMENTO COM PESSOAS   ----- UMA Membro SÓ PODE PERTENCER UMA ORCRIM 
-            
-            public function orcrim() {
-                return $this->belongsTo(Orcrim::class);
-
-            }
- }       
-
-
--------------------RODAR MIGRATE PARA CRIAR TABELA
+------------ RODAR MIGRATE PARA FAZER A TABELA NO BD  (não esquecer de SALVAR)
 
 # php artisan migrate
 
------------------------------------------------------------------OK PERFEITO - TABELA CRIADA
+-----------OK perfeito (criou tabela -- membros_orcrim)
 
-3MMORC-------------------------------------VAMOS CRIAR O MembroCONTROLLER ----------------------------
-# php artisan make:controller Admin\MenbroOrcrimController
+2MMORC----------------------CRIAR ROTA (membros_orcrim)
+    //ROTAS DE MEMBROS DA  ORCRIM
 
---------------E CRIAR A ROuter INDEX DO Tembro (acima das rotas da Contas)
- Route::get('orcrims/{id}/membros', 'MenbroOrcrimController@index')->name('membros.orcrim.index'); 
+ Route::get('orcrims/{id}/membros', 'MenbroOrcrimController@pessoas')->name('membros.orcrim'); 
 
+3MMORC ----------- E ENTAO VAMOS CRIAR NOSSO CONTROLLER (MenbroOrcrimController)           
 
----VAMOS TRABALHAR NO MenbroCONTROLLER ---IMPORTANTE  (erro de portugues, coloquei Menbro = Membro)
---FAREMOS O METODO CONSTRUCTOR PRIMEIRAMENTE COM DOIS OBJETO repository e Orcrim
+# php artisan make:controller Admin\MenbroOrcrimController                      //  PODERIA TER SIDO --resource
 
-namespace App\Http\Controllers\Admin;
+OBS: SE DER UM ERRO (e vai dar ) È PQ JA TEMOS A ROTA DECLARADA, BOM COMETAR ELA PARA RODAR O make:controller FAREMOS ISSO EM
+router\web.php
 
-use App\Http\Controllers\Controller;
-use App\Models\MembroOrcrim;
-use App\Models\Orcrim;
-use Illuminate\Http\Request;
-
-class MenbroOrcrimController extends Controller
-{
-    //
-
-    private $repository, $orcrim;
-
-    public function __construct(MembroOrcrim $membroorcrim, Orcrim $orcrim )
-       {
-           $this->repository= $membroorcrim;
-           $this->orcrim = $orcrim;
-        }
+//   Route::get('orcrims/{id}/membros', 'MenbroOrcrimController@membros')->name('membros.orcrims'); 
 
 
--------DEPOIS COMECAREMOS PELO METODO iNDEX DO MenbroOrcrimCOMTROLLER (pela id)
+4MMORC-----IR NA MODELS\Orcrim E LIBERAR O RELACIONAMENTO COM OS 
+// RELACIONAMENTO DA ORCRIM COM OS MEMBROS - 
+        public function membros() {
+            return $this->belongsToMany(Membro::class);
+        } 
+------ACABOU FICANDO ESSA ABAIXA
+ // RELACIONAMENTO COM Membro   ----- UMA ORCRIM PODE TER VARIAS MembroS
 
-   public function index($idOrcrim)
-        {
-          If(!$orcrim = $this->orcrim->where ('id', $idOrcrim)->first()) {         //SE NÃo ACHOU (recuperando pela url)
-            return redirect()->back();
-          }                                                                   //SE ACHOU (recuperando pela url)
-                 
-          // $membros = $pessoa->membros();
-          $membros = $orcrim->membros()->paginate(); 
-          
-        return view('admin.pages.orcrims.membros.index', [
-            'pessoa' => $orcrim,
-            'membros'=> $membros,
+     public function membros() {
+        return $this->hasMany(MembroOrcrim::class);
+-------------------
 
-            ]);
 
-            }
-                
---------------------------------------------CRIAREMOS A view Membro\INDEX -LISTAR - (dentro de (admin\pages\orcrims\membros\index,blade.php)
- 
+------IR NA MODElS\MembrosOcrim e LIBERAR RELACIONAMENTO COM OS ORCRIM
+// RELACIONAMENTO DAS MEMBROS COM A ORCRIMS - ESSA SER os ORCRIM  POSSIVEL NUM PESSOA
+public function orcrims() {
+    return $this->belongsToMany(Orcrim::class);
+}   
+---------ACABOU FICANDO ESSA ABAIXA
+
+ // RELACIONAMENTO COM orcrim   ----- UMA Membro SÓ PODE PERTENCER UMA ORCRIM 
+            
+            public function orcrim() {
+                return $this->belongsTo(Orcrim::class);
+-ATENÇÂO------------------  PODERIA SER AS DUAS DE CIMA, MAS FIZ A DUAS DE BAIXO
+
+---PRONTO JA ESTAMOS COM A MenbroOrcrimController@index CRIADO VAMOS CODIFICAR (nao esquecer de decometar a router)
+---ESSA CODIFICAÃO VAI SER BEM DIFERENTE DO OUTROS CONTROLLER
+---COMO SEMPRE VAMOS COMEÇAR PELO CONSTRUCT COM DUAS VARIAVEIS ($orcrim, $pessoa )  -- Não esquecer de declara as classes
+
+   protected $orcrim, $pessoa;
+
+    public function __construct(Orcrim $orcrim, Pessoa $pessoa)
+    {
+        $this->orcrim = $orcrim;
+        $this->pessoa = $pessoa;
+
+      //  $this->middleware(['can:orcrims']);
+    }
+
+
+---E VAMOS FAZER É LISTAR OS PESSOAS DE UM Orcrim (listar os pessoas de um Orcrimo ----RECUPERANDO NOSSOS pessoa PELO id   EM UMA Function orcrims
+E LEVAR O RESULTADOS PARA UMA view de LISTAGEM
+
+ // LISTAGEM DAS PESSOA DE UMA ORCRIM 
+
+   public function pessoas($idOrcrim)
+   {
+       if (!$orcrim = $this->orcrim->find($idOrcrim)) {
+           return redirect()->back();
+       }
+
+       $pessoas = $orcrim->pessoas()->paginate();
+
+       return view('admin.pages.orcrims.membros.membros', compact('orcrim', 'pessoas'));
+   }
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx STANDBOAD PARA APAGAR ()
+
+ // LISTAGEM das ORCRIM  DE UMA  PESSOA
+   public function orcrims($idPessoa)
+   {
+       if (!$pessoa = $this->pessoa->find($idPessoa)) {
+           return redirect()->back();
+       }
+
+       $orcrims = $pessoa->orcrims()->paginate();
+
+       return view('admin.pages.pessoas.orcrims.orcrims', compact('pessoa', 'orcrims'));
+   }
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+5MMORC--------------(LISTAR MEMBROS)  VANOS FAZER A view de LISTAGEM DAS PESSOA DE UMA ORCRIM    admin.pages.orcrims.membros.membros.blade.php
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX AQUI NA VERDADE EU PULEI PARA 6MMORC
 @extends('adminlte::page')
 
-@section('title', "Detalhes do Pessoaos {$pessoa->name}")
+@section('title', "PESSOAS do orcrimo {$orcrim->name}")
 
 @section('content_header')
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('admin.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Pessoas</a></li>
+    </ol>
 
-
-<nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="{{route('admin.index')}} ">Dashboard</a></li>
-    <li class="breadcrumb-item" aria-current="page"><a href="{{route('pessoas.index')}}" >Pessoas</a></li>
+    <h1>PESSOAS da orcrim <strong>{{ $orcrim->name }}</strong></h1>
     
-    <li class="breadcrumb-item active" aria-current="page"><a href="{{route('membros.orcrim.index', $pessoa->id)}}" class="active">Detalhes</a></li>
-  </ol>
-</nav>
+    <a href=" {{ route('orcrims.membros.acesso', $orcrim->id) }} " class="btn btn-dark">ADD NOVA PERMISSÃO</a>
 
 @stop
 
 @section('content')
-   
-            <div class="card">
-            
+    <div class="card">
         <div class="card-body">
-
- @include ('admin\includes\alerts')
-
-        <table class="table table-condensed">
-            <thead>
-                <tr>
-                    <th>Banco</th>
-                    <th>Agencia</th>
-                   
-                    <th style="width: 50px">Ação</th>
-
-                </tr>
-
-            </thead>
-            <body>
-                @foreach($membros as $membro)
-                 <tr>
-                    <td>{{ $membro->numero }}</td>
-                    <td>{{ $membro->discrypton }}</td>
-                   
-                    
-                    <td style="width: 250px;">
-                    <a href="{{ route('pessoas.edit', $pessoa->id) }}" class="btn btn-warning">EDITAR</a>
-                    <a href="{{ route('pessoas.show', $pessoa->id) }}" class="btn btn-warning">VER</a>
-                    </td>
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th width="50">Ações</th>
                     </tr>
-                @endforeach
-            </body>
-        </table>
-       
-    
-                </div>
-            </div>
+                </thead>
+                <tbody>
+                    @foreach ($pessoas as $pessoa)
+                        <tr>
+                            <td>
+                                {{ $pessoa->name }}
+                            </td>
+                            <td style="width=10px;">
+                            <a href="{{ route('orcrims.membros.acesso', $orcrim->id) }}" ><i class="fas fa-user-secret"></i></a>
+                              
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            @if (isset($filters))
+                {!! $pessoas->appends($filters)->links() !!}
+            @else
+                {!! $pessoas->links() !!}
+            @endif
+        </div>
+    </div>
+@stop
 
-            <div class="card-footer">
+--------------------------------------------------------------------OK PERFEITO --SEGUINDO
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
-                @if (isset ($filters)) 
-                {!! $membros->appends($filters)->links() !!}
-                @else
-                 {!! $membros->links() !!}
-                @endif
+6MMORC --------ABRIR View DE CADASTRO DIRETAMENTE Trazendo peeosa e orcrim do metodo pessoasAvailable -- Atraves do 
+primeiro link secret que nos enviou pela router {{ route('orcrims.membros.acesso', $orcrim->id) }}
+------------ PRIMEIRAMENTE VAMOS LISTAR TODAS AS pessoas PARA DEPOIS ESCOLHER A pessoa 
+-----VAMOS CRIAR UMA NOVA ROTA (tipo any)
 
-               
-            </div>
+              Route::any('orcrims/{id}/membros/create', 'MenbroOrcrimController@pessoasAvailable')->name('orcrims.membros.acesso');  
+                Route::get('orcrims/{id}/membros', 'MenbroOrcrimController@pessoas')->name('membros.orcrims');
+
+
+----- NO NOSSO OrcrimPessoaController VAMOS CODIFICAR UM METODO COM O NOME membrosAcesso
+POR ENQUANTO NAO VAMOS FILTRAR , VAMOS PEGAR TODOS AS PESSOAS COM $this->pessoas->All(); ou paginate()
+
+
+    //  VAMOS PEGAR TODOS com $this->pessoas->All(); ou paginate()  ---PESSOAS QUE PODEM ESTAR DISPONIVEIS
+   public function pessoasAvailable(Request $request, $idOrcrim)
+   {
+       if (!$orcrim = $this->orcrim->find($idOrcrim)) {
+           return redirect()->back();
+       }
+
+     // $filters = $request->except('_token');
+
+     // $pessoas = $orcrim->pessoasAvailable($request->filter);
+
+      // $pessoas = $this->pessoa->All();
+      $pessoas = $this->pessoa->paginate();
+
+       return view('admin.pages.orcrims.membros.acesso', compact('orcrim', 'pessoas', 'filters'));
+   }
+
+
+7MMORC--------------VAMOS CRIAR UMA view   admin.pages.orcrims.membros.acesso  - DEIXEI PARTE DE UMA OUTRA APLICAÇÂO
+PODEMOS E DEVEMOS TIRAR---VOU DEIXAR POR ENQUANTO
+
+@extends('adminlte::page')
+
+@section('title', 'PESSOASdisponíveis para o orcrimo {$orcrim->name}')
+
+@section('content_header')
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('admin.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('orcrims.index') }}">ORCRIM</a></li>
+        <li class="breadcrumb-item"><a href="{{ route('orcrims.pessoas', $orcrim->id) }}">Perfis</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('orcrims.pessoas.available', $orcrim->id) }}" class="active">Disponíveis</a></li>
+    </ol>
+
+    <h1>PESSOASdisponíveis para o orcrimo <strong>{{ $orcrim->name }}</strong></h1>
 
 @stop
 
+@section('content')
+<div class="card">
+        <div class="card-header">
+<form>
+  <div class="form-row">
+    <div class="form-group col-md-3">
+      <label for="inputEmail4">ORCRIM</label>
+      <input type="email" class="form-control" id="inputEmail4" value="{{ $orcrim->name }}">
+    </div>
+    <div class="form-group col-md-1">
+      <label for="inputEmail4">ID ORCRIM</label>
+      <input type="email" class="form-control" id="inputEmail4" value="{{ $orcrim->id }}">
+    </div>
+    <div class="form-group col-md-6">
+      <label for="inputState">MEMBRO</label>
+      <select id="inputState" class="form-control">
+      @foreach ($pessoas as $pessoa)
+      <option selected>Choose...</option>
+        <option value ="{{$pessoa->name }}"> {{ $pessoa->name }}</option>
+        @endforeach
+      </select>
+    </div>
+  </div>
+  <div class="form-row">
+  <div class="form-group col-md-3">
+      <label for="inputState">FUNÇÂO</label>
+      <select id="inputState" class="form-control">
+        <option selected>Sem função...</option>
+        <option value="Sintonia da rua" >Sintonia da rua</option>
+        <option value="Geral da rua" >Geral da rua</option>
+        <option value="Sintonia da gravata" >Sintonia da gravata</option>
+      </select>
+    </div>
+    <div class="form-group col-md-3">
+        <label for="inputAddress">LIDERANÇA</label>
+        <input type="text" class="form-control" id="inputAddress" placeholder="1234 Main St" value="{{ $pessoa->name}}">
+    </div>
+    </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="inputCity">QUEBRADA</label>
+      <input type="text" class="form-control" id="inputCity">
+    </div>
+    <div class="form-group col-md-6">
+      <label for="inputState">PADRINHO</label>
+      <select id="inputState" class="form-control">
+      @foreach ($pessoas as $pessoa)
+      <option selected>Sem padrinho...</option>
+        <option value ="{{$pessoa->name }}"> {{ $pessoa->name }}</option>
+        @endforeach
+      </select>
+    </div>
+   </div>
+   <div class="form-row">
+   <div class="form-group col-md-2">
+      <label for="inputCity">DATA FILIAÇÂO</label>
+      <input type="text" class="form-control" id="inputCity">
+    </div>
 
---------AGORA VAMOS NA View index de ORCRIM --------- 
-E COLOCAREMOS O LINK  PARA ROUTER INDEX DA View adimn\pages\orcrims\membros\index.blade.php
- ref="{{ route('membros.orcrim.index', $orcrim->id) }}" class="btn btn-warning"><i class="fas fa-users"></i>Menbros</a>
- 
- @foreach($orcrims as $orcrim)
-                 <tr>
-                     <td>
-                    <a href="{{ route('membros.orcrim.index', $orcrim->id) }}" class="btn btn-warning"><i class="fas fa-users"></i>Menbros</a>
-                    </td>
-                    <td>{{ $orcrim->name }}</td>
-                    <td>{{ $orcrim->sigla }}</td>
-                    <td>
----------------------------------------------------------------------------OK PERFEITO  --(vamos ajustar)
+    <div class="form-group col-md-2">
+      <label for="inputCity">LOCAL DE FILIAÇÃO</label>
+      <input type="text" class="form-control" id="inputCity">
+    </div>
+    <div class="form-group col-md-4">
+      <label for="inputCity">AREA DE ATUAÇÃO</label>
+      <input type="text" class="form-control" id="inputCity">
+    </div>
+   </div>
+   <div class="form-row">
+   <div class="form-group col-md-2">
+      <label for="inputCity">OBSERVAÇÂO</label>
+      <input type="text" class="form-control" id="inputCity">
+    </div>
+       </div>
+  <button type="submit" class="btn btn-primary">INSERIR/CADASTRAR</button>
+</form>
+</div>
+ </div>
+         
 
-
-
-4MMORC---------------------CADASTRAR NOVOS TembroS DE Pessoa-------------------------------CADASTRAR TembroS
----------CRIAR router Create e store (que cadastra realmente)
-
-   //ROTAS DE Membro
-
-    Route::post('orcrims/{id}/membros', 'MenbroOrcrimController@store')->name('membros.orcrim.store');
-    Route::get('orcrims/{id}/membros/create', 'MenbroOrcrimController@create')->name('membros.orcrim.create');       
-    Route::get('pessoas/{id}/tembros', 'MenbroOrcrimController@index')->name('tembros.pessoa.index');       
-
-
- --------------------------EM MenbroOrcrimController VAMOS FAZER NOSSO METODO create e story------------
-------METODO create
-       public function create($idOrcrim)
-            {
-                if (!$orcrim = $this->orcrim->where('id', $idOrcrim)->first()) {
-                    return redirect()->back();
-                }
-        
-                return view('admin.pages.orcrims.membros.create', [
-                    'orcrim' => $orcrim,
-                ]);
-            }
--------------------METODO Store  
-        
-   public function store(Request $request, $idOrcrim )
-        {
-            if (!$orcrim = $this->orcrim->where('id', $idOrcrim)->first()) {
-                return redirect()->back();
-            }
     
-            // $data = $request->all();
-            // $data['orcrim_id'] = $orcrim->id;
-            // $this->repository->create($data);
-            $orcrim->membros()->create($request->all());
-    
-            return redirect()->route('membros.orcrim.index', $orcrim->id);
-        }
------------------APROVEITAMOS E VAMOS NA MODEL Membrosorcrim.php AGORA DEFINIR OS ATRIBUTOS QUE PODEM SER PREECHIDOS COM OS DADOS
 
-<?php
+         
+       
+        
+    <div class="card">
+        <div class="card-header">
+            <form action="{{route('orcrims.pessoas.available', $orcrim->id)}}" method="POST" class="form form-inline">
+                @csrf
+                <input type="text" name="filter" placeholder="Filtro" class="form-control" value="{{ $filters['filter'] ?? '' }}">
+                <button type="submit" class="btn btn-dark">Filtrar</button>
+            </form>
+        </div>
+        <div class="card-body">
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th width="50px">#</th>
+                        <th>Nome</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <form action="{{ route('orcrims.pessoas.attach', $orcrim->id) }}" method="POST">
+                        @csrf
 
-namespace App\Models;
+                        @foreach ($pessoas as $pessoa)
+                            <tr>
+                                <td>
+                                    <input type="checkbox" name="pessoas[]" value="{{ $pessoa->id }}">
+                                </td>
+                                <td>
+                                    {{ $pessoa->name }}
+                                </td>
+                            </tr>
+                        @endforeach
 
-use Illuminate\Database\Eloquent\Model;
-    class MenbroOrcrim extends Model
+                        <tr>
+                            <td colspan="500">
+                                @include('admin.includes.alerts')
+
+                                <button type="submit" class="btn btn-success">TIRAR</button>
+                            </td>
+                        </tr>
+                    </form>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            @if (isset($filters))
+                {!! $pessoas->appends($filters)->links() !!}
+            @else
+                {!! $pessoas->links() !!}
+            @endif
+        </div>
+    </div>
+@stop
+
+
+----------------------------------------------------------------------------------
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX NÃO CONSEGUIE CADASTRAR
+8MMORC---------INSERIR OU CADASTRAR MEMNBRO (RELACIONAR COM ORCRIM -  (ANTERIORMENTE Esquecir de 
+fazer o relacionamento com a identidade pessoa (pessoa_id), acho qe ficaria MELHOR)
+
+-- APAGINA DE CADASTRO SERA A view ZCESSO  admin.pages.orcrims.membros.acesso
+
+-------------------VAMOS NO MenbroOrcrimController E  CODIFICANDO O METODO create 
+
+public function create()
+    {
+        return view('admin.pages.orcrim.membros.create');
+    }
+
+---E NO METODO STORE que faz o cadastro em si) PEGAR_MOS NOSSO REPOSITORIO DE DADOS E
+REDIRECIONAR PARA view DE LISTAGEM
+
+ //  public function store(StoreUpdateProfile $request)
+   public function store(Request $request)
+    {
+        $this->repository->create($request->all());
+
+        return redirect()->route('profiles.index');
+    }
+
+----- E AGORA VAMOS NA MODEL MEMBROS E LIBERAMOS OS CAMPOS QUE PODEM RECEBER INSERÇÂO   (fillable)
+ class Menbro extends Model
 {
      protected $table = 'membros_orcrim';          //     MODIFICAMOS O NOME DA TABELA AQUI (opcional)
     protected $fillable = [ 'name', 'func', 'lidera', 'quebrada', 'padrinho', 'databast', 'localbast', 'atua',  'description'];
 
-            // RELACIONAMENTO COM PESSOAS   ----- UMA Membro SÓ PODE PERTENCER UMA ORCRIM 
-            
-            public function orcrim() {
-                return $this->belongsTo(Orcrim::class);
-
-            }
 }
 
- -------CRIAR view create EM resource\views\admin\pages\orcrins\membros\create.blade.php--------------------
- -------ATENÇÂO
- a view create, sera criada normalmente mais sera inserida parte do seu codigo na view index (listagem) - FAREMOS 
- UMA View SÓ MOSTRANDO OS DOIS METODOS (cadastrar e listar) --CRIAREMOS NORMAL (passando para  rota tembros.pessoa.create e o argumento da id do PessoaO $pessoa->id)
- 
-@extends('adminlte::page')
-
-@section('title', 'Cadastrando Nova Tembro')
-
-@section('content_header')
-<link rel="stylesheet" type="text/css" href="/css/base.css">
-<ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
-        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Pessoas</a></li>
-        
-    </ol>
-<h1>Cadastrando Novo Tembro {{$pessoa->name}}  </h1>
-
-@stop
-
-@section('content')
-   
-            <div class="card">
-            <div class="card-body">
-            <form action="{{route('tembros.pessoa.store',  $pessoa->id)}}" class="form" method="POST" >
-@csrf
-@include('admin.includes.alerts')
-
-  <div class="form-row">
-    <div class="form-group col-md-3">
-      <label> Numero</label>
-      <input class="form-control" type="text" name="numero" placeholder="numero" value=" {{$pessoa->numero ?? old('numero')}} ">
-    </div>
-    <div class="form-group col-md-3">
-      <label >Descrição</label>
-      <input type="text" class="form-control" name="description" placeholder="description" value=" {{$pessoa->description ?? old('description')}} ">
-    </div>
-        
-   </div>
-    <button type="submit" class="btn btn-primary"  >ADD TembroS</button>
-</form>
-</div>
-</div>
-@endsection   
- 
-5MT----------VAMOS AGORA MODIFICAR A View Index (admin\pages\orcrims\membros\index.blade.php) para receber PARTE DO CODIGO DE 
- INSERÇÂO DA View CREATE (admin\pages\pessoas\cembros\create,blade.php) - CADASTRANDO E LISTANDO
-  MUDAR A ROTA EM INDEX membro) E PASSAR A id (link do botao ADD)
-
-@extends('adminlte::page')
-
-@section('title', "Detalhes do Pessoaos {$pessoa->name}")
-
-@section('content_header')
-
-
-<nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="{{route('admin.index')}} ">Dashboard</a></li>
-    <li class="breadcrumb-item" aria-current="page"><a href="{{route('pessoas.index')}}" >Pessoas</a></li>
-    
-    <li class="breadcrumb-item active" aria-current="page"><a href="{{route('tembros.pessoa.index', $pessoa->id)}}" class="active">Detalhes</a></li>
-  </ol>
-</nav>
-
-<div id="cx1">
-<div class="card">
-            <div class="card-body">
-            <form action="{{route('tembros.pessoa.store',  $pessoa->id)}}" class="form" method="POST" >
-@csrf
-@include('admin.includes.alerts')
-
-  <div class="form-row">
-    <div class="form-group col-md-3">
-      <label> Numero</label>
-      <input class="form-control" type="text" name="numero" placeholder="numero" value=" {{$pessoa->numero ?? old('numero')}} ">
-    </div>
-    <div class="form-group col-md-3">
-      <label >Descrição</label>
-      <input type="text" class="form-control" name="description" placeholder="description" value=" {{$pessoa->description ?? old('description')}} ">
-    </div>
-        
-   </div>
-    <button type="submit" class="btn btn-primary"  >ADD TembroS</button>
-</form>
-</div>
-</div>
-</div>
-
-@stop
-
-@section('content')
-   
-            <div class="card">
-            
-        <div class="card-body">
-
- @include ('admin\includes\alerts')
-
-        <table class="table table-condensed">
-            <thead>
-                <tr>
-                    <th>Numero</th>
-                    <th>Descrição</th>
-                   
-                    <th style="width: 50px">Ação</th>
-
-                </tr>
-
-            </thead>
-            <body>
-                @foreach($tembros as $tembro)
-                 <tr>
-                    <td>{{ $tembro->numero }}</td>
-                    <td>{{ $tembro->discrypton }}</td>
-                   
-                    
-                    <td style="width: 250px;">
-                    <a href="{{ route('pessoas.edit', $pessoa->id) }}" class="btn btn-warning">EDITAR</a>
-                    <a href="{{ route('pessoas.show', $pessoa->id) }}" class="btn btn-warning">VER</a>
-                    </td>
-                    </tr>
-                @endforeach
-            </body>
-        </table>
-       
-    
-                </div>
-            </div>
-
-            <div class="card-footer">
-
-                @if (isset ($filters)) 
-                {!! $tembros->appends($filters)->links() !!}
-                @else
-                 {!! $tembros->links() !!}
-                @endif
-
-               
-            </div>
-
-@stop
-  -----------------------------OK PERFEITO - DA LUPA EM MODULO PESSOA VAI PARA View EDITE (sinopse da pessoa)
-ONDE TEM LINK PARA INSERÇÂO DE PARTICULARIDADESS ...EX: tembro , CONTA BANCARIA - NA view IndeX Onde CADASTRAMOS E VISUALIZAMOS A LISTAGEM
-
-------------------------------------------------------------------------------------Ok PERFEITO (sem restrição) - PRECISO AJUSTAR
-
-6MT---------------EDITAR Cembro BANCARIA DE UM Pessoa------
----PRIMERO CRIA AS ROTAS edit e update
-
- //ROTAS DE tembros
-
-    Route::put('pessoas/{id}/tembros/{idtembro}', 'MenbroOrcrimController@update')->name('tembros.pessoa.update');
-    Route::get('pessoas/{id}/tembros/{idtembro}/edit', 'MenbroOrcrimController@edit')->name('tembros.pessoa.edit');
-    Route::post('pessoas/{id}/cembros', 'CembroPessoaController@store')->name('cembros.pessoa.store');
-    Route::get('pessoas/{id}/cembros/create', 'CembroPessoaController@create')->name('cembros.pessoa.create');
-    Route::get('pessoas/{id}/cembros', 'CembroPessoaController@index')->name('cembros.pessoa.index');
-
-
--------------------------VAMOS FAZER o METODO edit e update no CembroPessoaController
- public function edit($idPessoa, $idTembro)
-        {
-            $pessoa = $this->pessoa->where('id', $idPessoa)->first();
-            $tembro = $this->repository->find($idTembro);
-    
-            if (!$pessoa || !$tembro) {
-                return redirect()->back();
-            }
-    
-            return view('admin.pages.pessoas.tembros.edit', [
-                'pessoa' => $pessoa,
-                'tembro' => $tembro,
-            ]);
-        }
-
-
-        public function update(Request $request, $idPessoa, $idTembro)
-         //public function update(StoreUpdateCembroPessoa $request, $urlPessoa, $idTembro)
-        {
-            $pessoa = $this->pessoa->where('id', $idPessoa)->first();
-            $tembro = $this->repository->find($idTembro);
-    
-            if (!$pessoa || !$tembro) {
-                return redirect()->back();
-            }
-    
-            $tembro->update($request->all());
-    
-            return redirect()->route('tembros.pessoa.index', $pessoa->id);
-        }
-
------------------CRIAR A view edit DO TembroS------
---ATENÇÂO temos que passar a id do pessoao e o id do Tembro NO LINK      
-  <li class="breadcrumb-item active" aria-current="page"><a href="{{route('tembros.pessoas.edit', [$pessoa->url, $tembro->id])}}" class="active">Edit</a></li>
-E O METODO PUT NO FORM  @method('PUT')
--------AQUI A view edit---------------------------
-
-@extends('adminlte::page')
-
-@section('title', 'Cadastrando Nova Tembro')
-
-@section('content_header')
-<link rel="stylesheet" type="text/css" href="/css/base.css">
-<ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
-        <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Pessoas</a></li>
-        
-    </ol>
-<h1>Editando Tembro {{$pessoa->name}}  </h1>
-
-@stop
-
-@section('content')
-   
-            <div class="card">
-            <div class="card-body">
-            <form action="{{route('tembros.pessoa.update', [$pessoa->id, $tembro->id])}}" class="form" method="POST" >
-            @method('PUT')
-@csrf
-@include('admin.includes.alerts')
-
-<div class="card">
-            <div class="card-body">
-            <form action="{{route('tembros.pessoa.store',  $pessoa->id)}}" class="form" method="POST" >
-@csrf
-@include('admin.includes.alerts')
-
-  <div class="form-row">
-    <div class="form-group col-md-3">
-      <label> Numero</label>
-      <input class="form-control" type="text" name="numero" placeholder="numero" value=" {{$tembro->numero ?? old('numero')}} ">
-    </div>
-    <div class="form-group col-md-3">
-      <label >Descrição</label>
-      <input type="text" class="form-control" name="description" placeholder="description" value=" {{$tembro->description ?? old('description')}} ">
-    </div>
-    
-</form>
-</div>
-<button type="submit" class="btn btn-primary"  >EDITAR TembroS</button>
-</div>
-@endsection     
-
--------------VAMOS EM index do TembroS DO Pessoa (onde exibe a listagem) E ATUALIZAR AS URL para as ROTAS CERTAS , PASSANDO A 
-URL DO Pessoa e O ID DO TembroSEM UMA RAIS  --JA FEITO
-
-  @foreach($tembros as $tembro)
-                 <tr>
-                    <td>{{ $Cembro->name }}</td>
-                    
-                    <td style="width: 250px;">
-                    <a href="{{ route('tembros.pessoa.edit', [$pessoa->id, $tembro->id]) }}" class="btn btn-warning">EDITAR</a>
-                    <a href="{{ route('pessoas.show', $pessoa->id) }}" class="btn btn-warning">VER</a>
-                    </td>
-                    </tr>
-                @endforeach
-            </body>
-        </table>
-
---------------------------------------------------- OK PERFEITO  - EDITOU
-
-7MT---------------VALIDAR Tembro (validação) ---------------------------
-
-----CRIAR REQUEST
-# php artisan make:request StoreUpdateMenbroOrcrim
-E CODIFICA    
-public function authorize()
-    {
-        return true;
-    }
-
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array
-     */
-    public function rules()
-    {
-        return [
-            //
-            'numero' => "required|min:13|max:255",
-            'description' => "required|min:4|max:255",
-           
-        ];
-    }
-}
-
----------------------------EM SEGUIDA VAMOS EM MenbroOrcrimController
-DECLARAMOS A CLASSE (la em cima ) E SUBISTITUIMOS (o Request por StoreUpdateMenbroOrcrim)  NOS METODOS strore e upade         
-namespace App\Http\Controllers\Admin;
-
-use App\Http\Requests\StoreUpadeCembroPessoa;
-use App\Http\Controllers\Controller;
-
----NOS METODOS store e update (a subistituição)
-  public function store(StoreUpdateMenbroOrcrim $request, $idPessoa)
-             // public function store(Request $request, $idPessoa )
--------update
-
-  // public function update(Request $request, $idPessoa, $idTembro)
-         public function update(StoreUpdateMenbroOrcrim $request, $idPessoa, $idTembro)
------------------------------------------------------------------------------------------OK PERFEITO
-
-8MT------------------DELETAR TembroS(em VER)---------------------
-
-----COMO SEMPRE VAMOS CRIAR AS Route (vai ter a id do pessoa, o detalis e o id do detalis)
-   //ROTAS DE Tembro
-
-
-    Route::delete('pessoas/{id}/tembros/{idtembro}', 'MenbroOrcrimController@destroy')->name('tembros.pessoa.destroy');
-    Route::get('pessoas/{id}/tembros/{idtembro}', 'MenbroOrcrimController@show')->name('tembros.pessoa.show');        
-    Route::put('pessoas/{id}/tembros/{idtembro}', 'MenbroOrcrimController@update')->name('tembros.pessoa.update');
-    Route::get('pessoas/{id}/tembros/{idtembro}/edit', 'MenbroOrcrimController@edit')->name('tembros.pessoa.edit');
-     Route::post('pessoas/{id}/tembros', 'MenbroOrcrimController@store')->name('tembros.pessoa.store');
-    Route::get('pessoas/{id}/tembros/create', 'MenbroOrcrimController@create')->name('tembros.pessoa.create');
-    Route::get('pessoas/{id}/tembros', 'MenbroOrcrimController@index')->name('tembros.pessoa.index');   
-
----VAMOS EM TembroSPessoaCONTROLLER e FAZEMOS O METODO SHOW E DETROY
-
- public function show($idPessoa, $idTembro)
-        {
-            $pessoa = $this->pessoa->where('id', $idPessoa)->first();
-            $tembro = $this->repository->find($idTembro);
-    
-            if (!$pessoa || !$tembro) {
-                return redirect()->back();
-            }
-    
-            return view('admin.pages.pessoas.tembros.show', [
-                'pessoa' => $pessoa,
-                'tembro' => $tembro,
-            ]);
-        }
-    
-    
-        public function destroy($idPessoa, $idTembro)
-        {
-            $pessoa = $this->pessoa->where('id', $idPessoa)->first();
-            $tembro = $this->repository->find($idTembro);
-    
-            if (!$pessoa || !$tembro) {
-                return redirect()->back();
-            }
-    
-            $tembro->delete();
-    
-            return redirect()
-                        ->route('tembros.pessoa.index', $pessoa->id)
-                        ->with('message', 'Registro detalado com sucesso');
-
-                        
-        }
-
--------E FAZER NOSSA view SHOW     ***DICA (podemos copiar da view edit dando um cTL+SHIT+S - salvar como e nomear-la
-show.blade.php) ..  OLHAR SE PRECISA ALTERAR ALGO ----AI FAZ AS ALERAÇÔES  
-
-@extends('adminlte::page')
-
-@section('title', "Detalhes da Tembro de {$pessoa->name}")
-
-@section('content_header')
-
-
-<nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="{{route('admin.index')}} ">Dashboard</a></li>
-    <li class="breadcrumb-item" aria-current="page"><a href="{{route('pessoas.index')}}" >Pessoaos</a></li>
-   
-    <li class="breadcrumb-item" aria-current="page"><a href="{{route('tembros.pessoa.index', $pessoa->id)}}" class="active">Detalhes</a></li>
-    <li class="breadcrumb-item active" aria-current="page"><a href="{{route('tembros.pessoa.edit', [$pessoa->id, $tembro->id])}}" class="active">Detalhes</a></li>
-</ol>
-</nav>
-
-<h1> Detalhes da Tembro de {{$pessoa->name}} </h1>
-
-@stop
-
-@section('content')
-   
-            <div class="card">
-            
-        <div class="card-body">
-       <ul>
-       <li><strong>NOME</strong>{{$tembro->numero}}</li>
-       <li><strong>DESCRIÇÃO</strong>{{$tembro->description}}</li>
-       
-       </ul> 
-       
-       </div>
-       </div>
-       @endsection
-       
-
----------------------TEMOS QUE IR NA LISTAGEM (index) E MODIFICAMOS A ROTA DA NOSA URL (tembros.pessoa.show) E 
-pASSA DOS PARAMNETRO EM UMA RAIS - A id DO Pessoa E O ID DO TembroS[$pessoa->id, $tembro->id] -
-        <body>
-                @foreach($tembros as $tembro)
-                 <tr>
-                    <td>{{ $tembro->numero }}</td>
-                    <td>{{ $tembro->description }}</td>
-                   
-                    
-                    <td style="width: 200px;">
-                    <a href="{{ route('tembros.pessoa.edit', [$pessoa->id, $tembro->id]) }}" class="btn btn-warning">EDITAR</a>
-                    <a href="{{ route('tembros.pessoa.show', [$pessoa->id, $tembro->id]) }}" class="btn btn-warning"><i class="fas fa-trash-alt"></i></a>
-                    </td>
-                     </tr>
-                @endforeach
-            </body>
-
----------------------------AQUI JA ESTA EXIBINDO Detalhes da Tembro da PESSOA EM BOTAO (lixeira)
-PARA REMOVER O REGISTRO (DELETAR) FAREMOS UM FORMULARIO NO FINAL DA view show.blade.php DO TembroSDO PessoaO
-PERCEBA QUE JA CODIFICAMOS O METODO DETROY NA CembroPessoaController
-O FORMULARIO VAI PAR ROTA DE DETROY COM OS DOIS PARAMENTROS, id DO Pessoa E ID DO DETALHE
-NÂO ESQUECER AS DIRETRIZES @csrf e O METHOD (DELETE)
-
-  @section('content')
-   
-            <div class="card">
-            
-        <div class="card-body">
-       <ul>
-       <li><strong>NOME  :  </strong>{{$cembro->banco}}</li>
-       <li><strong>AGENCIA  :  </strong>{{$cembro->agencia}}</li>
-       <li><strong>Tembro  :  </strong>{{$cembro->cembro}}</li>
-       </ul> 
-       
-       </div>
-        <div class="car-footer">
-            <form action="{{route('tembros.pessoa.destroy', [$pessoa->id, $tembro->id])}}" method="post">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-danger">Deletar a tembro {{$tembro->tembro}} de {{$pessoa->name}} </button>
-            </form>
-
-           </div>
-       </div>
-       @endsection
-
----A view admin\pages\pessoas\tembro\show.blade.php FICA ASSIM 
-@extends('adminlte::page')
-
-@section('title', "Detalhes da Tembro de {$pessoa->name}")
-
-@section('content_header')
-
-
-<nav aria-label="breadcrumb">
-  <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="{{route('admin.index')}} ">Dashboard</a></li>
-    <li class="breadcrumb-item" aria-current="page"><a href="{{route('pessoas.index')}}" >Pessoaos</a></li>
-   
-    <li class="breadcrumb-item" aria-current="page"><a href="{{route('tembros.pessoa.index', $pessoa->id)}}" class="active">Detalhes</a></li>
-    <li class="breadcrumb-item active" aria-current="page"><a href="{{route('tembros.pessoa.edit', [$pessoa->id, $tembro->id])}}" class="active">Detalhes</a></li>
-</ol>
-</nav>
-
-<h1> Detalhes da Tembro de {{$pessoa->name}} </h1>
-
-@stop
-
-@section('content')
-   
-            <div class="card">
-            
-        <div class="card-body">
-       <ul>
-       <li><strong>NOME   ...</strong>{{$tembro->numero}} </li>
-       <li><strong>DESCRIÇÃO   ...</strong>{{$tembro->description}} </li>
-      
-       </ul> 
-       
-       </div>
-       <div class="car-footer">
-            <form action="{{route('tembros.pessoa.destroy', [$pessoa->id, $tembro->id])}}" method="post">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-danger">Deletar a tembro {{$tembro->tembro}} de {{$pessoa->name}} </button>
-            </form>
-
-           </div>
-       </div>
-       @endsection
-
-FINAL_MMORC--------------------------------
-
-
-
-
-
-
-
-
-
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX NÃO CONSEGUIR CADASTRAR
 
 
 
@@ -7213,6 +6865,19 @@ Route::prefix('admin')
 {
 E AGORA JA ESTA RESTRITA (redirecionamdo todos que nao tenha permisão -  auth)-------------Ok PERFEITO
 
+--------PARA ENTRAR DIRETO NA PAGINA DE LOGIM PODEMOS MUDAR A view Welcone NA função
+//ROTAS DE Acessorios
+//
+
+Route::get('/', function () {
+    return view('Auth.login');
+});
+
+Auth::routes(['register'=>false]);
+
+
+------------------------------VAMOS DEIXAR SEM RESTRIÇÂO
+
 ----AGORA VAMOS CRIAR UM SEEDER PARA INCLUIR UM USUARIO AUTENTICADO
 
 # php artisan make:seeder UsersTableSeeder
@@ -7249,3 +6914,116 @@ CRIOU O SEEDER (vamos codifica-lo)---ESSE SEEDER VAI INCLUIR O REGISTRO NA NOSSA
  Auth::routes(['register'=>false]);       - NÃo FIZEMOS
 
 ----------------------------------------------------------------------OK PERFEITO
+
+
+
+0ROTAS-------------ROTAS ATE AQUI--------------------
+<?php
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+
+Route::prefix('admin')
+        ->namespace('Admin')
+         //->middleware('auth')
+        ->group(function() {
+
+
+
+            // ROTA DAS ORCRIM X PESSOA 
+
+           Route::get('orcrims/{id}/pessoa/{idPessoa}/detach', 'OrcrimPessoaController@detachPessoaOrcrim')->name('orcrims.pessoa.detach');
+           Route::post('orcrims/{id}/pessoas', 'OrcrimPessoaController@attachPessoasOrcrim')->name('orcrims.pessoas.attach');         
+           Route::any('orcrims/{id}/pessoas/create', 'OrcrimPessoaController@pessoasAvailable')->name('orcrims.pessoas.available');  
+           Route::get('orcrims/{id}/pessoas', 'OrcrimPessoaController@pessoas')->name('orcrims.pessoas');
+          /*   ESSA ROTA È ASSOCIADA A PAGINA PESSOA>INDEX (para exibir as orcrim que pertence a pessoa) */
+           Route::get('pessoas/{id}/orcrims', 'OrcrimPessoaController@orcrims')->name('pessoas.orcrims');
+
+              //ROTAS DE MEMBROS DA  ORCRIM
+
+
+         //     Route::post('orcrims/{id}/membros', 'MenbroOrcrimController@store')->name('membros.orcrim.store');
+         //     Route::get('orcrims/{id}/membros/create', 'MenbroOrcrimController@create')->name('membros.orcrim.create'); 
+                Route::post('orcrims/{id}/membros', 'MenbroOrcrimController@attachPessoasOrcrim')->name('orcrims.membros.attach');      
+                Route::any('orcrims/{id}/membros/create', 'MenbroOrcrimController@pessoasAvailable')->name('orcrims.membros.acesso');  
+                Route::get('orcrims/{id}/membros', 'MenbroOrcrimController@pessoas')->name('membros.orcrims'); 
+
+
+              //ROTAS DE ORCRIM
+        
+        Route::put('orcrims/{id}', 'OrcrimController@update')->name('orcrims.update');
+        Route::get('orcrims/{id}/edit', 'OrcrimController@edit')->name('orcrims.edit');
+        Route::any('orcrims/search', 'OrcrimController@search')->name('orcrims.search');
+        Route::delete('orcrims/{id}', 'OrcrimController@destroy')->name('orcrims.destroy');
+        Route::get('orcrims/{id}', 'OrcrimController@show')->name('orcrims.show'); 
+        Route::post('orcrims', 'OrcrimController@store')->name('orcrims.store');
+        Route::get('orcrims/create', 'OrcrimController@create')->name('orcrims.create');         
+        Route::get('orcrims', 'OrcrimController@index')->name('orcrims.index');
+        
+           //ROTAS DE TELEFONE
+
+    Route::delete('pessoas/{id}/telefones/{idtelefone}', 'TelefonePessoaController@destroy')->name('telefones.pessoa.destroy');
+    Route::get('pessoas/{id}/telefones/{idtelefone}', 'TelefonePessoaController@show')->name('telefones.pessoa.show');        
+    Route::put('pessoas/{id}/telefones/{idtelefone}', 'TelefonePessoaController@update')->name('telefones.pessoa.update');
+    Route::get('pessoas/{id}/telefones/{idtelefone}/edit', 'TelefonePessoaController@edit')->name('telefones.pessoa.edit');
+     Route::post('pessoas/{id}/telefones', 'TelefonePessoaController@store')->name('telefones.pessoa.store');
+    Route::get('pessoas/{id}/telefones/create', 'TelefonePessoaController@create')->name('telefones.pessoa.create');
+    Route::get('pessoas/{id}/telefones', 'TelefonePessoaController@index')->name('telefones.pessoa.index');            
+
+        //ROTAS DE contas
+
+    Route::delete('pessoas/{id}/contas/{idconta}', 'ContaPessoaController@destroy')->name('contas.pessoa.destroy');
+    Route::get('pessoas/{id}/contas/{idconta}', 'ContaPessoaController@show')->name('contas.pessoa.show');        
+    Route::put('pessoas/{id}/contas/{idconta}', 'ContaPessoaController@update')->name('contas.pessoa.update');
+    Route::get('pessoas/{id}/contas/{idconta}/edit', 'ContaPessoaController@edit')->name('contas.pessoa.edit');
+    Route::post('pessoas/{id}/contas', 'ContaPessoaController@store')->name('contas.pessoa.store');
+    Route::get('pessoas/{id}/contas/create', 'ContaPessoaController@create')->name('contas.pessoa.create');
+    Route::get('pessoas/{id}/contas', 'ContaPessoaController@index')->name('contas.pessoa.index');
+
+    //ROTAS DE PESSOAS
+
+    Route::get('pessoas/create', 'PessoaController@create')->name('pessoas.create');
+
+    Route::put('pessoas/{url}', 'PessoaController@update')->name('pessoas.update');
+    Route::get('pessoas/{url}/edite', 'PessoaController@edite')->name('pessoas.edite');  //EXPERIMENTAL
+    Route::get('pessoas/{url}/edit', 'PessoaController@edit')->name('pessoas.edit');
+    Route::any('pessoas/search', 'PessoaController@search')->name('pessoas.search');
+    Route::delete('pessoas/{url}', 'PessoaController@destroy')->name('pessoas.destroy');
+    Route::get('pessoas/{url}', 'PessoaController@show')->name('pessoas.show');
+    Route::post('pessoas', 'PessoaController@store')->name('pessoas.store');
+    
+    Route::get('pessoas', 'PessoaController@index')->name('pessoas.index');
+    
+    
+    
+    
+//ROTAS DE GERAIS
+    Route::get('/gerals', 'GeralController@index')->name('gerals.index');
+
+
+   //ROTAS DE base (home-dashboard)
+    Route::get('/', 'PessoaController@index')->name('admin.index');
+
+
+});
+ 
+
+//ROTAS DE Acessorios
+//
+
+Route::get('/', function () {
+    return view('Auth.login');
+});
+
+Auth::routes(['register'=>false]);
+
+-------------------------------------------------------------------------------------------------------
