@@ -12,17 +12,8 @@
     
     <li class="breadcrumb-item active" aria-current="page"><a href="{{route('membros.orcrim.index', $pessoa->id)}}" class="active">Detalhes</a></li>
   </ol>
- 
 </nav>
- 
-<select class="custom-select" id="inputGroupSelect03">
-
-@foreach($membros as $membro)
-   
-    <option value="{{ $orcrim->id }}">{{ $orcrim->name }}</option>
-   @endforeach
-  </select>
-<h1>ORCRIM {{ $pessoa->name }}</h1>
+<h1>{{$pessoa->name}}</h1>
 @stop
 
 @section('content')
