@@ -28,6 +28,14 @@ class Pessoa extends Model
     return $this->hasMany(TelefonePessoa::class);
 }   
 
+      // RELACIONAMENTO COM Parent   ----- UMA Pessoa PODE TER VARIAS ParentS
+
+                public function parents() {
+                    return $this->belongsToMany(ParentPessoa::class);
+                        } 
+
+
+
 
     // FILTRO DE PESSOAS
     public function search($filter = null) {
