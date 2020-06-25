@@ -7,7 +7,7 @@
         <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
         <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Perfis</a></li>
     </ol>
-<h1>Vincular Pessoas</h1>
+<h1>Vincular Pessoas   </h1>
 <style type="text/css">
 .hidden {
     display:none;
@@ -28,17 +28,17 @@ function mostra(id) {
    <div id="cadastro" class="hidden">
    <div class="card">
    <div class="card-body">
-            <form action="{{route('orcrims.store')}}" class="form" method="POST" >
+            <form action="{{route('parents.store')}}" class="form" method="POST" >
 @csrf
 @include('admin.includes.alerts')
 
   <div class="form-row">
   <div class="form-group col-md-6">
       <label for="inputState">MEMBRO</label>
-      <select id="inputState" class="form-control" name="name">
+      <select id="inputState" class="form-control" name="parent_id">
       @foreach ($pessoas as $pessoa)
       <option selected>Choose...</option>
-        <option value ="{{$pessoa->name ?? old('name')}}"> {{$pessoa->name ?? old('name')}}</option>
+        <option value ="{{$pessoa->id ?? old('id')}}"> {{$pessoa->name ?? old('name')}}</option>
         @endforeach
       </select>
     </div>
@@ -48,11 +48,11 @@ function mostra(id) {
     </div>
     <div class="form-group col-md-2">
       <label >VÍNCULO</label>
-      <select  class="form-control" name="func">
+      <select  class="form-control" name="name">
         <option selected>Sem função...</option>
-        <option value="Sintonia da rua" >Comparsa</option>
-        <option value="Sintonia da rua" >Advogado</option>
-        <option value="Sintonia da rua" >Cunhado</option>
+        <option value="Comparsa da rua" >Comparsa</option>
+        <option value="Advogado" >Advogado</option>
+        <option value="Cunhado" >Cunhado</option>
         <option value="Sintonia da rua" >Sintonia da rua</option>
         <option value="Geral da rua" >Geral da rua</option>
         <option value="Sintonia da gravata" >Sintonia da gravata</option>
@@ -62,19 +62,19 @@ function mostra(id) {
   <div class="form-row">
   <div class="form-group col-md-6">
       <label for="inputState">MEMBRO</label>
-      <select id="inputState" class="form-control" name="name">
+      <select id="inputState" class="form-control" name="pessoa_id ">
       @foreach ($pessoas as $pessoa)
       <option selected>Choose...</option>
-        <option value ="{{$pessoa->name ?? old('name')}}"> {{$pessoa->name ?? old('name')}}</option>
+        <option value ="{{$pessoa->id ?? old('id')}}"> {{$pessoa->name ?? old('name')}}</option>
         @endforeach
       </select>
     </div>
     <div class="form-group col-md-3">
       <label> Estado</label>
-      <input class="form-control" type="text" name="estado" placeholder="estado" value="  ">
+      <input class="form-control" type="text" name="pessoa_id" placeholder="estado" value=" {{$pessoa->id ?? old('id')}} ">
     </div>
     </div>
-    <button type="submit" class="btn btn-primary">CADASTRAR ORCRIMS</button>
+    <button type="submit" class="btn btn-primary">VINCULAR PESSOAS</button>
  </form> 
    </div>
    </div>
