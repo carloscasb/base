@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Admin;
-
+use Illuminate\Support\Str;
 use App\Http\Controllers\Controller;
 use App\Models\ParentPessoa;
 use App\Models\Pessoa;
@@ -13,9 +13,9 @@ class ParentPessoaController extends Controller
 
     protected $parent, $pessoa;
 
-    public function __construct(ParentPessoa $parentpessoa, Pessoa $pessoa)
+    public function __construct(ParentPessoa $parent, Pessoa $pessoa)
     {
-        $this->parent = $parentpessoa;
+        $this->parent = $parent;
         $this->pessoa = $pessoa;
 
       //  $this->middleware(['can:orcrims']);
@@ -27,8 +27,10 @@ class ParentPessoaController extends Controller
        // $pessoas = $this->pessoa->all();
         // $pessoas = $this->pessoa->paginate(4);
         $pessoas = $this->pessoa->latest()->paginate();
+        $parents = $this->parent->latest()->paginate();
         return view('admin.pages.parents.index', [
             'pessoas' => $pessoas,
+            'parent' => $parents,
             ]);
 
         }
@@ -38,21 +40,25 @@ class ParentPessoaController extends Controller
             return view('admin.pages.parents.create');
         }
 
-            
+        /*
         //public function store(StoreUpdatePessoa $request)
-        public function store(Request $request, $idParent )
+        public function store(Request $request, ParentPessoa $parent)
         {
-           
-            $data = $request->all();
-            $data['id']= Str::kebab($request->name);
-            
-    
-            $this->parent->create($data);
-    
-            return redirect()->route('parents.index');
+
+            $this->parent->create($request->all());
+
+              return redirect ()-> route('parents.index', $parent);
+         // return view('admin.pages.parents.index', $parentpessoa);
         }
 
+*/
 
+            public function store(Request $request, ParentPessoa $parent) {
+                //dd($parent->all());
+                $this->parent->create($request->all());
+
+                return redirect ()-> route('parents.index', $parent);
+            }
 
     
 }
