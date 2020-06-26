@@ -7,7 +7,7 @@
         <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
         <li class="breadcrumb-item active"><a href="{{ route('pessoas.index') }}" class="active">Perfis</a></li>
     </ol>
-<h1>Vincular Pessoas   </h1>
+<h1>Vincular Pessoas  </h1>
 <style type="text/css">
 .hidden {
     display:none;
@@ -34,7 +34,7 @@ function mostra(id) {
 
   <div class="form-row">
   <div class="form-group col-md-6">
-      <label for="inputState">MEMBRO</label>
+      <label for="inputState">Pessoa 1</label>
       <select id="inputState" class="form-control" name="parent_id">
       @foreach ($pessoas as $pessoa)
       <option selected>Choose...</option>
@@ -42,14 +42,11 @@ function mostra(id) {
         @endforeach
       </select>
     </div>
-    <div class="form-group col-md-3">
-      <label >Sigla</label>
-      <input type="text" class="form-control" name="sigla" placeholder="sigla" value="{{$pessoa->name ?? old('name')}}  ">
-    </div>
+   
     <div class="form-group col-md-2">
       <label >VÍNCULO</label>
       <select  class="form-control" name="name">
-        <option selected>Sem função...</option>
+        <option selected>Indefindo</option>
         <option value="Comparsa da rua" >Comparsa</option>
         <option value="Advogado" >Advogado</option>
         <option value="Cunhado" >Cunhado</option>
@@ -61,18 +58,15 @@ function mostra(id) {
   </div>
   <div class="form-row">
   <div class="form-group col-md-6">
-      <label for="inputState">MEMBRO</label>
-      <select id="inputState" class="form-control" name="pessoa_id ">
+      <label for="inputState">Pessoa 2</label>
+      <select id="inputState" class="form-control" name="pessoa_id">
       @foreach ($pessoas as $pessoa)
       <option selected>Choose...</option>
         <option value ="{{$pessoa->id ?? old('id')}}"> {{$pessoa->name ?? old('name')}}</option>
         @endforeach
       </select>
     </div>
-    <div class="form-group col-md-3">
-      <label> Estado</label>
-      <input class="form-control" type="text" name="pessoa_id" placeholder="estado" value=" {{$pessoa->id ?? old('id')}} ">
-    </div>
+    
     </div>
     <button type="submit" class="btn btn-primary">VINCULAR PESSOAS</button>
  </form> 
@@ -92,23 +86,25 @@ function mostra(id) {
         <table class="table table-condensed">
             <thead>
                 <tr>
-                    <th>Nome</th>
-                    <th>Preço</th>
-                     <th style="width: 50px">Ação</th>
+                    <th>Vínculo</th>
+                    <th>Id da Pessoa 1</th>
+                     <th style="width: 100px">Pessoa 2</th>
 
                 </tr>
 
             </thead>
             <body>
-            @foreach($pessoas as $pessoa)
+            @foreach($parent as $parent)
+           
                  <tr>
-                    <td>{{ $pessoa->name }}</td>
-                    <td>{{ $pessoa->cpf }}</td>
+                    <td>{{ $parent->name }}</td>
+                    <td>{{ $parent->pessoa_id }}</td>
                     <td>
-                    <a href="url" class="btn btn-warning">Detalhe</a>
+                    <a href="url" class="btn btn-warning">{{ $parent->parent_id }}</a>
                     </td>
                     </tr>
                 @endforeach
+               
             </body>
         </table>
        
@@ -116,6 +112,7 @@ function mostra(id) {
                 </div>
             </div>
             <div class="card-footer">
-                {!! $pessoas->links() !!}
+               
+               
             </div>
 @stop
