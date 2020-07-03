@@ -90,19 +90,19 @@ function mostra(id) {
                 @foreach($orcrims as $orcrim)
                  <tr>
                      <td>
-                    <a href="{{ route('orcrims.pessoas', $orcrim->id) }}" class="btn btn-warning"><i class="fas fa-users"></i>Menbros</a>
+                    <a href="{{ route('orcrims.pessoas', $orcrim->id) }}" class="btn btn-warning" title="Vincular Membros"><i class="fas fa-users"></i>Menbros</a>
                     </td>
                     <td>{{ $orcrim->name }}</td>
                     <td>{{ $orcrim->sigla }}</td>
                     <td>
-                    <a href="{{ route('orcrims.edit', $orcrim->id) }}" ><i class="fas fa-edit"></i></a>
+                    <a href="{{ route('orcrims.edit', $orcrim->id) }}" title="Editar"><i class="fas fa-edit"></i></a>
                     </td>
                      <td>
-                    <a href="{{ route('orcrims.show', $orcrim->id) }}" ><i class="fas fa-trash-alt"></i></a>
+                    <a href="{{ route('orcrims.show', $orcrim->id) }}" title="Deletar"><i class="fas fa-trash-alt"></i></a>
                     </td>
                     
                     <td>
-                    <a href="{{ route('membros.orcrim.index', $orcrim->id) }}" ><i class="fas fa-user-secret"></i></a>
+                    <a href="{{ route('orcrims.membros.acesso', $orcrim->id) }}", title="função dentro da Orcrim" ><i class="fas fa-user-secret"></i></a>
                     </td>
                   </tr>
                 @endforeach

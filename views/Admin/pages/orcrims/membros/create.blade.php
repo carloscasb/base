@@ -17,7 +17,7 @@
    
             <div class="card">
             <div class="card-body">
-            <form action="{{route('membros.orcrim.store',  $membros->id)}}" class="form" method="POST" >
+            <form action="{{route('membros.orcrim.store',  $orcrim->id)}}" class="form" method="POST" >
 @csrf
 @include('admin.includes.alerts')
 

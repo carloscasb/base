@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', "Planos do perfil {$pessoa->name}")
+@section('title', " {$pessoa->name} " )
 
 @section('content_header')
     <ol class="breadcrumb">
@@ -9,7 +9,7 @@
         <li class="breadcrumb-item active"><a href="{{ route('pessoas.orcrims', $pessoa->id) }}" class="active">Planos</a></li>
     </ol>
 
-    <h1>Planos do perfil <strong>{{ $pessoa->name }}</strong></h1>
+    <h1> <strong>{{ $pessoa->name }}</strong> é integrante da ORCRIM abaixo:</h1>
 
 @stop
 

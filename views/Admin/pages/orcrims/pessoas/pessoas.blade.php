@@ -9,7 +9,7 @@
     </ol>
 
     <h1>Pessoas com ligação <strong>{{ $orcrim->name }}</strong></h1>
-    <a href="{{ route('orcrims.pessoas.available', $orcrim->id)}}" class="btn btn-dark">ADD NOVA PERMISSÃO</a>
+    <a href="{{ route('orcrims.pessoas.available', $orcrim->id)}}" class="btn btn-dark">ADD NOVA PESSOA</a>
 
 @stop
 
