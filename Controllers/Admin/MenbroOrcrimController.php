@@ -24,11 +24,7 @@ class MenbroOrcrimController extends Controller
     }
 
      //TENTAIVAS INSERIR
-
-    
-      
-    
-        
+       
       
 
     public function create()
@@ -39,13 +35,16 @@ class MenbroOrcrimController extends Controller
      //  public function store(StoreUpdateProfile $request)
    public function store(Request $request, $idOrcrim )
    {
+    dd('Estou aqui em: CategoryController no método store()');
+       
+    /*
     if (!$orcrim = $this->orcrim->where('id', $idOrcrim)->first()) {
         return redirect()->back();
     
         $orcrim->membros()->create($request->all());
     
         return redirect()->route('orcrims.membros.acesso', $orcrim->id);
-    }
+    } */
       //   $this->repository->create($request->all());
 
        //  return redirect()->route('orcrims.membros.acesso');
@@ -94,16 +93,49 @@ class MenbroOrcrimController extends Controller
        return view('admin.pages.orcrims.membros.acesso', compact('orcrim', 'pessoas', 'filters'));
    }
 
-   public function attachPessoasOrcrim(Request $request, $idOrcrim)
-   {
-    
+   public function attachPessoaOrcrim(Request $request, MembroOrcrim $membroorcrim, Orcrim $orcrim )
+   { 
+       //  $membroorcrim->orcrim_id = $request->orcrim_id;
+    // $membroorcrim->name = $request->name;
    
-      
+  // $membroorcrim->save();
+
+  $membroorcrim->create($request->all());
+  
+  
+  
+  
+}
+   // dd($request->orcrim_id);
+ 
+     //    $orcrim = $this->orcrim->where('id', $idOrcrim)->first();
+
+        // $orcrim->membros()->create($request->all());
+    
+        //   return redirect()->route('orcrims.membros.acesso', $orcrim->id);
+
+   
+    /*
+
+
+
+       if (!$orcrim = $this->orcrim->find($idOrcrim)) {
+           return redirect()->back();
+       }
+
+       if (!$request->pessoas || count($request->pessoas) == 0) {
+           return redirect()
+                       ->back()
+                       ->with('info', 'Precisa escolher pelo menos um orcrimo');
+       }
+
+       $orcrim->pessoas()->attach($request->pessoas);
+
+       return redirect()->route('membros.orcrims', $orcrim->id);  
    }
 
         
-
-
-
+ */
 
 }
+
