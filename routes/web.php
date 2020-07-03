@@ -19,6 +19,36 @@ Route::prefix('admin')
 
 
 
+            //ROTA DAS Evento X PESSOA 
+
+            Route::post('eventos/{id}/pessoas', 'EventoPessoaController@store')->name('eventos.pessoas.store');
+
+            Route::post('eventos/{id}/pessoas', 'EventoPessoaController@attachPessoaEvento')->name('eventos.pessoas.attach');  
+            Route::any('eventos/{id}/pessoas/create', 'EventoPessoaController@pessoasAvailable')->name('eventos.pessoas.acesso');  
+            Route::get('eventos/{id}/pessoas', 'EventoPessoaController@pessoas')->name('eventos.pessoas');
+
+
+            //ROTAS DE Evento
+
+          //  Route::any('orcrims/{id}/edit', 'EventoPessoaController@pessoasAvailable')->name('eventos.pessoas.available');  
+            Route::put('eventos/{id}', 'EventoController@update')->name('eventos.update');
+            Route::get('eventos/{id}/edit', 'EventoController@edit')->name('eventos.edit');
+            Route::any('eventos/search', 'EventoController@search')->name('eventos.search');
+            Route::delete('eventos/{id}', 'EventoController@destroy')->name('eventos.destroy');
+            Route::get('eventos/{id}', 'EventoController@show')->name('eventos.show'); 
+            Route::post('eventos', 'EventoController@store')->name('eventos.store');
+            Route::get('eventos/create', 'EventoController@create')->name('eventos.create'); 
+            Route::get('eventos', 'EventoController@index')->name('eventos.index');
+                    
+
+
+            // ROTA DAS PESSOAS X PESSOA 
+
+           
+            Route::post('parents', 'ParentPessoaController@store')->name('parents.store');
+            Route::get('parents/create', 'ParentPessoaController@create')->name('parents.create');    
+           Route::get('parents', 'ParentPessoaController@index')->name('parents.index');
+
             // ROTA DAS ORCRIM X PESSOA 
 
            Route::get('orcrims/{id}/pessoa/{idPessoa}/detach', 'OrcrimPessoaController@detachPessoaOrcrim')->name('orcrims.pessoa.detach');
@@ -31,9 +61,9 @@ Route::prefix('admin')
               //ROTAS DE MEMBROS DA  ORCRIM
 
 
-                Route::post('orcrims/{id}/membros', 'MenbroOrcrimController@store')->name('membros.orcrim.store');
+             //   Route::post('orcrims/{id}/membros', 'MenbroOrcrimController@store')->name('membros.orcrim.store');
             // Route::get('orcrims/{id}/membros/create', 'MenbroOrcrimController@create')->name('membros.orcrim.create'); 
-                Route::post('orcrims/{id}/membros', 'MenbroOrcrimController@attachPessoasOrcrim')->name('orcrims.membros.attach');      
+                Route::post('orcrims/{id}/membros', 'MenbroOrcrimController@attachPessoaOrcrim')->name('orcrims.membros.attach');      
                 Route::any('orcrims/{id}/membros/create', 'MenbroOrcrimController@pessoasAvailable')->name('orcrims.membros.acesso');  
                 Route::get('orcrims/{id}/membros', 'MenbroOrcrimController@pessoas')->name('membros.orcrims'); 
 
