@@ -15,7 +15,7 @@ class CreateMembroOrcrimsTable extends Migration
     {
         Schema::create('membros_orcrim', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('orcrim_id');;
+            $table->unsignedBigInteger('orcrim_id');
             $table->string('name')->required();
            
             $table->string('func')->required();
