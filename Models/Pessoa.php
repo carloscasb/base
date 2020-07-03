@@ -34,7 +34,10 @@ class Pessoa extends Model
                     return $this->belongsToMany(ParentPessoa::class);
                         } 
 
-
+            // RELACIONAMENTO DAS PESSOAS - ESSA SER os Evento  POSSIVEL NUM PESSOA
+            public function eventos() {
+                return $this->belongsToMany(Evento::class);
+            }   
 
 
     // FILTRO DE PESSOAS

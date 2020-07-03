@@ -9,7 +9,7 @@ class MembroOrcrim extends Model
     //
 
     protected $table = 'membros_orcrim';          //     MODIFICAMOS O NOME DA TABELA AQUI (opcional)
-    protected $fillable = [ 'name', 'func', 'lidera', 'quebrada', 'padrinho', 'databast', 'localbast', 'atua',  'description'];
+    protected $fillable = ['orcrim_id', 'name', 'func', 'lidera', 'quebrada', 'padrinho', 'databast', 'localbast', 'atua',  'description'];
 
             // RELACIONAMENTO COM orcrim   ----- UMA Membro SÓ PODE PERTENCER UMA ORCRIM 
             
