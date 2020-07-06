@@ -9,8 +9,8 @@ class EventoPessoa extends Model
     //
 
      // CAMPOS QUE PODEM SER PREENCHIDOS
-     protected $fillable = [ 'evento_id ' , 'pessoa_id'];
-
+     protected $fillable = [ 'evento_id' , 'pessoa_id'];
+     public $timestamps = false;
 
      // RELACIONAMENTO COM Pessoa   ----- UMA EVENTO SÓ PODE PERTENCER UMA Oessoa 
              
