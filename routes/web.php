@@ -21,7 +21,7 @@ Route::prefix('admin')
 
             //ROTA DAS Evento X PESSOA 
 
-            Route::post('eventos/{id}/pessoas', 'EventoPessoaController@store')->name('eventos.pessoas.store');
+            Route::post('eventos/{id}/pessoas/create', 'EventoPessoaController@store')->name('eventos.pessoas.store');
 
             Route::post('eventos/{id}/pessoas', 'EventoPessoaController@attachPessoaEvento')->name('eventos.pessoas.attach');  
             Route::any('eventos/{id}/pessoas/create', 'EventoPessoaController@pessoasAvailable')->name('eventos.pessoas.acesso');  
