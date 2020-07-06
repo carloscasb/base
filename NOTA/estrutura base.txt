@@ -9513,42 +9513,68 @@ function mostra(id) {
 @endsection       
 ----------------------------------------------OK PERFEITO (exibindo os DADOS e editando em cima---- OS EVENTOS)
 
-8MMORC---------INSERIR OU CADASTRAR MEMNBRO (RELACIONAR COM Evento ) NÃO EVOLUI 
+8MAEVPES---------INSERIR OU CADASTRAR PESSOA (RELACIONAR COM Evento ) 
 
 
---------------- PRIMEIRO VAMOS CRIAR UMA ROTA PARA INCLUSÂO (sera diferente da normalmente)
- Route::post('eventos/{id}/pessoas', 'MenbroEventoController@attachPessoaEvento')->name('eventos.pessoas.attach');      
-                Route::any('eventos/{id}/membros/create', 'MenbroEventoController@pessoasAvailable')->name('eventos.membros.acesso');  
-                Route::get('eventos/{id}/membros', 'MenbroEventoController@pessoas')->name('membros.eventos'); 
+--------------- PRIMEIRO VAMOS CRIAR UMA ROTA PARA INCLUSÂO name('eventos.pessoas.attach'); (sera diferente da normalmente)
+  //ROTA DAS Evento X PESSOA 
+
+            Route::post('eventos/{id}/pessoas/create', 'EventoPessoaController@store')->name('eventos.pessoas.store');
+
+            Route::post('eventos/{id}/pessoas', 'EventoPessoaController@attachPessoaEvento')->name('eventos.pessoas.attach');  
+            Route::any('eventos/{id}/pessoas/create', 'EventoPessoaController@pessoasAvailable')->name('eventos.pessoas.acesso');  
+            Route::get('eventos/{id}/pessoas', 'EventoPessoaController@pessoas')->name('eventos.pessoas');
 
 
--- A PAGINA DE CADASTRO SERA A view ACESSO  admin.pages.eventos.membros.acesso E O LINK SERA
+
+-- A PAGINA DE CADASTRO SERA A view ACESSO  admin.pages.eventos.pessoas.acesso E O LINK SERA
 @stop
 
 @section('content')
 <div class="card">
         <div class="card-header">
-        <form action="{{ route('eventos.membros.attach', $evento->id) }}" class="form" method="POST" >
+        <form action="{{ route('eventos.pessoas.attach', $evento->id) }}" class="form" method="POST" >
         @csrf
 @include('admin.includes.alerts')
 
--------------------VAMOS NO MenbroEventoController E  CODIFICANDO O METODO attachPessoaEvento -
- public function attachPessoaEvento(Request $request, MembroEvento $membroevento )
-   { 
-       //  $membroevento->evento_id = $request->evento_id;
-    // $membroevento->name = $request->name;
-   
-  // $membroevento->save();
+-------------------VAMOS NO EventoController E  CODIFICANDO O METODO attachPessoaEvento -
+  public function attachPessoaEvento(Request $request, EventoPessoa $eventopessoa )
+            { 
+               //   $eventopessoa->evento_id = $request->evento_id;
+           // $eventopessoa->pessoa_id = $request->pessoa_id;
+            
+         // $eventopessoa->save();
+        
+        /*
+        $eventopessoa ->name = $request->name;
+        $eventopessoa ->save();
+    */ 
 
-  $membroevento->create($request->all());
-   }
+       $eventopessoa->create($request->all());
+       return redirect()->route('eventos.index');
 
+            }
 
 ----- E AGORA VAMOS NA MODEL MEMBROS E LIBERAMOS OS CAMPOS QUE PODEM RECEBER INSERÇÂO   (fillable)
- class Menbro extends Model
+ class EventoPessoa extends Model
 {
-     protected $table = 'membros_evento';          //     MODIFICAMOS O NOME DA TABELA AQUI (opcional)
-    protected $fillable = [ 'name', 'func', 'lidera', 'quebrada', 'padrinho', 'databast', 'localbast', 'atua',  'description'];
+    //
+
+     // CAMPOS QUE PODEM SER PREENCHIDOS
+     protected $fillable = [ 'evento_id' , 'pessoa_id'];
+     public $timestamps = false;
+
+     // RELACIONAMENTO COM Pessoa   ----- UMA EVENTO SÓ PODE PERTENCER UMA Oessoa 
+             
+         public function pessoas() {
+         return $this->belongsToMany(Pessoa::class);
+ }
+
+                                // RELACIONAMENTO COM Evento   ----- UMA EVENTO SÓ PODE PERTENCER UMA Oessoa 
+                                            
+                                public function eventos() {
+                                    return $this->belongsToMany(Evento::class);
+                                }
 
 }
 
@@ -9558,8 +9584,251 @@ NOSSA View FICARAM ASSIM :
 
 ----ACESSO
 
+@extends('adminlte::page')
 
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx STANDBOAD PARA prosseguir
+@section('title', "EDITANDO Pessoaos {$evento->name}")
+
+@section('content_header')
+
+</script>
+@section('content_header')
+
+<!---SCRIPE PARA A DIV ROLANTE DO BOTAO ADD -->
+    <style type="text/css">
+.hidden {
+    display:none;
+}
+input {
+    display: block;
+}
+</style>
+<script>
+function mostra(id) {
+     if (document.getElementById (id).style.display =='none' ){
+        document.getElementById (id).style.display = 'block'
+     }else {document.getElementById (id).style.display = 'none'  } 
+}
+</script>
+
+<!---FIM DO SCRIPE PARA A DIV ROLANTE DO BOTAO ADD -->
+
+<link rel="stylesheet" type="text/css" href="/css/base.css">
+
+<ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ route('gerals.index') }}">Dashboard</a></li>
+        <li class="breadcrumb-item active"><a href="{{ route('eventos.index') }}" class="active">Eventos</a></li>
+        <li> ...   {!!$evento->name!!}</li>
+    </ol>
+@stop
+
+@section('content')
+   
+            <div class="card">
+            <div class="card-body">
+
+
+
+<div id="caixa3">
+	<div id="cx1">
+  <form action="{{route('eventos.update', $evento->id)}}" class="form" method="POST" >
+@csrf
+@method('PUT')
+  <div class="form-row">
+    <div class="form-group col-md-8" row="4">
+      <label> Nome</label>
+      <input class="form-control" type="text" name="name" placeholder="name" value=" {{$evento->name ?? old('name')}} ">
+    </div>
+    <div class="form-group col-md-4">
+      <label for="inputCity">DATA DO EVENTO</label>
+      <input type="text" class="form-control" name="nascimento" value=" {{$evento->nascimento ?? old('nascimento')}}">
+    </div>
+    </div>
+ <div class="form-row">
+ <div class="form-group col-md-4">
+      <label for="inputState">TIPO</label>
+      <select  class="form-control" name="tipo">
+        <option selected>{{$evento->tipo ?? old('tipo')}}</option>
+        <option value="Trafico de droga" >Trafico de droga</option>
+        <option value="Assalto a banco" >Assalto a banco</option>
+        <option value="Crime financeiros" >Crime financeiros</option>
+      </select>
+    </div>
+    <div class="form-group col-md-4">
+      <label for="inputState">STATUS</label>
+      <select  class="form-control" name="status">
+        <option selected>{{$evento->status ?? old('status')}}</option>
+        <option value="Em Analise" >Em Analise</option>
+        <option value="Processamento" >Processamento</option>
+        <option value="Concluido" >Concluido</option>
+      </select>
+    </div>
+  </div>
+	</div>
+	<div id="cx2">
+ 
+  <div class="form-group">
+    <label for="inputAddress">Observação</label>
+    <textarea type="text" class="form-control"    placeholder="1234 Main St" name="description">{{$evento->description ?? old('description')}}</textarea>
+ </div>
+   <button type="submit" class="btn btn-primary">EDITAR EVENTO</button>
+</form>
+	</div>
+</div>
+
+<div id="caixa4">
+  
+<div>
+<input type="button" value="+ Cadastra " onClick="mostra('cadastro')"/>
+   <div id="cadastro" class="hidden">
+   <div class="card">
+   <div class="card">
+            <div class="card-body">
+            <form action="{{ route('eventos.pessoas.attach', $evento->id) }}" class="form" method="POST" >
+@csrf
+@include('admin.includes.alerts')
+<div class="form-row">
+<div class="form-group col-md-6">
+      <label for="inputState">Pessoa</label>
+      <select  class="form-control" name="pessoa_id">
+      @foreach ($pessoas as $pessoa)
+      <option selected>Choose...</option>
+        <option value ="{{$pessoa->id ?? old('id')}}"> {{$pessoa->name ?? old('name')}}</option>
+        @endforeach
+      </select>
+    </div>
+    <div class="form-group col-md-2">
+      <label for="inputCity">DATA DO EVENTO</label>
+      <input type="text" class="form-control" name="evento_id" value=" {{$evento->id ?? old('id')}}">
+    </div>
+    </div>
+   
+
+    <button type="submit" class="btn btn-primary">ASSOCIAR Pessoa</button>
+ </form> 
+   </div>
+</div>
+
+</div>
+
+	<div id="cx3">222 {{$evento->id ?? old('id')}}</div>
+	<div id="cx4">
+    222eeeeee
+    ffffffffffff
+    @foreach ($pessoas as $pessoa)
+    {{$pessoa->id ?? old('id')}}
+    
+    @endforeach
+    {{$evento->id ?? old('id')}}
+	</div>
+</div>
+
+            </div>
+            </div>
+@endsection    
+
+
+---------------------EventoCOMTROLLER
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Evento;
+use App\Models\EventoPessoa;
+use App\Models\Pessoa;
+use Illuminate\Http\Request;
+
+class EventoPessoaController extends Controller
+{
+    //
+
+    protected $evento, $pessoa, $repository;
+
+    public function __construct(Evento $evento, Pessoa $pessoa, EventoPessoa $eventopessoa )
+    {
+        $this->evento = $evento;
+        $this->pessoa = $pessoa;
+        $this->repository= $eventopessoa;
+
+      //  $this->middleware(['can:evento']);
+    }
+
+    public function pessoas($idEvento)
+    {
+
+dd('estou aqui');
+
+
+
+    }
+ 
+    public function pessoasAvailable(Request $request, $idEvento)
+    {
+        if (!$evento = $this->evento->find($idEvento)) {
+            return redirect()->back();
+        }
+ 
+      // $filters = $request->except('_token');
+ 
+      // $pessoas = $ovento->pessoasAvailable($request->filter);
+ 
+       // $pessoas = $this->pessoa->All();
+       $pessoas = $this->pessoa->paginate();
+ 
+        return view('admin.pages.eventos.pessoas.acesso', compact('evento', 'pessoas', 'filters'));
+    }
+
+            public function attachPessoaEvento(Request $request, EventoPessoa $eventopessoa )
+            { 
+               //   $eventopessoa->evento_id = $request->evento_id;
+           // $eventopessoa->pessoa_id = $request->pessoa_id;
+            
+         // $eventopessoa->save();
+        
+        /*
+        $eventopessoa ->name = $request->name;
+        $eventopessoa ->save();
+    */ 
+
+       $eventopessoa->create($request->all());
+       return redirect()->route('eventos.index');
+
+            }
+
+            public function create()
+            {
+                return view('admin.pages.eventos.pessoas.acesso');
+               
+            }
+            public function store(Request $request)
+            {
+                dd('Estou aqui em:');
+            }
+
+
+}
+
+----------------------------------EDITANDO EVENTO....RELACIONANDO TABELA -----FALGTA LISTAR
+VOU MUDAR OS LINK DE EDIT E MENBROS (estetica e didatica)
+NA VIEW evento.INDEX mudar link
+
+  @foreach($eventos as $evento)
+                 <tr>
+                     <td>
+                   <a href="{{ route('eventos.pessoas.acesso', $evento->id) }}" class="btn btn-warning"><i class="fas fa-search"></i></a> 
+                    </td>
+                    <td>{{ $evento->name }}</td>
+                    <td>{{ $evento->tipo }}</td>
+                    <td>
+                    <a href="{{ route('eventos.edit', $evento->id) }}" title="Assoociar"><i class="fas fa-edit"></i></a>
+                    </td>
+                    <td>
+                    <a href="{{ route('eventos.show', $evento->id) }}" title="Deletar"><i class="fas fa-trash-alt"></i></a>
+                    </td>
+                    </tr>
+                @endforeach
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx STANDBOAD PARA prosseguir  ---tenatar listar na pagina create
 
  
 ------------------------------------------------------------------PARCIAL FIM
