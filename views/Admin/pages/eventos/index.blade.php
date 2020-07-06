@@ -108,12 +108,12 @@ function mostra(id) {
                 @foreach($eventos as $evento)
                  <tr>
                      <td>
-                   <a href="{{ route('eventos.edit', $evento->id) }}" class="btn btn-warning"><i class="fas fa-search"></i></a> 
+                   <a href="{{ route('eventos.pessoas.acesso', $evento->id) }}" class="btn btn-warning"><i class="fas fa-search"></i></a> 
                     </td>
                     <td>{{ $evento->name }}</td>
                     <td>{{ $evento->tipo }}</td>
                     <td>
-                    <a href="{{ route('eventos.pessoas.acesso', $evento->id) }}" title="Assoociar"><i class="fas fa-edit"></i></a>
+                    <a href="{{ route('eventos.edit', $evento->id) }}" title="Assoociar"><i class="fas fa-edit"></i></a>
                     </td>
                     <td>
                     <a href="{{ route('eventos.show', $evento->id) }}" title="Deletar"><i class="fas fa-trash-alt"></i></a>
