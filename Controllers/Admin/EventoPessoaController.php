@@ -50,19 +50,30 @@ dd('estou aqui');
 
             public function attachPessoaEvento(Request $request, EventoPessoa $eventopessoa )
             { 
-                  $eventopessoa->evento_id = $request->evento_id;
-            $eventopessoa->pessoa_id = $request->pessoa_id;
+               //   $eventopessoa->evento_id = $request->evento_id;
+           // $eventopessoa->pessoa_id = $request->pessoa_id;
             
-         $eventopessoa->save();
-        //
-        // 
+         // $eventopessoa->save();
+        
+        /*
+        $eventopessoa ->name = $request->name;
+        $eventopessoa ->save();
+    */ 
 
-
-       // $eventopessoa->create($request->all());
-
+       $eventopessoa->create($request->all());
+       return redirect()->route('eventos.index');
 
             }
 
+            public function create()
+            {
+                return view('admin.pages.eventos.pessoas.acesso');
+               
+            }
+            public function store(Request $request)
+            {
+                dd('Estou aqui em:');
+            }
 
 
 }
